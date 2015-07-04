@@ -1,0 +1,518 @@
+body {
+	background-color: #EAEAEA;
+	overflow: auto;
+}
+input, textarea{
+	outline-color: #ffa609;
+}
+.profileContainer {
+	margin: 0 0 0 240px;
+}
+.profileWrapper {
+	width: 1024px;
+	margin: 0 auto;
+}
+.profileTitle {
+	background-color: #FFFFFF;
+	width: 100%;
+	height: 260px;
+	position: relative;
+}
+.profileHr1 {
+	clear: both;
+	height: 3px;
+	width: 100%;
+	background-color: #FFA609;
+}
+.profileEmpty1 {
+	height: 20px;
+}
+.profileEmpty2 {
+	height: 200px;
+}
+.profileNav {
+	position: relative;
+	width: 100%;
+	height: 64px;
+	background-color: #3C3C3C;
+	overflow: hidden;
+}
+.profileUserImg {
+	float: left;
+	width: 200px;
+	height: 200px;
+	margin: 40px 0 0 40px;
+	background-color: #20B8E5;
+}
+.profileUserInfo {
+	position: absolute;
+	left: 280px;
+	bottom: 15px;
+	width: 600px;
+	height: 120px;
+}
+.profileUserName {
+	font-size: 24px;
+	color: #1E1E1E;
+}
+.profileUserId {
+	margin-top: 32px;
+	font-size: 14px;
+	color: #1E1E1E;
+}
+.profileUserLvl {
+	position: relative;
+	font-size: 14px;
+	color: #1E1E1E;
+	float: right;
+	margin-right: 75px;
+	width: 310px;
+}
+.profileUserLvlBar {
+	position: absolute;
+	top: 3px;
+	left: 50px;
+	width: 200px;
+	height: 12px;
+	border: 1px solid #CACACA;
+	margin-right: 20px;
+}
+.profileUserLvlBarFill {
+	width: 175px;
+	height: 12px;
+	background-color: #FFA609;
+}
+.profileUserLvlNum {
+	position: absolute;
+	right: 0;
+	color: #FFA609;
+}
+.profileUserBal {
+	font-size: 14px;
+	color: #FFA609;
+	margin-top: 14px;
+}
+.profileUserBal div {
+	display: inline-block;
+}
+.profileUserTopup {
+	color: #20B8E5;
+	margin-left: 44px;
+	cursor: pointer;
+}
+.profileUserTopup:hover {
+	opacity: 0.7;
+}
+.profileNav ul {
+	padding: 0;
+	margin: 0;
+	margin-left: 40px;
+}
+.profileNav ul li {
+	text-align: center;
+	list-style: none;
+	float: left;
+	width: 128px;
+	height: 64px;
+	font-size: 18px;
+	line-height: 64px;
+	color: #CACACA;
+	cursor: pointer;
+}
+.profileNav li:hover {
+	background-color: #000000;
+	color: #FFFFFF;
+}
+.profileNavHighlighter {
+	height: 4px;
+	width: 128px;
+	background-color: #FFA609;
+	position: absolute;
+	bottom: 0px;
+	left: 40px;
+}
+.profileNavHighlighter2 {
+	background-color: #000000;
+	color: #FFFFFF!important;
+}
+.profileMain {
+	padding-top: 40px;
+	width: 100%;
+	background-color: #FFFFFF;
+	position: relative;
+}
+.profileUserModifier {
+	width: 460px;
+	margin: 50px auto 0;
+}
+.profileTd1_1 {
+	font-size: 18px;
+	text-align: right;
+	padding: 22px 0 22px 0;
+}
+.profileTd1_2 {
+	font-size: 16px;
+	color: #969696;
+	padding-left: 20px;
+}
+.profileUserGenderMale {
+	margin-right: 10px;
+}
+.profileUserGenderFemale {
+	margin: 0 10px 0 20px;
+}
+.profileUserDobY {
+	margin-right: 10px;
+}
+.profileUserDobM,
+.profileUserDobD {
+	margin: 0 10px 0 10px;
+}
+.profileUserLocationP {
+	margin-right: 10px;
+}
+.profileUserLocationC {
+	margin: 0 10px 0 10px;
+}
+.profileUserModifierSubmit {
+	width: 100px;
+	height: 36px;
+	margin: 50px auto 50px;
+	background: url(../img/zbj.png) -910px -568px;
+	cursor: pointer;
+}
+.profileUserModifierSubmit:hover {
+	background: url(../img/zbj.png) -1020px -568px;
+}
+.profileUserSingUp {
+	overflow: hidden;
+}
+.profileUserSingUpImg1,
+.profileUserSingUpImg2 {
+	width: 180px;
+	height: 240px;
+	float: left;
+	margin-left: 312px;
+	background-color: #20B8E5;
+	cursor: pointer;
+}
+.profileUserSingUpImg2 {
+	margin-left: 40px;
+}
+.profileUserSingUpImgHint {
+	text-align: center;
+	margin-top: 40px;
+	font-size: 14px;
+	color: #969696;
+}
+.profileUserSingUpTable {
+	margin: 40px auto 0;
+	width: 450px;
+}
+.profileTd2_1 {
+	text-align: right;
+	font-size: 18px;
+	color: #1E1E1E;
+	padding: 22px 0 22px;
+}
+.profileTd2_2 {
+	padding-left: 20px;
+	position: relative;
+}
+.profileTd2_2 input {
+	padding-left: 20px;
+	width: 280px;
+	height: 40px;
+}
+.profileTd2_2 select {
+	height: 40px;
+}
+.profileUserLiveDateY,
+.profileUserLiveDateD {
+	margin-right: 10px;
+}
+.profileUserLiveDateM {
+	margin: 0 10px 0 10px;
+}
+.profileUserSingUpRuels div {
+	position: absolute;
+}
+.profileUserSingUpRuelsText {
+	left: 48px;
+	top: 21px;
+	font-size: 14px;
+}
+.profileUserSingUpRuelsText span {
+	color: #FFA609;
+	cursor: pointer;
+}
+.profileUserSingUpCheck {
+	cursor: pointer;
+	width: 17px;
+	height: 17px;
+	background: url(../img/zbj.png) no-repeat -260px -766px;
+}
+.profileUserSingUpChecked {
+	background: url(../img/zbj.png) no-repeat -284px -766px;
+}
+.profileUserSingUpSubmit {
+	background: url(../img/zbj.png) no-repeat -690px -568px;
+	width: 100px;
+	height: 36px;
+	margin: 40px auto 40px;
+	cursor: pointer;
+}
+.profileUserSingUpSubmit:hover {
+	background: url(../img/zbj.png) no-repeat -800px -568px;
+}
+.profileUserSingUpMsg {
+	font-size: 14px;
+	color: #969696;
+	text-align: center;
+}
+.profileUserNamingLeft {
+	width: 300px;
+	font-size: 16px;
+	color: #1E1E1E;
+	margin-left: 182px;
+}
+.profileUserNamingSelectionText {
+	font-size: 18px;
+}
+.profileUserNamingSelectionText span {
+	color: #FFA609;
+}
+.profileUserNamingRight {
+	width: 288px;
+	position: absolute;
+	left: 560px;
+	top: 40px;
+}
+.profileUserNamingSelection {
+	margin-top: 10px;
+	border-bottom: 1px solid #EAEAEA;
+	padding-bottom: 72px;
+	font-size: 16px;
+}
+.profileUserNamingCheck {
+	background: url(../img/zbj.png) no-repeat -260px -766px;
+	width: 17px;
+	height: 17px;
+	cursor: pointer;
+}
+.profileUserNamingChecked {
+	background: url(../img/zbj.png) no-repeat -284px -766px;
+}
+.profileUserNamingRuels {
+	position: relative;
+	margin-top: 70px;
+}
+.profileUserNamingRuelsText {
+	position: absolute;
+	top: -1px;
+	left: 25px;
+	font-size: 14px;
+}
+.profileUserNamingRuelsText span {
+	color: #FFA609;
+	cursor: pointer;
+}
+.profileUserNamingSubmit {
+	background: url(../img/zbj.png) no-repeat -910px -660px;
+	width: 100px;
+	height: 36px;
+	margin-top: 40px;
+	cursor: pointer;
+}
+.profileUserNamingSubmit:hover {
+	background: url(../img/zbj.png) no-repeat -1020px -660px;
+}
+.profileUserNamingRightTitle {
+	font-size: 18px;
+	color: #1E1E1E;
+}
+.profileUserNamingHint {
+	margin-top: 10px;
+	font-size: 14px;
+	color: #969696;
+}
+.profileUserNamingHint div {
+	display: inline-block;
+}
+.profileUserNamingHint2 {
+	margin-left: 30px;
+}
+.profileUserNamingDate {
+	width: 288px;
+	height: 316px;
+	margin-top: 30px;
+}
+.profileUserPwdModifier {
+	width: 450px;
+	margin: 127px auto 0;
+	font-size: 18px;
+	color: #1E1E1E;
+}
+.profileTd3_1 {
+	padding: 26px 0 26px;
+	text-align: right;
+}
+.profileTd3_2 input {
+	margin-left: 20px;
+	height: 40px;
+	padding-left: 20px;
+	width: 280px;
+}
+.profileUserPwdSubmit {
+	background: url(../img/zbj.png) no-repeat -690px -568px;
+	width: 100px;
+	height: 36px;
+	margin: 50px auto 0;
+	cursor: pointer;
+}
+.profileUserPwdSubmit:hover {
+	background: url(../img/zbj.png) no-repeat -800px -568px;
+}
+.profileUserPostNav {
+	height: 64px;
+	width: 100%;
+	border-bottom: 1px solid #d4d4d4;
+	position: relative;
+}
+.profileUserPostNav ul li {
+	float: left;
+	list-style: none;
+	width: 128px;
+	height: 64px;
+	font-size: 18px;
+	text-align: center;
+	line-height: 64px;
+}
+.profileUserPostNav ul {
+	margin-top: -60px;
+}
+.profileUserPostNavCursor {
+	background: url(../img/zbj.png) no-repeat -730px -753px;
+	width: 20px;
+	height: 11px;
+	position: absolute;
+	bottom: -1px;
+	left: 94px;
+}
+.addTextColorOrange {
+	color: #FFA609;
+}
+.profileUserPostType {
+	font-size: 18px;
+	margin: 42px 0 0 67px;
+}
+.profileUserPostTypeTitle {
+	margin-bottom: 20px;
+}
+.profileUserPostTypeChoose,
+.profileUserPostTypeWrite {
+	display: inline-block;
+}
+.profileUserPostTypeChoose input {
+	margin-right: 14px;
+}
+.profileUserPostTypeWrite input {
+	margin: 0 14px 0 28px;
+}
+.profileUserPostWrite {
+	position: relative;
+}
+.profileUserPostWriteTitle {
+	margin: 20px 0 0 67px;
+	font-size: 18px;
+}
+.profileUserPostWriteArea,
+.profileUserPostCommentArea {
+	margin: 20px 0 0 67px;
+	width: 864px;
+	height: 130px;
+	resize: none;
+	padding: 10px;
+}
+.profileUserPostWriteAreaCounter {
+	position: absolute;
+	right: 80px;
+	bottom: 10px;
+}
+.profileUserPostChoose {
+	margin: 20px 0 0 67px;
+}
+.profileUserPostChooseCorrect,
+.profileUserPostChooseIncorrect {
+	position: relative;
+}
+.profileUserPostChooseCorrect input,
+.profileUserPostChooseIncorrect input {
+	margin-top: 20px;
+	padding: 10px 10px 10px 40px;
+	height: 20px;
+	width: 834px;
+}
+.profileUserPostChooseCorrectIcon {
+	background: url(../img/zbj.png) no-repeat -690px -808px;
+	width: 16px;
+	height: 12px;
+	position: absolute;
+	top: 38px;
+	left: 12px;
+}
+.profileUserPostChooseIncorrectIcon {
+	background: url(../img/zbj.png) no-repeat -717px -808px;
+	width: 14px;
+	height: 14px;
+	position: absolute;
+	top: 36px;
+	left: 12px;
+}
+.profileUserPostChooseDelete {
+	background: url(../img/zbj.png) no-repeat -689px -777px;
+	width: 21px;
+	height: 20px;
+	position: absolute;
+	top: 33px;
+	right: 80px;
+	cursor: pointer;
+}
+.profileUserPostChooseDelete:hover {
+	opacity: 0.7;
+}
+.profileUserPostChooseNew {
+	position: relative;
+	float: right;
+	margin: 20px 70px 0 0;
+	cursor: pointer;
+}
+.profileUserPostChooseNew:hover {
+	opacity: 0.7;
+}
+.profileUserPostChooseNewIcon {
+	background: url(../img/zbj.png) no-repeat -740px -808px;
+	width: 14px;
+	height: 14px;
+	position: absolute;
+	left: -23px;
+	top: 4px;
+}
+.profileUserPostComment {
+	clear: both;
+	margin-top: 20px;
+	overflow: hidden;
+}
+.profileUserPostCommentTitle {
+	margin: 20px 0 0 67px;
+}
+.profileUserPostSubmit {
+	background: url(../img/zbj.png) no-repeat -690px -568px;
+	width: 100px;
+	height: 36px;
+	margin: 20px 0 0 67px;
+	cursor: pointer;
+}
+.profileUserPostSubmit:hover {
+	opacity: 0.7;
+}

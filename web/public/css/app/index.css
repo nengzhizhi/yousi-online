@@ -1,0 +1,66 @@
+html {
+
+	height: 100%;
+
+}
+
+body {
+
+	font-family: "microsoft yahei";
+
+	padding: 0;
+
+	margin: 0;
+
+	overflow: hidden;
+
+	height: 100%;
+
+}
+
+.logo {
+
+	background: url(/img/app/zbj.png) no-repeat -480px -50px;
+
+	width: 105px;
+
+	height: 50px;
+
+	margin: 25px auto 25px;
+
+	cursor: pointer;
+
+}
+
+.logoDivid {
+
+	background: url(/img/app/zbj.png) no-repeat -280px -10px;
+
+	width: 240px;
+
+	height: 10px;
+
+	margin-bottom: 24px;
+
+}
+
+.appDownload {
+
+	height: 360px;
+
+	overflow: hidden;
+
+}
+
+.appDownloadWrapper{
+
+	width: 100%;
+
+	height: 100%;
+
+	position: relative;
+
+	top: -360px;
+
+}
+

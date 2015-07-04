@@ -1,0 +1,78 @@
+body{
+	
+}
+
+#fansList{
+	display: none;
+	position: absolute;
+	width: 340px;
+	top: 272px;
+	bottom: 0;
+}
+
+.fansSelection{
+	position: absolute;
+	width: 302px;
+	height: 36px;
+	bottom: 40px;
+	left: 20px;
+}
+
+.fansToday, .fansSuper{
+	float: left;
+	background: url('../img/zbj.png') no-repeat -350px -92px;
+	width: 150px;
+	height: 36px;
+	cursor: pointer;
+}
+
+.fansSuper{
+	background: url('../img/zbj.png') no-repeat -510px -184px;
+}
+
+.allFans{
+	position: absolute;
+	bottom: 110px;
+	top: 0;
+	overflow: hidden;
+}
+
+.singleFan{
+	overflow: hidden;
+	height: 76px;
+	width: 300px;
+	position: relative;
+	margin: 0 20px 0 20px;
+	border-bottom: 1px solid #ccc;
+	font-size: 12px;
+	
+}
+
+.singleFanRank, .singleFanImg, .singleFanName{
+	float: left;
+	margin-left: 20px;
+	line-height: 76px;
+}
+
+.singleFanName{
+	margin-left: 10px;
+}
+
+.singleFanRank{
+	width: 30px;
+	text-align: center;
+}
+
+.singleFanScore{
+	color: #ffa669;
+	float: right;
+	margin-right: 20px;
+	line-height: 76px;
+	text-align: right;
+}
+
+.singleFanImg img{
+	margin-top: 14px;
+	width: 48px;
+	height: 48px;
+}

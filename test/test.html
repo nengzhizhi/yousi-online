@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf8">
+		<link href="./public/css/bootstrap.min.css" rel="stylesheet">
+		<link href="./public/css/dashboard.css" rel="stylesheet">
+		<link href="./public/css/datetimepicker.css" rel="stylesheet">
+	</head>
+	<body>
+		<!--api test -->
+		<div class="container">
+			<div class="row">
+				<h1 class="page-header">API 测试</h1>
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						创建房间
+					</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://127.0.0.1:2002/api/answering/createRoom" method="post">
+							<div class="form-group">
+								<label>房间类型：</label>
+								 <select class="form-control" name="type">
+								 	<option value="answering">答疑房间</option>
+								 </select>
+							</div>
+							<input class="btn btn-primary" type="submit" value="创建房间">
+						</form>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">查看房间列表</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://127.0.0.1:2002/api/answering/getRooms" method="post">
+							<input class="btn btn-primary" type="submit" value="获取房间列表">
+						</form>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">关闭房间</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://127.0.0.1:2002/api/answering/closeRoom" method="post">
+							<div class="form-group">
+								<input class="form-control" type="text" name="roomId" placeholder="房间编号">
+							</div>
+							<input class="btn btn-primary" type="submit" value="关闭房间">
+						</form>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">进入房间</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://127.0.0.1:2002/api/answering/enterRoom" method="post">
+							<div class="form-group">
+								<input class="form-control" type="text" name="roomId" placeholder="房间编号">
+							</div>
+							<input class="btn btn-primary" type="submit" value="进入房间">
+						</form>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">离开房间</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://127.0.0.1:2002/api/answering/leaveRoom" method="post">
+							<div class="form-group">
+								<input class="form-control" type="text" name="roomId" placeholder="房间编号">
+							</div>
+							<input class="btn btn-primary" type="submit" value="离开房间">
+						</form>
+					</div>
+				</div>
+
+
+				<div class="panel panel-default">
+					<div class="panel-heading">用户注册</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://127.0.0.1:2003/api/users/register" method="post">
+							<div class="form-group">
+								<input class="form-control" type="text" name="username" placeholder="username">
+							</div>
+							<div class="form-group">
+								<input class="form-control" type="password" name="password">
+							</div>
+							<div class="form-group">
+								<input class="form-control" type="password" name="confirm_password">
+							</div>
+							<div class="form-group">
+								<select class="form-control" name="role">
+									<option value="teacher">老师</option>
+									<option value="teacher">学生</option>
+								</select>
+							</div>
+							<input class="btn btn-primary" type="submit" value="注册">
+						</form>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">用户登录</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://vgame.tv/api/users/login" method="post">
+							<div class="form-group">
+								<input class="form-control" type="text" name="username" placeholder="用户名">
+							</div>
+							<div class="form-group">
+								<input class="form-control" type="password" name="password" placeholder="密码">
+							</div>
+							<input class="btn btn-primary" type="submit" value="登录">
+						</form>
+					</div>
+				</div>
+
+
+				<h1 class="page-header">页面测试</h1>
+
+				<form action="http://127.0.0.1:3001/answering/createRoom" method="post">
+					<input type="text" name="type">
+					<input type="submit" value="创建房间">
+				</form>
+
+				<a href="http://127.0.0.1:3001/answering/rooms">获取房间列表</a>
+
+				<a href="http://127.0.0.1:3001/users/register">进入登录页面</a>
+			</div>
+		</div>
+	</body>
+</html>

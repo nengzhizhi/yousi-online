@@ -1,0 +1,383 @@
+body {
+	background-color: #eaeaea;
+	overflow: visible;
+	color: #000000;
+}
+body img {
+	width: 100%;
+	height: 100%;
+}
+.topupContainer {
+	margin-left: 240px;
+}
+.topupMain {
+	width: 980px;
+	margin: 0 auto;
+}
+.topupJumbotron {
+	width: 980px;
+	height: 360px;
+	background-color: #ccc;
+}
+.topupContents {
+	overflow: hidden;
+	margin-top: 10px;
+	width: 980px;
+	height: 610px;
+	padding-bottom: 50px;
+}
+.topupLeft {
+	width: 250px;
+	height: 610px;
+	background-color: #f5f5f5;
+	float: left;
+}
+.topupRight {
+	width: 720px;
+	height: 610px;
+	background-color: #ffffff;
+	float: left;
+	margin-left: 10px;
+	position: relative;
+}
+.topupLeftP1,
+.topupRightTitle {
+	font-size: 16px;
+	height: 50px;
+	line-height: 50px;
+	margin: 0 20px;
+	border-bottom: 1px solid #eaeaea;
+}
+.topupLeftP2,
+.topupLeftP5 {
+	font-size: 12px;
+	margin: 30px 0 0 30px;
+}
+.topupLeftP3,
+.topupLeftP4,
+.topupLeftP6 {
+	font-size: 12px;
+	margin: 30px 0 0 30px;
+	color: #969696;
+	line-height: 20px;
+}
+.topupLeftLine1 {
+	width: 210px;
+	height: 1px;
+	background-color: #eaeaea;
+	margin: 75px auto 0;
+}
+.topupLeftP3 > ul > li:nth-child(1) {
+	color: #00beea;
+}
+.topupLeftP6 > ul > li:nth-child(2),
+.topupLeftP6 > ul > li:nth-child(4) {
+	color: #00beea;
+}
+.topupRightTitle {
+	margin: 0 30px;
+}
+.topupTable {
+	width: 660px;
+	margin: 30px 0 0 30px;
+}
+.topupTable tr td:nth-child(1) {
+	width: 100px;
+	height: 40px;
+	text-align: center;
+	font-size: 12px;
+	color: #3c3c3c;
+}
+.topupTable tr td:nth-child(2) {
+	width: 560px;
+	height: 40px;
+}
+.topupUsername,
+.topupAmount {
+	position: relative;
+	width: 265px;
+	height: 40px;
+	float: left;
+	border: 1px solid #eaeaea;
+}
+.topupUsernameInput,
+.topupAmountInput {
+	width: 220px;
+	height: 40px;
+	font-size: 12px;
+	color: #000000;
+	outline: none;
+	border: none;
+	padding: 0 10px 0 10px;
+	font-family: "microsoft yahei";
+}
+.topupUsernameInputInfo,
+.topupAmountInputInfo {
+	line-height: 40px;
+	float: left;
+	font-size: 12px;
+	color: #ff0000;
+	margin-left: 10px;
+	display: none;
+}
+.topupInputClear {
+	position: absolute;
+	width: 14px;
+	height: 13px;
+	right: 10px;
+	top: 14px;
+	background: url(/img/app/topup/topup.png) no-repeat -57px -123px;
+	cursor: pointer;
+}
+.topupInputClear:hover {
+	opacity: 0.5;
+}
+.topupPriceBlock li {
+	position: relative;
+	width: 80px;
+	height: 40px;
+	float: left;
+	margin-right: 10px;
+	line-height: 40px;
+	text-align: center;
+	background-color: #f5f5f5;
+	border: 1px solid #eaeaea;
+	cursor: pointer;
+}
+.topupPriceBlock li:hover {
+	border: 1px solid #00BEEA;
+}
+.topupBargin {
+	position: absolute;
+	width: 28px;
+	height: 12px;
+	top: -6px;
+	right: -5px;
+}
+.topupBargin85 {
+	background: url(/img/app/topup/topup.png) no-repeat -48px -60px;
+}
+.topupBargin95 {
+	background: url(/img/app/topup/topup.png) no-repeat -10px -60px;
+}
+.topupPriceSelect {
+	position: absolute;
+	display: none;
+	width: 80px;
+	height: 40px;
+	top: 0;
+	background: url(/img/app/topup/topup.png) no-repeat -10px -10px;
+}
+.topupAmountInputInfo > span {
+	color: #000000;
+}
+.topupAmountInputInfo > span:nth-child(2) {
+	margin-left: 10px;
+}
+.topupTotal > div:nth-child(1) {
+	font-size: 24px;
+	color: #ffa609;
+	float: left;
+	line-height: 40px;
+}
+.topupTotal > div:nth-child(2) {
+	font-size: 12px;
+	margin-left: 10px;
+	float: left;
+	line-height: 40px;
+}
+.topupBy > li {
+	position: relative;
+	float: left;
+	width: 140px;
+	height: 40px;
+	margin-right: 10px;
+	cursor: pointer;
+	border: 1px solid #eaeaea;
+}
+.topupBySelect {
+	position: absolute;
+	display: none;
+	width: 140px;
+	height: 40px;
+	top: 0;
+	background: url(/img/app/topup/topup.png) no-repeat -100px -10px;
+}
+.topupBy > li:nth-child(1) {
+	background: url(/img/app/topup/topup.png) no-repeat -10px -148px;
+}
+.topupBy > li:nth-child(2) {
+	background: url(/img/app/topup/topup.png) no-repeat -160px -148px;
+}
+.topupBy > li:nth-child(3) {
+	background: url(/img/app/topup/topup.png) no-repeat -310px -148px;
+}
+.topupBy > li:hover {
+	border: 1px solid #00BEEA;
+}
+.topupButton {
+	width: 120px;
+	height: 32px;
+	background: url(/img/app/topup/topup.png) no-repeat -140px -82px;
+	cursor: pointer;
+}
+.topupButton:hover {
+	background: url(/img/app/topup/topup.png) no-repeat -10px -82px;
+}
+.topupRuleCheckbox {
+	float: left;
+	width: 15px;
+	height: 14px;
+	background: url(/img/app/topup/topup.png) no-repeat -10px -124px;
+	margin-top: 2px;
+	cursor: pointer;
+}
+.topupRuleCheckboxUn {
+	background: url(/img/app/topup/topup.png) no-repeat -33px -124px;
+}
+.topupRuleText {
+	float: left;
+	margin-left: 10px;
+	font-size: 12px;
+}
+.topupRuleText > span {
+	color: #00BEEA;
+	cursor: pointer;
+}
+.topupRuleText > span:hover {
+	text-decoration: underline;
+}
+.topup-modal-pending{
+	width: 480px;
+	height: 240px;
+	position: absolute;
+	margin: -120px 0 0 -240px;
+	left: 50%;
+	top: 50%;
+	background-color: #EAEAEA;
+	opacity: 1;
+}
+.topup-modal-pending-wrapper{
+	background-color: #FFFFFF;
+	width: 468px;
+	height: 228px;
+	overflow: hidden;
+	margin: 6px 0 0 6px;
+}
+.topup-modal-pending-text{
+	font-size: 16px;
+	color: #000000;
+	text-align: center;
+	margin-top: 70px;
+}
+.topup-modal-pending-btns{
+	width: 260px;
+	height: 32px;
+	margin: 70px auto 0;
+}
+.topup-modal-pending-finish{
+	width: 120px;
+	height: 32px;
+	float: left;
+	cursor: pointer;
+	background: url(/img/app/topup/topup.png) no-repeat -10px -198px;
+}
+.topup-modal-pending-finish:hover{
+	background: url(/img/app/topup/topup.png) no-repeat -270px -198px;
+}
+.topup-modal-pending-re{
+	float: left;
+	cursor: pointer;
+	margin-left: 20px;
+	width: 120px;
+	height: 32px;
+	background: url(/img/app/topup/topup.png) no-repeat -140px -198px;
+}
+.topup-modal-pending-re:hover{
+	background: url(/img/app/topup/topup.png) no-repeat -400px -198px;
+}
+.topup-results{
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	display: none;
+}
+.topup-results-text{
+	overflow: hidden;
+	display: inline-block;
+	margin-top: 120px;
+}
+.topup-results-text > div:nth-child(1){
+	float: left;
+	background: url(/img/app/topup/topup.png) no-repeat -300px -10px;
+	width: 41px;
+	height: 40px;
+}
+.topup-results-text > div:nth-child(2){
+	font-size: 24px;
+	float: left;
+	color: #3C3C3C;
+	line-height: 40px;
+	margin-left: 10px;
+}
+.topup-results-info{
+	font-size: 12px;
+	color: #3C3C3C;
+	text-align: center;
+	margin-top: 20px;
+}
+.topup-results-btns{
+	width: 260px;
+	height: 40px;
+	margin: 100px auto 0;
+}
+.topup-results-btnL, .topup-results-btnR{
+	width: 120px;
+	height: 40px;
+	float: left;
+	cursor: pointer;
+}
+.topup-results-btnR{
+	margin-left: 20px;
+}
+.topup-results-ctn{
+	background: url(/img/app/topup/topup.png) no-repeat -10px -290px;
+}
+.topup-results-ctn:hover{
+	background: url(/img/app/topup/topup.png) no-repeat -270px -290px;
+}
+.topup-results-check{
+	background: url(/img/app/topup/topup.png) no-repeat -140px -290px;
+}
+.topup-results-check:hover{
+	background: url(/img/app/topup/topup.png) no-repeat -400px -290px;
+}
+.topup-results-rp{
+	background: url(/img/app/topup/topup.png) no-repeat -10px -240px;
+}
+.topup-results-rp:hover{
+	background: url(/img/app/topup/topup.png) no-repeat -270px -240px;
+}
+.topup-results-back{
+	background: url(/img/app/topup/topup.png) no-repeat -140px -240px;
+}
+.topup-results-back:hover{
+	background: url(/img/app/topup/topup.png) no-repeat -400px -240px;
+}
+.mt10 {
+	margin-top: 10px;
+}
+.ml0 {
+	margin-left: 0;
+}
+.showMe {
+	display: block;
+}
+@media only screen and (max-width: 1222px) {
+	.topupContainer {
+		margin-left: 0;
+	}
+}

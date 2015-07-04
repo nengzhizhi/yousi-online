@@ -1,0 +1,270 @@
+body{
+	background-color: #EAEAEA;
+	font-family: "microsoft yahei";
+	overflow: visible;
+}
+
+.userProfile-main{
+	margin-left: 240px;
+}
+
+.userProfile-header{
+	width: 980px;
+	height: 360px;
+	background-color: #FFFFFF;
+	margin: 0 auto;
+	position: relative;
+	overflow: hidden;
+}
+
+.userProfile-contents{
+	width: 980px;
+	height: 640px;
+	margin: 10px auto 0;
+	overflow: hidden;
+}
+
+.userProfile-contents-left{
+	width: 160px;
+	height: 100%;
+	background-color: #F5F5F5;
+	float: left;
+}
+
+.userProfile-contents-left > ul{
+	margin-top: 10px;	
+}
+
+.userProfile-contents-left > ul >li{
+	width: 140px;
+	height: 40px;
+	padding-left: 20px;
+	float: left;
+	line-height: 40px;
+}
+
+.userProfile-contents-left > ul >li:nth-child(1){
+	line-height: 31px;
+}
+
+.userProfile-contents-left-line{
+	width: 140px;
+	height: 1px;
+	background-color: #EAEAEA;
+	margin-left: -10px;	
+}
+
+.userProfile-contents-left > ul >li:nth-child(3):hover,
+.userProfile-contents-left > ul >li:nth-child(5):hover,
+.userProfile-contents-left > ul >li:nth-child(6):hover,
+.userProfile-contents-left > ul >li:nth-child(8):hover,
+.userProfile-contents-left > ul >li:nth-child(9):hover,
+.userProfile-contents-left > ul >li:nth-child(11):hover,
+.userProfile-contents-left > ul >li:nth-child(12):hover,
+.userProfile-contents-left > ul >li:nth-child(14):hover{
+	background-color: #00BEEA;
+	color: #FFFFFF;
+	cursor: pointer;
+}
+
+.userProfile-contents-left > ul >li:nth-child(1){
+	font-size: 16px;
+	color: #000000;
+	font-weight: bold;
+}
+
+.userProfile-contents-left-liSelected{
+	background-color: #00BEEA;
+	color: #FFFFFF;
+}
+
+.userProfile-contents-right{
+	width: 810px;
+	height: 100%;
+	background-color: #FFFFFF;
+	float: left;
+	margin-left: 10px;
+}
+
+.userProfile-contents-right-wrapper{
+	width: 750px;
+	height: 100%;
+	margin: 0 auto;
+}
+
+.userProfile-contents-right-title{
+	height: 50px;
+	line-height: 50px;
+	color: #000000;
+	font-weight: bold;
+	border-bottom: 1px solid #EAEAEA;
+}
+
+.userProfile-contents-right-table{
+	width: 100%;
+}
+
+.userProfile-contents-right-table th,
+.userProfile-contents-right-table tr,
+.userProfile-contents-right-table td{
+	height: 40px;
+	overflow: hidden;
+	text-align: left;
+	font-size: 12px;
+	color: #000000;
+}
+
+.userProfile-contents-right-table th{
+	color: #606060;
+}
+
+.userProfile-contents-right-table th:nth-child(1){
+	width: 200px;
+}
+
+.userProfile-contents-right-table th:nth-child(2){
+	width: 170px;
+}
+
+.userProfile-contents-right-table th:nth-child(3){
+	width: 150px;
+}
+
+.userProfile-contents-right-table th:nth-child(4){
+	width: 120px;
+}
+
+.userProfile-contents-right-table th:nth-child(5){
+	width: 110px;
+}
+
+.userProfile-contents-right-table tr td:nth-child(1) span:nth-child(1){
+	margin-right: 5px;
+}
+
+.userProfile-contents-right-table tr td:nth-child(1),
+.userProfile-contents-right-table tr th:nth-child(1){
+	padding-left: 10px;
+}
+
+.userProfile-contents-right-table tr td:nth-child(5) div{
+	display: inline-block;
+}
+
+.userProfile-contents-right-table-pending{
+	color: #FA2D1E;
+}
+
+.userProfile-contents-right-table-paid{
+	color: #5ab419;
+}
+
+.userProfile-contents-right-table-pay{
+	width: 40px;
+	height: 24px;
+	line-height: 24px;
+	background-color: #f06496;
+	text-align: center;
+	color: #FFFFFF;
+	margin-right: 20px;
+	cursor: pointer;
+}
+
+.userProfile-contents-right-table-delete{
+	color: #00BEEA;
+	cursor: pointer;
+}
+
+.userProfile-modal-repay{
+	width: 600px;
+	height: 320px;
+	position: absolute;
+	margin: -160px 0 0 -300px;
+	left: 50%;
+	top: 50%;
+	background-color: #EAEAEA;
+	opacity: 1;
+}
+
+.userProfile-modal-wrapper{
+	background-color: #FFFFFF;
+	width: 588px;
+	height: 308px;
+	overflow: hidden;
+	margin: 6px 0 0 6px;
+}
+
+.userProfile-modal-repay-amount > span:nth-child(1){
+	margin: 0 10px;
+	color: #FFA609;
+	font-size: 24px;
+}
+
+.userProfile-modal-repay-amount > span:nth-child(2){
+	font-size: 12px;
+}
+
+.userProfile-modal-wrapper > table{
+	margin: 70px auto 0;
+}
+
+.userProfile-modal-wrapper table tr td{
+	height: 40px;	
+}
+
+.userProfile-modal-repay-topupBy{
+	margin-left: 10px;
+}
+
+.userProfile-modal-repay-topupBy > li{
+	position: relative;
+	float: left;
+	width: 140px;
+	height: 40px;
+	margin-right: 10px;
+	cursor: pointer;
+	border: 1px solid #eaeaea;
+}
+
+.userProfile-modal-repay-topupBy > li:hover {
+	border: 1px solid #00BEEA;
+}
+
+.topupBySelect {
+	position: absolute;
+	display: none;
+	width: 140px;
+	height: 40px;
+	top: 0;
+	background: url(../img/topup/topup.png) no-repeat -100px -10px;
+}
+
+.userProfile-modal-repay-btn{
+	width: 120px;
+	height: 32px;
+	background: url(../img/topup/topup.png) no-repeat -140px -82px;
+	cursor: pointer;
+	margin: 40px auto 0;
+}
+
+.userProfile-modal-repay-btn:hover{
+	background: url(../img/topup/topup.png) no-repeat -10px -82px;
+}
+
+.userProfile-modal-repay-topupBy > li:nth-child(1) {
+	background: url(../img/topup/topup.png) no-repeat -10px -148px;
+}
+.userProfile-modal-repay-topupBy > li:nth-child(2) {
+	background: url(../img/topup/topup.png) no-repeat -160px -148px;
+}
+.userProfile-modal-repay-topupBy > li:nth-child(3) {
+	background: url(../img/topup/topup.png) no-repeat -310px -148px;
+}
+
+@media only screen and (max-width: 1222px) {
+
+	.userProfile-main{
+		margin-left: 0;
+	}
+
+}

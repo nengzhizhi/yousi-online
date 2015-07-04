@@ -1,0 +1,718 @@
+html, body{
+	padding: 0;
+	margin: 0;
+	background-color: #EAEAEA;
+	height: 100%;
+	width: 100%;
+	font-family: "microsoft yahei";
+	
+}
+
+.moneyStyle{
+	position: absolute;
+	font-size: 18px;
+	top: 42px;
+	color: rgb(255,166,9);
+}
+
+.alertMsg{
+	height: 40px;
+	display: none;
+	position: fixed;
+	left: 50%;
+	top: 50%;
+	background-color: #CACACA;
+	color: #FFA609;
+	z-index: 5;
+	text-align: center;
+	border-radius: 20px;
+	font-size: 30px;
+	padding: 10px;
+}
+
+.zhanwei{
+	height: 300px;
+}
+
+.personalContainer{
+	position: relative;
+	margin: 0 0 0 240px;
+	height: 100%;
+}
+
+.personalInner{
+	position: absolute;
+	width: 1024px;
+	margin-left: -512px;
+	left: 50%;
+	background-color: #FFFFFF;
+	height: 100%;
+}
+
+.userInfo{
+	padding-top: 40px;
+}
+
+.userImg{
+	width: 200px;
+	height: 200px;
+	margin-left: 40px;
+}
+
+.userDetails{
+	position: absolute;
+	left: 280px;
+	top: 100px;
+}
+
+.userName{
+	font-size: 24px;
+	color: #1E1E1E;
+}
+
+.userIdArea{
+	margin-top: 32px; 
+	position: relative;
+}
+
+.userIdText, .userId{
+	float: left;
+}
+
+.userId{
+	margin-left: 5px;
+}
+
+.userLvl{
+	position: absolute;
+	left: 220px;
+	width: 400px;
+}
+
+.userLvlText, .userLvlBar, .userLvlNum{
+	float: left;
+}
+
+.userLvlBar{
+	width: 200px;
+	height: 12px;
+	margin: 0 20px 0 10px;
+	border: 1px solid #CACACA;
+	margin-top: 5px;
+}
+
+.userLvlBarProgress{
+	width: 150px;
+	height: 12px;
+	background-color: rgb(255,166,9);
+}
+
+.userBal{
+	float: left;
+	margin-top: 14px;
+}
+
+.userBalText, .userBalAmount, .topup{
+	float: left;
+}
+
+.topup{
+	color: #20B8E5;
+	margin-left: 24px;
+	border-left: 1px solid #CACACA;
+	padding-left: 20px;
+}
+
+.divid{
+	height: 3px;
+	width: 100%;
+	background-color: rgb(255,166,9);
+	margin-top: 20px;
+	margin-bottom: 0;
+}
+
+.personalNavs{
+	width: 100%;
+	height: 64px;
+	background-color: #3C3C3C;
+	margin-top: 20px;
+}
+
+.dummy{
+	float: left;
+	width: 40px;
+	height: 64px;
+}
+
+.personalNav{
+	position: relative;
+	text-align: center;
+	float: left;
+	width: 128px;
+	height: 64px;
+	font-size: 18px;
+	color: #CACACA;
+	line-height: 64px;
+	cursor: pointer;
+	
+}
+
+.userProfile:hover, .userIcon:hover, .userPwd:hover, .userQuest:hover{
+	background-color: #1E1E1E;
+	color: #FFFFFF;
+}
+
+.bottomLine{
+	position: absolute;
+	width: 128px;
+	height: 4px;
+	bottom: 0;
+}
+
+.shuffles{
+	background-color: #FFFFFF;
+}
+
+.shuffle4, .shuffle2, .shuffle3{
+	display: none;
+}
+
+.makeQuest{
+	display: none;
+}
+
+.shuffle1Title{
+	width: 100%;
+	height: 64px;
+	position: relative;
+}
+
+.makeQuestTitle, .oldQuestTitle{
+	text-align: center;
+	float: left;
+	width: 128px;
+	height: 64px;
+	font-size: 18px;
+	color: #CACACA;
+	line-height: 64px;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+.triangleSlider{
+	width: 20px;
+	height: 11px;
+	background: url(../img/user.png) no-repeat -40px -185px;
+	position: absolute;
+	top: 1px;
+	left: 90px;
+}
+
+.pseudoLine{
+	position: absolute;
+	width: 1023px;
+	height: 11px; 
+	border-bottom: 1px solid #CACACA;
+	bottom: 0;
+}
+
+.shuffleInner{
+	width: 884px;
+	margin-left: 65px;
+	font-size: 18px;
+	margin-top: 42px;
+}
+
+.questType{
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.questType span{
+	margin-right: 28px;
+}
+
+.questType span input{
+	margin-right: 14px;
+}
+
+.questDescription textarea{
+	width: 874px;
+	height: 130px;
+	margin-top: 20px;
+	border: 1px solid #CACACA;
+	resize: none;
+	ont-size: 18px;
+	color: #CACACA; 
+	padding-top: 10px;
+	padding-left: 10px;
+	font-family: "microsoft yahei";
+	margin-bottom: 20px;
+	font-size: 18px;
+}
+
+.questDescription{
+	position: relative;
+}
+
+.questDescriptionCount{
+	position: absolute;
+	top: 160px;
+	left: 830px;
+	font-size: 14px;
+}
+
+.answerTab{
+	width: 884px;
+	height: 40px;
+	margin-top: 20px;
+	border: 1px solid #CACACA;
+	position: relative;
+}
+
+.greenRight{
+	position: absolute;
+	width: 16px;
+	height: 12px;
+	left: 12px;
+	top: 13px;
+	background: url(../img/user.png) no-repeat 0 -240px;
+}
+
+.redWrong{
+	position: absolute;
+	left: 12px;
+	top: 13px;
+	width: 13px;
+	height: 14px;
+	background: url(../img/user.png) no-repeat -28px -240px;
+}
+
+.deleteAnswer{
+	position: absolute;
+	right: 10px;
+	top: 10px;
+	width: 20px;
+	height: 20px;
+	background: url(../img/user.png) no-repeat 0 -209px;
+	cursor: pointer;
+}
+
+.answerTab input{
+	font-family: "microsoft yahei";
+	height: 38px;
+	width: 840px;
+	float: right;
+	border: none;
+	outline: none;
+	font-size: 18px;
+}
+
+.answerTabAdd{
+	margin-top: 20px;
+	font-size: 14px;
+	float: right;
+	cursor: pointer;
+} 
+
+.answerTabAddImg{
+	width: 14px;
+	height: 14px;
+	background: url(../img/user.png) no-repeat -50px -240px;
+	float: left;
+	margin-right: 10px;
+	margin-top: 2px;
+}
+
+.makeQuestComment{
+	margin-top: 56px;
+}
+
+.makeQuestComment textarea{
+	margin-top: 20px;
+	width: 874px;
+	height: 130px;
+	margin-top: 20px;
+	border: 1px solid #CACACA;
+	resize: none;
+	font-size: 18px;
+	color: #CACACA; 
+	padding-top: 10px;
+	padding-left: 10px;
+	font-family: "microsoft yahei";
+	margin-bottom: 20px;
+	font-size: 18px;
+}
+
+.makeQuestSubmit{
+	width: 100px;
+	height: 36px;
+	background: url(../img/user.png) no-repeat 0 0;
+}
+
+.shuffle1Line2, .shuffle1Line3{
+	width: 1022px;
+	margin-left: -65px;
+}
+
+.shuffle1Line2{
+	margin-top: 60px;
+}
+
+.shuffle1Line3{
+	margin-top: 60px;
+}
+
+.oldQuestInner{
+	margin-top: 20px;
+	width: 1024px;
+}
+
+.oldQuestTable{
+	margin-left: 68px;
+}
+
+.oldQuestTableTd1{
+	width: 789px;
+}
+
+.oldQuestTableTd1 div{
+	width: 500px;
+	overflow:hidden;    
+	text-overflow:ellipsis;    
+	white-space:nowrap;
+}
+
+.oldQuestQuest:hover{
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.oldQuestQuest{
+	margin-top: 20px;
+}
+
+.oldQuestDescription{
+	margin-top: 20px;
+	font-size: 16px;
+	color: #B3B3B3;
+}
+
+
+.oldQuestTableTd2{
+	text-align: center;
+	width: 92px;
+}
+
+.oldQuestStatus{
+	margin-bottom: 5px;
+}
+
+.oldQuestReward{
+	cursor: pointer;
+	color: #20B8E5;
+	display: none;
+}
+
+.oldQuestTableTd3{
+	width: 75px; 
+	position: relative;
+}
+
+.shuffle4Inner{
+	position: relative;
+	width: 470px;
+	margin: 0 auto; 
+	font-size: 18px;
+	margin-top: 30px;
+}
+
+.shuffle4Text{
+	float: left;
+	text-align: right;
+	width: 90px;
+}
+
+.shuffle4Text div{
+	margin-bottom: 45px;
+}
+
+.shuffle4Selection{
+	width: 360px;
+	float: right;
+	text-align: left;
+}
+
+.shuffle4Text1{
+	margin-top: 10px;
+}
+
+.shuffle4Selection1{
+	position: relative;
+}
+
+.shuffle4Selection1Img{
+	position: absolute;
+	width: 26px;
+	height: 26px;
+	background: url(../img/user.png) no-repeat 0 -270px;
+	top: 10px;
+	right: 0;
+}
+
+.shuffle4Selection1 input, .shuffle4Selection6 input{
+	width: 310px;
+	height: 40px;
+	font-size: 18px;
+	padding-left: 5px;
+}
+
+.shuffle4Selection2{
+	margin-top: 35px;
+}
+
+.shuffle4Selection3 input{
+	margin-right: 5px;
+}
+
+.shuffle4Selection4 select, .shuffle4Selection5 select{
+	font-size: 18px;
+	height: 40px;
+	font-family: "microsoft yahei";
+}
+
+.shuffle4Selection3{
+	margin-top: 45px;
+}
+
+.shuffle4Selection4{
+	margin-top: 40px;
+}
+
+.shuffle4Selection5{
+	margin-top: 27px;
+}
+
+.shuffle4Selection6{
+	margin-top: 27px;
+}
+
+.shuffle4Selection7{
+	margin-top: 30px;
+}
+
+.userProfileSave{
+	width: 120px;
+	height: 42px;
+	background: url(../img/user.png) no-repeat 0 -306px;
+	margin-top: 30px;
+	margin-left: 50px;
+}
+
+.shuffle2Inner{
+	width: 860px;
+	margin: 0 auto;
+	margin-top: 54px;
+	background-color: #FFFFFF;
+	height: 100%;
+}
+
+.shuffle2Text1{
+	font-size: 18px;
+	color: #1E1E1E;
+	font-weight: bold;
+}
+
+.shuffle2Text2{
+	font-size: 18px;
+	color: #606060;
+	margin-top: 24px;
+}
+
+.shuffle2ImageOperation{
+	width: 860px;
+	margin: 40px 0 50px 0;
+	position: relative;
+}
+
+.shuffle2ImageOperation1{
+	background-color: #FFFFFF;
+}
+
+.shuffle2ImageDisplay1{
+	width: 280px;
+	height: 280px;
+	
+}
+
+.shuffle2ImageOperation3{
+	position: absolute;
+	width: 540px;
+	height: 280px;
+	right: 0;
+	top: 0;
+	border-left: 1px solid #EAEAEA;
+}
+
+.shuffle2ImageOperation4, .shuffle2ImageOperation5{
+	width: 500px;
+	height: 280px;
+	float: right;
+	background-color: #EAEAEA;
+}
+
+.shuffle2ImageOperation4{
+	display: none;
+}
+
+.shuffle2ImageOperationImg1{
+	cursor: pointer;
+	width: 165px;
+	height: 48px;
+	margin-left: 167px;
+	background: url(../img/user.png) no-repeat 0 -358px;
+	margin-top: 77px;
+}
+
+.shuffle2ImageOperationImg1:hover{
+	background: url(../img/user.png) no-repeat -175px -358px;
+}
+
+.shuffle2ImageOperationImg2{
+	cursor: pointer;
+	width: 165px;
+	height: 48px;
+	margin-left: 167px;
+	background: url(../img/user.png) no-repeat 0 -416px;
+	margin-top: 28px;
+}
+
+.shuffle2ImageOperationImg2:hover{
+	background: url(../img/user.png) no-repeat -175px -416px;
+}
+
+.shuffle2ImageDisplay2{
+	width: 200px;
+	height: 200px;
+	position: absolute;
+	top: 20px;
+	left: 150px;
+}
+
+.shuffle2ImageDisplay3{
+	width: 64px;
+	height: 64px;
+	background-color: #20B8E5;
+	position: absolute;
+	top: 20px;
+	left: 400px;
+}
+
+.shuffle2ImageDisplay4{
+	width: 48px;
+	height: 48px;
+	background-color: #20B8E5;
+	position: absolute;
+	top: 172px;
+	left: 408px;
+}
+
+.shuffle2ImageDisplayText1, .shuffle2ImageDisplayText2, .shuffle2ImageDisplayText3{
+	font-size: 12px;
+	color: #969696;
+	position: absolute;
+	text-align: center;
+}
+
+.shuffle2ImageDisplayText1{
+	left: 225px;
+	top: 230px;
+}
+
+.shuffle2ImageDisplayText3{
+	left: 403px;
+	top: 230px;
+}
+
+.shuffle2ImageDisplayText2{
+	left: 403px;
+	top: 90px;
+}
+
+.jcrop-holder #preview-pane {
+  display: block;
+  position: absolute;
+  z-index: 2000;
+  top: 14px;
+  right: -396px;
+  padding: 6px;
+}
+
+#preview-pane .preview-container {
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+}
+
+#preview-pane2{
+	width: 64px;
+	height: 64px;
+	overflow: hidden;
+}
+
+.userProfileSave{
+	cursor: pointer;
+	width: 120px;
+	height: 42px;
+	background: url(../img/user.png) no-repeat 0 -306px;
+	float: right;
+}
+
+.userProfileSave:hover{
+	background: url(../img/user.png) no-repeat -130px -306px;
+}
+
+.shuffle3Inner{
+	width: 440px;
+	margin: 167px auto 0;
+	position: relative;
+}
+
+.userPwdText, .userPwdInput{
+	position: absolute;
+}
+
+.userPwdInput{
+	right: 0;
+}
+
+.userPwdInput input{
+	width: 320px;
+	height: 40px;
+	margin-bottom: 26px;
+}
+
+.userPwdText{
+	font-size: 18px;
+	color: #1E1E1E;
+	width: 110px;
+	height: 272px;
+}
+
+.userPwdText1, .userPwdText2, .userPwdText3{
+	width: 110px;
+	height: 40px;
+	line-height: 40px;
+	text-align: right;
+	margin-bottom: 33px;
+}
+
+.userPwdSubmit{
+	position: absolute;
+	width: 100px;
+	height: 36px;
+	background: url(../img/user.png) no-repeat 0 0;
+	bottom: 10px;
+	right: 0;
+}
+

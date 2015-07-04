@@ -1,0 +1,134 @@
+#left {
+	top: 0px;
+	position: fixed;
+	left: 0px;
+	width: 240px;
+	background-color: #1e1e1e;
+	color: #969696;
+	height: 100%;
+	z-index: 2;
+}
+#right {
+	position: fixed;
+	right: 0px;
+	width: 340px;
+	background-color: #F8F8F8;
+	height: 100%;
+	z-index: 2;
+	border-left: 1px solid #CACACA;
+}
+.scaleSwitch {
+	position: absolute;
+	width: 16px;
+	height: 80px;
+	margin-top: -40px;
+	top: 50%;
+	cursor: pointer;
+	z-index: 10;
+}
+#leftScale {
+	left: 239px;
+	background: url(/img/app/zbj.png) no-repeat -279px -50px;
+}
+#rightScale {
+	right: 340px;
+	background: url(/img/app/zbj.png) no-repeat -423px -50px;
+}
+#leftScale:hover {
+	background: url(/img/app/zbj.png) no-repeat -304px -50px;
+}
+#rightScale:hover {
+	background: url(/img/app/zbj.png) no-repeat -447px -494px;
+}
+#wrapper {
+	height: 100%;
+}
+#container {
+	position: relative;
+	margin: 0px 340px 0px 245px;
+	background-color: #FFFFFF;
+	overflow: hidden;
+	height: 100%;
+}
+#liveStreamVideo {
+	width: 100%;
+}
+.videoFunction {
+	color: rgb(255, 166, 9);
+	background-color: #1E1E1E;
+	height: 50px;
+	position: relative;
+}
+#videoFuctionLeft {
+	margin: 8px 0 0 8px;
+}
+#videoFunctionRight {
+	padding: 8px 8px 0 0;
+}
+#VideoShare {
+	position: relative;
+	margin-top: 18px;
+	overflow: hidden;
+}
+#personalCenter {
+	position: fixed;
+	bottom: 5px;
+	z-index: 10;
+	background-color: #1E1E1E;
+	height: 75px;
+	cursor: auto;
+	color: #969696;
+}
+#personalCenter hr {
+	margin-bottom: 15px;
+}
+#chat {
+	position: fixed;
+	bottom: 0px;
+	background-color: #EAEAEA;
+	width: 340px;
+	height: 119px;
+	border-top: 1px solid #CACACA;
+}
+#miniLeft {
+	position: fixed;
+	left: 0px;
+	width: 72px;
+	background-color: #1e1e1e;
+	height: 100%;
+	z-index: 2;
+	display: none;
+	top: 0;
+}
+#wqhkContainer {
+	position: relative;
+	margin: 0 0 0 240px;
+	text-align: center;
+}
+#switchTriggerLeft,
+#switchTriggerRight {
+	width: 10px;
+	height: 100%;
+	z-index: 5;
+	background-color: transparent;
+	position: absolute;
+	top: 0;
+}
+#switchTriggerRight {
+	right: 0;
+}
+.nav1Icon1 {
+	background: url(/img/app/zbj.png) no-repeat -280px -170px;
+}
+.nav1Icon2 {
+	background: url(/img/app/zbj.png) no-repeat -280px -204px;
+}
+.nav1Icon3 {
+	background: url(/img/app/zbj.png) no-repeat -280px -238px;
+}
+.nav1Icon4 {
+	background: url(/img/app/zbj.png) no-repeat -283px -272px;
+}
+.nav1Icon5 {
+	background: url(/img/app/zbj.png) no-repeat -279px -308px;
+}

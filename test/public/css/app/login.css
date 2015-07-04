@@ -1,0 +1,358 @@
+#login {
+
+	width: 560px;
+
+	height: 326px;
+
+	position: absolute;
+
+	margin-left: -280px;
+
+	margin-top: -163px;
+
+	left: 50%;
+
+	top: 50%;
+
+	background-color: #ffffff;
+
+	font-family: "microsoft yahei";
+
+	font-size: 14px;
+
+}
+
+.loginSliderBar {
+
+	width: 48px;
+
+	height: 2px;
+
+	background-color: #ff695a;
+
+	margin: -2px 0 0 30px;
+
+	z-index: 2;
+
+}
+
+.loginText1 {
+
+	float: left;
+
+	margin: 30px 0 0 40px;
+
+	color: #ff695a;
+
+}
+
+.registerText1 {
+
+	float: left;
+
+	margin: 30px 0 10px 20px;
+
+	cursor: pointer;
+
+}
+
+.closeLogin {
+
+	float: right;
+
+	background: url(/img/app/zbj.png) no-repeat -383px -269px;
+
+	width: 16px;
+
+	height: 16px;
+
+	margin: 20px 30px 0 0;
+
+	cursor: pointer;
+
+}
+
+.closeLogin:hover {
+
+	background: url(/img/app/zbj.png) no-repeat -359px -269px;
+
+	width: 16px;
+
+	height: 16px;
+
+}
+
+.loginLine1 {
+
+	clear: both;
+
+	width: 500px;
+
+	margin: 30px 0 0 30px;
+
+	background-color: #CACACA;
+
+	border: none;
+
+	height: 1px;
+
+}
+
+#loginName,
+
+#loginPwd {
+
+	font-family: "microsoft yahei";
+
+	padding-left: 10px;
+
+	display: block;
+
+	width: 230px;
+
+	height: 33px;
+
+	margin: 30px 0 0 30px;
+
+	border: 1px solid #CACACA;
+
+}
+
+#loginPwd {
+
+	margin-top: 20px;
+
+}
+
+.rembMeBox {
+
+	float: left;
+
+	margin: 25px 0 0 29px;
+
+	width: 12px;
+
+	height: 12px;
+
+	background: url(/img/app/zbj.png) no-repeat -442px -260px;
+
+	cursor: pointer;
+
+}
+
+.rembMeText {
+
+	float: left;
+
+	margin: 21px 0 0 10px;
+
+	color: #cacaca;
+
+}
+
+.goForget {
+
+	float: right;
+
+	margin: 17px 289px 0 0;
+
+	color: #4096cd;
+
+	cursor: pointer;
+
+}
+
+.loginHint {
+
+	clear: both;
+
+	height: 14px;
+
+	visibility: hidden;
+
+}
+
+.loginHintIcon {
+
+	background: url(/img/app/zbj.png) no-repeat -420px -282px;
+
+	width: 12px;
+
+	height: 12px;
+
+	float: left;
+
+	margin: 15px 0 0 30px;
+
+	/*visibility: hidden;*/
+
+}
+
+.loginHintText {
+
+	float: left;
+
+	margin: 15px 0 18px 5px;
+
+	color: #fa2d1e;
+
+	font-size: 12px;
+
+	line-height: 14px;
+
+}
+
+.loginButton {
+
+	clear: both;
+
+	background: url(/img/app/zbj.png) no-repeat -10px -10px;
+
+	width: 100px;
+
+	height: 32px;
+
+	margin: 0 0 0 30px;
+
+	float: left;
+
+	cursor: pointer;
+
+}
+
+.loginButton:hover {
+
+	background: url(/img/app/zbj.png) no-repeat -120px -10px;
+
+	width: 100px;
+
+	height: 32px;
+
+}
+
+.goRegister {
+
+	float: left;
+
+	line-height: 32px;
+
+	margin-left: 16px;
+
+	color: #CACACA;
+
+}
+
+.goRegister span {
+
+	color: #4096CD;
+
+	cursor: pointer;
+
+}
+
+.thirdPartyLogin {
+
+	width: 230px;
+
+	height: 210px;
+
+	border-left: 1px solid #eaeaea;
+
+	position: absolute;
+
+	top: 88px;
+
+	right: 30px;
+
+}
+
+.thirdPartyWeibo {
+
+	background: url(/img/app/zbj.png) no-repeat -10px -554px;
+
+	width: 200px;
+
+	height: 36px;
+
+	margin: 0px 0 0 30px;
+
+	cursor: pointer;
+
+}
+
+.thirdPartyQQ {
+
+	background: url(/img/app/zbj.png) no-repeat -10px -646px;
+
+	width: 200px;
+
+	height: 36px;
+
+	margin: 20px 0 0 30px;
+
+	cursor: pointer;
+
+}
+
+.thirdPartyWeixin {
+
+	background: url(/img/app/zbj.png) no-repeat -10px -738px;
+
+	width: 200px;
+
+	height: 36px;
+
+	margin: 20px 0 0 30px;
+
+	cursor: pointer;
+
+}
+
+.thirdPartyHula {
+
+	background: url(/img/app/zbj.png) no-repeat -10px -830px;
+
+	width: 200px;
+
+	height: 36px;
+
+	margin: 20px 0 0 30px;
+
+	cursor: pointer;
+
+}
+
+.thirdPartyHula:hover,
+
+.thirdPartyQQ:hover,
+
+.thirdPartyWeibo:hover,
+
+.thirdPartyWeixin:hover,
+
+.goForget:hover,
+
+.goRegister span:hover,
+
+.rembMeBox:hover,
+
+.registerText1:hover {
+
+	opacity: 0.7;
+
+}
+
+.thirdPartyText{
+
+	font-size: 12px;
+
+	color: #ffffff;
+
+	display: inline;
+
+	line-height: 37px;
+
+	margin-left: 75px;
+
+}
+

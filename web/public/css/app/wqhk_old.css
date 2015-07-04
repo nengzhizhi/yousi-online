@@ -1,0 +1,158 @@
+html,
+body {
+	overflow-y: auto;
+	font-family: "microsoft yahei";
+	padding: 0;
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	background-color: #FFFFFF;
+}
+.jumbotron {
+	width: 1180px;
+	height: 480px;
+	background: url(../img/wqhkSets.png) no-repeat 0 -407px;
+}
+.wqhkSearch {
+	position: relative;
+	width: 260px;
+	height: 32px;
+	float: right;
+	margin: -60px 2px 0 0;
+}
+.wqhkSearch img {
+	cursor: pointer;
+	position: absolute;
+	top: 28px;
+	right: 10px;
+}
+.wqhkSearchBar {
+	width: 250px;
+	height: 32px;
+	border: 1px solid #CACACA;
+	font-size: 14px;
+	color: #CACACA;
+	margin-top: 20px;
+	padding-left: 10px;
+}
+.wqhkIntro {
+	margin-top: 74px;
+	text-align: left;
+}
+.wqhkIntroTitle {
+	text-align: left;
+	font-size: 24px;
+	color: #1E1E1E;
+}
+.wqhkIntroText {
+	margin-top: 22px;
+	font-size: 14px;
+	color: #969696;
+}
+.wqhkInner hr {
+	margin-top: 0;
+	width: 1180px;
+	color: #CACACA;
+}
+.wqhkYearSelection {
+	position: relative;
+	height: 36px;
+	margin-top: 42px;
+	font-size: 18px;
+	color: #1E1E1E;
+}
+.year2013,
+.year2014 {
+	width: 100px;
+	height: 18px;
+	position: absolute;
+}
+.year2013 {
+	left: 100px;
+}
+.year2013SliderBar,
+.year2014SliderBar {
+	top: 33px;
+	width: 100px;
+	height: 4px;
+	position: absolute;
+}
+.year2013SliderBar {
+	left: 100px;
+}
+.wqhkAnnualContent {
+	position: relative;
+	width: 1268px;
+}
+.wqhkSingleCell {
+	position: absolute;
+	width: 220px;
+	height: 184px;
+	background-color: #EAEAEA;
+}
+.wqhkSingleCellVideo {
+	width: 220px;
+	height: 184px;
+}
+.wqhkMonthContent {
+	position: relative;
+	width: 1268px;
+	height: 200px;
+	margin-bottom: 70px;
+}
+.wqhkMonthContent p {
+	text-align: left;
+	font-size: 18px;
+	color: #969696;
+}
+.wqhkSingleCell img {
+	margin-bottom: 1px;
+}
+.wqhkSingleCell p {
+	margin: 0;
+	padding-left: 10px;
+	text-align: left;
+	color: #606060;
+	font-size: 14px;
+}
+.wqhkSingleCell1 {
+	background: url(../img/wqhkSets.png) no-repeat 0 0;
+}
+.wqhkSingleCell2 {
+	left: 240px;
+	background: url(../img/wqhkSets.png) no-repeat -240px 0;
+}
+.wqhkSingleCell3 {
+	left: 480px;
+	background: url(../img/wqhkSets.png) no-repeat -480px 0;
+}
+.wqhkSingleCell4 {
+	left: 720px;
+	background: url(../img/wqhkSets.png) no-repeat -720px 0;
+}
+.wqhkSingleCell5 {
+	left: 960px;
+	background: url(../img/wqhkSets.png) no-repeat -960px 0;
+}
+.wqhkSingleCell2-1 {
+	background: url(../img/wqhkSets.png) no-repeat 0 -204px;
+}
+.wqhkSingleCell2-2 {
+	left: 240px;
+	background: url(../img/wqhkSets.png) no-repeat -240px -204px;
+}
+.wqhkSingleCell2-3 {
+	left: 480px;
+	background: url(../img/wqhkSets.png) no-repeat -480px -204px;
+}
+.wqhkSingleCell2-4 {
+	left: 720px;
+	background: url(../img/wqhkSets.png) no-repeat -720px -204px;
+}
+.wqhkSingleCell2-5 {
+	left: 960px;
+	background: url(../img/wqhkSets.png) no-repeat -960px -204px;
+}
+.wqhkSingleCellText {
+	display: none;
+}
