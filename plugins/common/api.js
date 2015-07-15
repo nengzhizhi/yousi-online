@@ -16,6 +16,6 @@ module.exports = function (options) {
 		var putPolicy = new qiniu.rs.PutPolicy('test');
 		//putPolicy.expires = 60;
 
-		res.end(JSON.stringify({'uptoken':putPolicy.token()}));
+		res.end(JSON.stringify({code:200, data:{'uptoken':putPolicy.token()}}));
 	}
 }

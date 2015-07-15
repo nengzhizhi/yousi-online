@@ -89,4 +89,9 @@ answeringRouter.get('/answerings', function (req, res){
 answeringRouter.get('/replay', function (req, res){
 	res.render('answering/replay', {user:req.signedCookies});
 })
+
+answeringRouter.get('/classroom', function (req, res){
+	res.render('answering/classroom', {user:req.signedCookies});
+})
+
 module.exports = answeringRouter;
