@@ -6,63 +6,63 @@ function error() {
 	error.InternalError = function(err){
 		if (util.isString(err)) {
 			return {
-				code : 200000,
-				detail : "Internal error:{0}"
+					code : 200000,
+					desc : "Internal error:{0}"
 			}
 		} else {
 			return {
-				code : 200000,
-				detail : 'Internal error'
+					code : 200000,
+					desc : 'Internal error'
 			}
 		}
 	}
 
 	error.InvalidUsername = function(err) {
 		return {
-			code : 200001,
-			detail : 'Invalid username'
+				code : 200001,
+				desc : 'Invalid username'
 		}
 	}
 
 	error.InvalidPassword = function(err) {
 		return {
 			code : 200002,
-			detail : 'Invalid password'
+			desc : 'Invalid password'
 		}
 	}
 
 	error.UsernameUsed = function() {
 		return {
 			code : 200003,
-			detail : 'Username is alereday in use!'
+			desc : 'Username is alereday in use!'
 		}
 	}
 
 	error.PasswordDiffer = function(err) {
 		return {
 			code : 200004,
-			detail : 'Password is differ with Confirm Password'
+			desc : 'Password is differ with Confirm Password'
 		}
 	}
 
 	error.UnknowRole = function(err) {
 		return {
 			code : 200005,
-			detail : 'Unkown Role'
+			desc : 'Unkown Role'
 		}		
 	}
 
 	error.UsernamePasswordNotMatch = function(err){
 		return {
 			code : 200006,
-			detail : 'Username and password does not match.'
+			desc : 'Username and password does not match.'
 		}			
 	}
 
 	error.VerifySignFail = function(err){
 		return {
 			code : 200007,
-			detail : 'Sign failed!'
+			desc : 'Sign failed!'
 		}
 	}
 

@@ -1,19 +1,41 @@
 <% include ../header.html %>
 
-
+<style type="text/css">
+	th{
+		text-align: left;
+	}
+</style>
 	<div class="container">
 		<div class="row">
+<!-- 			<% for(var i=0;i<rooms.length;i++){ %>
+<div class="col-sm-3">
+<div class="thumbnail">
+  <img data-src="holder.js/100%x200" alt="100%x200" src="" data-holder-rendered="true" style="height: 200px; width: 100%; display: block;">
+  <div class="caption">
+    <h3><%-rooms[i].teacher %></h3>
+    <p>房间状态：<%-rooms[i].status %></p>
+    <p>房间学生：<%-rooms[i].student %></p>
+    <p><a href="/answering/room?id=<%-rooms[i]._id %>" class="btn btn-primary" role="button">进入房间</a>
+  </div>
+</div>
+</div>			
+			<% } %>
+ -->
+
 			<div class="col-sm-8">
 				<h3 id="forms" class="page-header">房间列表：</h3>
 			
-				<table class="table">
+				<table class="table table-striped">
+				<thead>
 					<tr>
-						<td>房间编号</td>
-						<td>房间状态</td>
-						<td>房间老师</td>
-						<td>房间学生</td>
-						<td></td>
+						<th>房间编号</th>
+						<th>房间状态</th>
+						<th>房间老师</th>
+						<th>房间学生</th>
+						<th></th>
 					</tr>
+				</thead>
+				<tbody>
 					<% for(var i=0;i<rooms.length;i++){ %>
 					<tr>
 						<td><%-rooms[i]._id %></td>
@@ -23,6 +45,7 @@
 						<td><a href="/answering/room?id=<%-rooms[i]._id %>" class="btn btn-default">进入房间</a></td>
 					</tr>
 					<% } %>
+				</tbody>
 				</table>
 			</div>
 		</div>

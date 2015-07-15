@@ -1,0 +1,19 @@
+body{background: #8fdcff !important;}
+.main {width: 1440px;height:900px;margin: 0 auto;background: url(../../img/app/bg.jpg) no-repeat;padding-top: 340px;}
+.userback {width: 1440px;height:900px;margin: 0 auto;background: url(../../img/app/bg2.jpg) no-repeat;padding-top: 100px;}
+.denglu {position: relative;width: 400px;height: 300px;margin-left: 510px;padding: 20px 40px 40px 40px;}
+.c-w {color: white;}
+.op2 {margin-left: 100px;}
+.btn-dl {margin-left: 110px;margin-top: 40px;}
+.user {width: auto;height: 760px;}
+.user_top{width: auto;height:200px;padding-left: 100px;}
+.user_buttom{width: auto;height:auto;padding-left: 100px;}
+.user_img {width:160px;height: 160px;}
+.class_button {margin-left: 150px;}
+.record_list {border: 2px solid #b9e8fd; border-radius: 20px; padding: 30px 30px; width: 1000px;height:480px;background: #FFFFFF;}
+.record_ul {width:980px;}
+.record_ul li {list-style: none;border-bottom: 1px solid #e5e5e5;height: 140px;padding-top: 20px;width: 900px;}
+.record_img {width:600px;height:110px;float: left;}
+.record_img img {height:100px;float: left;}
+.time_teacher {float: left;padding-top: 10px;width: 100px;text-align: center;}
+.record_btn {float: left;padding-top: 30px;margin-left: 60px;}

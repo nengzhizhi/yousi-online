@@ -6,8 +6,22 @@ var answeringRouter = express.Router();
 var RestApi = {
 	getRooms : 'http://vgame.tv/api/answering/getRooms',
 	enterRoom : 'http://vgame.tv/api/answering/enterRoom',
-	leaveRoom : 'http://vgame.tv/api/answering/leaveRoom'
+	leaveRoom : 'http://vgame.tv/api/answering/leaveRoom',
+	getAnswerings : 'http://vgame.tv/api/answering/getAnswerings',
+	getOperations : 'http://vgame.tv/api/answering/getOperations'
 };
+
+
+//---------------------------test----------------------------------
+answeringRouter.get('/test', function (req, res){
+	res.render('answering/student');
+})
+
+answeringRouter.get('/upload', function (req, res){
+	res.render('answering/upload', {user:req.signedCookies})
+})
+
+//-----------------------------------------------------------------
 
 answeringRouter.get('/leaveRoom', function (req, res) {
 	request.post({
@@ -54,11 +68,25 @@ answeringRouter.get('/rooms', function (req, res) {
 	},function (err, response, body) {
 		var result = JSON.parse(body);
 
-		if (result) {
-			res.render('answering/roomList', {rooms:result,user:req.signedCookies});
-		} else {
-			res.end();
-		}
+		res.render('answering/roomList', {rooms:result,user:req.signedCookies});
 	});
 });
+
+answeringRouter.get('/answerings', function (req, res){
+	request.post({
+		url : RestApi.getAnswerings,
+		headers : { Cookie : req.headers.cookie }
+	},function (err, response, body){
+		console.log(body);
+		if(response.statusCode == 200) {
+			var result = JSON.parse(body);
+
+			res.render('answering/answerings', {answerings:result,user:req.signedCookies});
+		}
+	})
+});
+
+answeringRouter.get('/replay', function (req, res){
+	res.render('answering/replay', {user:req.signedCookies});
+})
 module.exports = answeringRouter;

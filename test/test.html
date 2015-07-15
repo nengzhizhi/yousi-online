@@ -38,6 +38,33 @@
 				</div>
 
 				<div class="panel panel-default">
+					<div class="panel-heading">查看答疑列表</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://vgame.tv/api/answering/getAnswerings" method="post">
+							<input class="btn btn-primary" type="submit" value="获取答疑列表">
+						</form>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">查看操作列表</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://vgame.tv/api/answering/getOperations" method="post">
+							<div class="form-group">
+								<input class="form-control" type="text" name="answeringId" placeholder="答疑编号">
+							</div>
+							<div class="form-group">
+								<input class="form-control" type="text" name="seek" placeholder="起始位置">
+							</div>
+							<div class="form-group">
+								<input class="form-control" type="text" name="count" placeholder="数量">
+							</div>													
+							<input class="btn btn-primary" type="submit" value="获取操作列表">
+						</form>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
 					<div class="panel-heading">关闭房间</div>
 					<div class="panel-body">
 						<form class="form-inline" action="http://127.0.0.1:2002/api/answering/closeRoom" method="post">
@@ -113,6 +140,18 @@
 					</div>
 				</div>
 
+
+				<div class="panel panel-default">
+					<div class="panel-heading">获取上传文件Token</div>
+					<div class="panel-body">
+						<form class="form-inline" action="http://vgame.tv/api/common/upload/token" method="post">
+							<div class="form-group">
+								<input class="form-control" type="text" name="bucketname" placeholder="bucket">
+							</div>
+							<input class="btn btn-primary" type="submit" value="提交">
+						</form>
+					</div>
+				</div>
 
 				<h1 class="page-header">页面测试</h1>
 

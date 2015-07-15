@@ -5,6 +5,7 @@ var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
 var expressValidator = require('express-validator');
 var mongoose = require('mongoose');
+var _ = require('lodash');
 mongoose.connect('mongodb://yousi:password@112.124.117.146:27017/yousi');
 
 seneca.use('/plugins/answering/api');
@@ -30,8 +31,11 @@ api
 .use(expressValidator({
 	customValidators : {
 		isObjectId : function(value){
-			return value.match(/^[a-z0-9]{20,30}$/g);
-		}
+			return _.isString(value) && value.match(/^[a-z0-9]{20,30}$/g);
+		},
+        isTimeStamp : function(value){
+            return _.isString(value) && value.match(/^[0-9]{10,20}$/g);
+        }
 	}
 }))
 .use(seneca.export('web'))

@@ -1,6 +1,7 @@
 var http = require('http');
 var net = require('net');
 var WebSocketServer = require('websocket').server;
+var mongoose = require('mongoose');
 
 module.exports = function(options) {
 	var seneca = this;
@@ -9,10 +10,10 @@ module.exports = function(options) {
 	seneca.add({role:'keepConn', cmd:'initStService'}, cmd_initStService);
 	seneca.add({role:'keepConn', cmd:'addConnection'}, cmd_addConnection);
 	seneca.add({role:'keepConn', cmd:'delConnection'}, cmd_delConnection);
-
-	seneca.add({role:'keepConn', cmd:'getConnections'}, cmd_getConnections);
-
 	seneca.add({role:'keepConn', cmd:'broadcast'}, cmd_broadcast);
+
+	seneca.use('/plugins/answering/service');
+	mongoose.connect('mongodb://yousi:password@112.124.117.146:27017/yousi');
 
 	//初始化websocket连接服务器
 	function cmd_initWsService(args, callback){
@@ -41,45 +42,9 @@ module.exports = function(options) {
 
 			connection.on('message', function (message) {
 				try{
-					console.log((new Date()) + "Received message " + message.utf8Data);
+					//console.log((new Date()) + "Received message " + message.utf8Data);
 					var req = JSON.parse(message.utf8Data);
-					
-					if (req.c == 'join') {
-						connection.roomId = req.data.roomId;
-						connection.username = req.data.username;
-						seneca.act({
-							role:'keepConn', cmd:'addConnection', 
-							data : {
-								type : 'ws',
-								roomId : req.data.roomId,
-								connection : connection
-							}
-						}, function (err, result) {
-							if (req.data.answeringId) {
-								seneca.act({role:'keepConn', cmd:'broadcast', data:{
-									roomId : req.data.roomId,
-									message : JSON.stringify({
-										c : 'join_push',
-										data : { 
-											answeringId : req.data.answeringId
-										} 
-									})
-								}});
-							}
-							connection.sendUTF(JSON.stringify({c:'join',data:{status:'success'}}));
-						});
-					} else if (req.c == 'draw') {
-						if (req.data.roomId && req.data.answeringId) {
-							//TODO 存储画图操作
-							seneca.act({role:'keepConn', cmd:'broadcast', data:{
-									message : message.utf8Data,
-									roomId : req.data.roomId
-								}
-							});
-						}
-					} else if (req.c == 'leave') {
-						if (req.data.roomId) {}
-					}
+					handleData('ws', connection, req);
 				}
 				catch(e){}
 			});
@@ -118,52 +83,12 @@ module.exports = function(options) {
 			});
 
 			connection.on('data', function (data) {
-				console.log((new Date()) + "Received message " + req);
+				//console.log((new Date()) + "Received message " + req);
 				var req = JSON.parse(data);
-
-				if(req.c == 'join') {
-					connection.roomId = req.data.roomId;
-					connection.username = req.data.username;
-					seneca.act({
-						role:'keepConn', cmd:'addConnection',
-						data : {
-							type : 'st',
-							roomId : req.data.roomId,
-							connection : connection
-						}
-					}, function (err, result) {
-						if (req.data.answeringId) {
-							seneca.act({role:'keepConn', cmd:'broadcast', data:{
-								roomId : req.data.roomId,
-								message : JSON.stringify({
-									c : 'join_push',
-									data : {
-										answeringId : req.data.answeringId
-									}
-								})
-							}});
-						}
-						connection.write(JSON.stringify({c:'join',data:{status:'success'}}));
-					})
-				}
-				else if(req.c == 'draw') {
-					if (req.data.roomId && req.data.answeringId) {
-						seneca.act({
-							role:'keepConn', cmd:'broadcast',
-							data : {
-								message : data,
-								roomId : req.data.roomId								
-							}
-						})
-					}
-				}
-				else if(req.c == 'leave') {
-
-				}
+				handleData('st', connection, req);
 			});
 
 			connection.on('error', function (err) {
-				console.log(err);
 				seneca.act({
 					role:'keepConn', cmd:'delConnection',
 					data : {
@@ -249,11 +174,10 @@ module.exports = function(options) {
 	}
 
 	function cmd_broadcast(args, callback){
-		console.log('broadcast message:' + args.data.message);
 		if (args.data.roomId) {
 			for (var i in seneca.stConnections[args.data.roomId])
 			{
-				seneca.stConnections[args.data.roomId][i].write(args.data.message);
+				seneca.stConnections[args.data.roomId][i].write(args.data.message + '\r\n');
 			}
 
 			for (var index in seneca.wsConnections[args.data.roomId]) 
@@ -264,8 +188,74 @@ module.exports = function(options) {
 		callback(null, null);
 	}
 
+	function handleData(type, connection, req){
+		if(req.c == 'join') {
+			connection.roomId = req.data.roomId;
+			connection.username = req.data.username;
+			seneca.act({
+				role:'keepConn', cmd:'addConnection',
+				data : {
+					type : type,
+					roomId : req.data.roomId,
+					connection : connection
+				}
+			}, function (err, result) {
+				if (req.data.answeringId) {
+					seneca.act({role:'keepConn', cmd:'broadcast', data:{
+						roomId : req.data.roomId,
+						message : JSON.stringify({
+							c : 'join_push',
+							data : {
+								answeringId : req.data.answeringId
+							}
+						})
+					}});
+				}
+				if (type == 'st'){
+					connection.write(JSON.stringify({c:'join',data:{status:'success'}}));
+				} else if(type == 'ws'){
+					connection.sendUTF(JSON.stringify({c:'join',data:{status:'success'}}));
+				}
+			})
+		}
+		else if(req.c == 'draw') {
+			if (req.data.roomId && req.data.answeringId) {
+				seneca.act({
+					role:'keepConn', cmd:'broadcast',
+					data : {
+						message : data,
+						roomId : req.data.roomId								
+					}
+				})
 
-	function cmd_getConnections(args, callback) {
-		callback(null, null);
+				// seneca.act({
+				// 	role:'answering', cmd:'saveOperations',
+				// 	data : {
+				// 		answeringId : req.data.answeringId,
+				// 		records : req.data.operations
+				// 	}
+				// })
+			}
+		}
+		else if(req.c == 'leave') {}
+		else if(req.c == 'upload') {
+			if (req.data.roomId && req.data.answeringId) {
+				seneca.act({
+					role:'answering', cmd:'addQuestion',
+					data : req.data;
+				})
+
+				seneca.act({
+					role:'keepConn', cmd:'broadcast',
+					data:{
+						roomId : req.data.roomId,
+						message : {
+							c : 'upload_push',
+							data : {key:req.data.key,meta:req.data.meta}
+						}
+					}
+				})
+			}
+		}
 	}
 }

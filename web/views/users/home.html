@@ -9,10 +9,12 @@
 				<% if (user.role=='teacher'){ %>
 					<p class="lead">老师</p>
 					<a href="#" class="btn btn-primary" id="createRoom">创建房间</a>
-					<a href="/answering/rooms" class="btn btn-default">房间列表</a>							
+					<a href="/answering/rooms" class="btn btn-default">房间列表</a>
+					<a href="/answering/answerings" class="btn btn-default">答疑列表</a>
 				<% } else { %>
 					<p class="lead">学生</p>
-					<a href="/answering/rooms" class="btn btn-default">房间列表</a>						
+					<a href="/answering/rooms" class="btn btn-default">房间列表</a>
+					<a href="/answering/answerings" class="btn btn-default">答疑列表</a>
 				<% } %>
 			</div>
 		</div>

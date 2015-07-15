@@ -1,0 +1,76 @@
+<% include ../header.html %>
+
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-8">
+				<h3 id="forms" class="page-header">
+					答疑回顾：
+				</h3>
+			</div>			
+		</div>
+	</div>
+</body>
+
+
+<script type="text/javascript">
+	var timeStamp = 1436241629029;
+	var count = 0;
+
+	var handle = setInterval(function(){
+		$.ajax({
+			url : '/api/answering/getOperations',
+			type : 'POST',
+			data : {
+				answeringId : '559b3a9a6b6a418e55040587',
+				startTime : timeStamp,
+				endTime : timeStamp + 1000
+			},
+			success : function(data){
+				console.log(JSON.stringify(data));
+				console.log('data.length = ' + data.length + ',count = ' + count);
+				count ++;
+				timeStamp += 1000;
+
+				if(count >= 100){
+					clearInterval(handle);
+				}
+			}
+		})
+	}, 1000);
+</script>
+
+<script type="text/javascript">
+var intervalCount = 0;
+
+function draw(){
+	emit('draw complete');
+}
+
+function getRecord(){}
+
+function 
+
+for(var i=0;i<100;i++){
+	var lastId;
+	var record = getRecord();
+
+	setInterval(
+		function(){
+			draw(record)
+			emit('draw complete!');
+		},
+	record.id - lastId);
+
+	lastId = record.id + 1;
+}
+
+event.on('draw complete', function(){
+	if (intervalCount < 100){
+
+	}
+})
+
+</script>
+
+<% include ../footer.html %>

@@ -10,7 +10,7 @@ var operationSchema = new Schema({
 });
 
 var answeringSchema = new Schema({
-	created : { type: Date, default: Date.now },
+	created : Number,
 	teacher : String,
 	student : String,
 	duration : Number
@@ -25,6 +25,16 @@ var roomSchema = new Schema({
 	answeringId : ObjectId
 });
 
+var questionSchema = new Schema({
+	created : Number,
+	teacher : String,
+	student : String,
+	answeringId : ObjectId,
+	key : String,
+	meta : String
+});
+
 exports.roomModel = mongoose.model('room', roomSchema);
 exports.answeringModel = mongoose.model('answering', answeringSchema);
 exports.operationModel = mongoose.model('operation', operationSchema);
+exports.questionModel = mongoose.model('question', questionSchema);

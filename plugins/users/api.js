@@ -6,16 +6,6 @@ module.exports = function (options) {
 	var seneca = this;
 	var router = seneca.export('web/httprouter');
 
-	var schema = {
-		username : {
-			type : String,
-			required : true,
-			length : { min:5, max:16},
-			test : /^[a-z0-9]+$/gi
-		}
-	}
-	var validator = new Validator(schema);
-
 	seneca.act('role:web', {use:router(function (app) {
 		app.post('/api/users/register', onRegister);
 		app.post('/api/users/login', onLogin);
@@ -32,11 +22,7 @@ module.exports = function (options) {
 		else if(!req.body.password || !req.body.password.match(/((.){6,10})/g))
 		{
 			res.end(JSON.stringify(error.InvalidPassword()));
-		} 
-		else if(!req.body.confirm_password || req.body.confirm_password!=req.body.password) 
-		{
-			res.end(JSON.stringify(error.PasswordDiffer()));
-		} 
+		}
 		else if(!req.body.role || (req.body.role!='teacher' && req.body.role!='student')) 
 		{
 			res.end(JSON.stringify(error.UnknowRole()));
@@ -80,20 +66,21 @@ module.exports = function (options) {
 				if (err) {
 					res.end(err);
 				} else {
-					res.end(JSON.stringify({status : 'success'}));
+					res.end(JSON.stringify({code:200}));
 				}
 			})
 		}
 	}
 
 	function onLogin(req, res){
+		console.log(req);
 		if (!req.body.username || !req.body.username.match(/([a-zA-Z0-9]){5,15}/g))
 		{
-			res.end(error.InvalidUsername());
+			res.end(JSON.stringify(error.InvalidUsername()));
 		}
 		else if(!req.body.password || !req.body.password.match(/((.){6,10})/g))
 		{
-			res.end(error.InvalidPassword());
+			res.end(JSON.stringify(error.InvalidPassword()));
 		} 
 		else 
 		{
@@ -124,28 +111,14 @@ module.exports = function (options) {
 					res.cookie('role', result.user.role, {signed: true});
 
 					res.end(JSON.stringify({
-						status : 'success',
-						username : req.body.username,
-						role : result.user.role
+						code : 200,
+						data : {
+							username : req.body.username,
+							role : result.user.role
+						}
 					}));
 				}
 			})
 		}
 	}
-
-	// function onUserInfo(req, res){
-	// 	seneca.act({
-	// 		role:'users', cmd:'checkLogin', 
-	// 		data:{
-	// 			cookies : req.cookies
-	// 		}
-	// 	}, function (err, result) {
-	// 		if (err) {
-	// 			res.end(JSON.stringify({}));
-	// 		} else{
-	// 			res.end(JSON.stringify(result));
-	// 		}
-	// 	});
-	// }
-
 }

@@ -11,6 +11,8 @@ module.exports = function(options) {
 		app.post('/api/answering/leaveRoom', onLeaveRoom);
 		app.post('/api/answering/createRoom', onCreateRoom);
 		app.post('/api/answering/closeRoom', onCloseRoom);
+		app.post('/api/answering/getAnswerings', onGetAnswerings);
+		app.post('/api/answering/getOperations', onGetOperations);
 	})});
 
 	seneca.use('/plugins/users/service');
@@ -22,7 +24,7 @@ module.exports = function(options) {
 			data : {}
 		}, function (err, result){
 			if (!err) {
-				res.end(JSON.stringify(result));
+				res.end(JSON.stringify({code:200,data:result}));
 			} else {
 				res.end(JSON.stringify(error.InternalError(err)));
 			}
@@ -35,7 +37,6 @@ module.exports = function(options) {
 			res.end(JSON.stringify(error.BadInput()));
 			return;
 		}
-
 
 		var roomId = req.body.roomId, student, teacher, answeringId;
 
@@ -58,10 +59,13 @@ module.exports = function(options) {
 					res.end(JSON.stringify(error.PermissonDeny()));
 				} else {
 					res.end(JSON.stringify({
-						status : 'success',
-						room : {
-							roomId : result._id,
-							teacher : result.teacher
+						code : 200,
+						data : {
+							room : {
+								roomId : result._id,
+								teacher : result.teacher,
+								answeringId : result.answeringId
+							}
 						}
 					}));
 				}
@@ -90,12 +94,14 @@ module.exports = function(options) {
 							//已经进入房间
 							if (result.student == student) {
 								res.end(JSON.stringify({
-									status : 'success',
-									room : {
-										roomId : result._id,
-										teacher : result.teacher,
-										student : result.student,
-										answering : result.answeringId
+									code : 200,
+									data : {
+										room : {
+											roomId : result._id,
+											teacher : result.teacher,
+											student : result.student,
+											answeringId : result.answeringId
+										}
 									}
 								}));
 								return;							
@@ -162,12 +168,14 @@ module.exports = function(options) {
 					res.end(err);
 				} else {
 					res.end(JSON.stringify({
-						status : 'success',
-						room : {
-							roomId : roomId,
-							teacher : teacher,
-							student : student,
-							answering : results.createAnswering._id
+						code : 200,
+						data : {
+							room : {
+								roomId : roomId,
+								teacher : teacher,
+								student : student,
+								answeringId : results.createAnswering._id
+							}
 						}
 					}));
 				}			
@@ -228,7 +236,7 @@ module.exports = function(options) {
 				if (err) {
 					res.end(err);
 				} else {
-					res.end(JSON.stringify({status : 'success'}))
+					res.end(JSON.stringify({code : 200}))
 				}
 			})
 		}
@@ -277,8 +285,10 @@ module.exports = function(options) {
 			}, function (err, results){
 				if (results.createRoom) {
 					res.end(JSON.stringify({
-						status : 'success',
-						roomId : results.createRoom._id
+						code : 200,
+						data : {
+							roomId : results.createRoom._id
+						}
 					}));					
 				} else if(err) {
 					res.end(err);
@@ -320,9 +330,64 @@ module.exports = function(options) {
 				if (err) {
 					res.end(err);
 				} else {
-					res.end(JSON.stringify({status : 'success'}));
+					res.end(JSON.stringify({code : 201}));
 				}
 			})
 		}
 	}	
+
+	function onGetAnswerings(req, res){
+		if(!req.signedCookies || !req.signedCookies.username) {
+			res.end(JSON.stringify(error.PermissonDeny()));
+		}else{
+			var queryData;
+			if (req.signedCookies.role == 'teacher') {
+				queryData = {teacher:req.signedCookies.username};
+			} else if(req.signedCookies.role == 'student') {
+				queryData = {student:req.signedCookies.username};
+			} else {
+				res.end(JSON.stringify(error.PermissonDeny));
+				return;
+			}
+
+			seneca.act({
+				role:'answering', cmd:'getAnswerings',
+				data : queryData
+			}, function (err, result){
+				if(err){
+					res.end(error.InternalError(err));
+				} else {
+					res.end(JSON.stringify({code :200, data:result}));
+				}
+			});
+		}
+	}
+
+	function onGetOperations(req, res){
+		req.checkBody('answeringId', error.BadInput()).isObjectId();
+		req.checkBody('startTime', error.BadInput()).isTimeStamp();
+		req.checkBody('endTime', error.BadInput()).isTimeStamp();
+
+		if (req.validationErrors()) {
+			res.end(JSON.stringify(error.BadInput()));
+			return;
+		} else if(!req.signedCookies || !req.signedCookies.username){
+			res.end(JSON.stringify(error.PermissonDeny()));
+		} else {
+			seneca.act({
+				role:'answering', cmd:'getOperations',
+				data:{
+					answeringId : req.body.answeringId,
+					startTime : req.body.startTime,
+					endTime : req.body.endTime
+				}
+			}, function (err, result) {
+				if (err) {
+					res.end(JSON.stringify(err));
+				} else {
+					res.end(JSON.stringify({code:200, data:result}));
+				}
+			})
+		}
+	}
 }

@@ -1,0 +1,32 @@
+<% include ../header.html %>
+
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>七牛云存储 - JavaScript SDK</title>
+	<link href="favicon.ico" rel="shortcut icon">
+</head>
+<body>
+<div class="container">
+	<div class="text-left col-md-12 wrapper">
+		<h1 class="text-left col-md-12 ">
+			七牛云存储 - JavaScript SDK
+		</h1>
+	</div>
+
+    <div class="col-md-12">
+        <div id="container">
+            <a class="btn btn-default btn-lg " id="pickfiles" href="#" >
+                <i class="glyphicon glyphicon-plus"></i>
+                <sapn>选择文件</sapn>
+            </a>
+        </div>
+    </div>	
+</div>	
+<input type="hidden" id="domain" value="http://qiniu-plupload.qiniudn.com/">
+<input type="hidden" id="uptoken_url" value="http://vgame.tv/api/common/upload/token">
+<% include ../footer.html %>
+<script type="text/javascript" src="/js/qiniu/plupload/plupload.full.min.js"></script>
+<script type="text/javascript" src="/js/qiniu/plupload/i18n/zh_CN.js"></script>
+<script type="text/javascript" src="/js/qiniu.js"></script>
+<script type="text/javascript" src="/js/qiniu/main.js"></script>
