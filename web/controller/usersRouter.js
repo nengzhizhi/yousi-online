@@ -45,13 +45,20 @@ usersRouter.post('/login', function (req, res) {
 			}
 		},
 		function (err, response, body) {
-			var result = JSON.parse(body);
-			if (result.status == 'success') {
-				res.cookie('role', result.role?result.role:'', {signed:true});
-				res.cookie('username', result.username?result.username:'', {signed:true});
-				res.redirect('/users/home');
+			if (response.statusCode == 200) {
+				if (body && 'string' === typeof(body)){
+					var result = JSON.parse(body);
+				}
+
+				if (result && result.code == 200) {
+					res.cookie('role', (result.data && result.data.role) ? result.data.role : '', { signed : true });
+					res.cookie('username', (result.data && result.data.username) ? result.data.username : '', { signed : true });
+					res.redirect('/users/home');
+				} else {
+					res.end('login failed!');
+				}
 			} else {
-				res.end('Login failed!');
+				res.end('service unaviable!');
 			}
 		}
 	);

@@ -2,13 +2,15 @@
 (function(g){
 	g.toolkit = {};
 	g.trace = [];
-	g.init = function(id) {
+	g.mode = 'passive';
+	g.init = function(id, mode) {
+		g.mode = mode ? mode : 'passive';
 		g.canvas = document.getElementById(id);
 		g.ctx = g.canvas ? g.canvas.getContext('2d') : null;
 		g.strokeStyle = '#000';
 		g.diameter = 2;
-		g.setToolkit('pencil');
 		g.frameInterval = 20;
+		g.setToolkit('pencil');
 	}
 
 	g.registerToolkit = function (t, f) {
@@ -54,27 +56,27 @@
 		pencil.id = 'pencil';
 
 		this.enable = function(){
-			if (!this.isEnabled) {
-				this.ctx = g.ctx;
-				this.canvas = g.canvas;
-				this.isEnabled = true;
-
-				this.canvas.onmousedown = function(e){
-					this.isDrawingMode = true;
-				}
-				this.canvas.onmouseup = function(e) {
-					this.isDrawingMode = false;
-				}
-
-				this.canvas.onmousemove =  function(e) {
-					if (this.isDrawingMode) {
-						pencil.path.push({x:e.offsetX, y:e.offsetY});
+			if (!pencil.isEnabled) {
+				this.ctx = g.ctx, this.canvas = g.canvas, this.isEnabled = true;
+				
+				if (g.mode && g.mode == 'active') {
+					pencil.canvas.onmousedown = function(e){
+						pencil.isDrawingMode = true;
 					}
-					else {
-						g.trace.push({x:e.offsetX, y:e.offsetY});
+					pencil.canvas.onmouseup = function(e) {
+						pencil.isDrawingMode = false;
 					}
+
+					pencil.canvas.onmousemove =  function(e) {
+						if (pencil.isDrawingMode) {
+							pencil.path.push([e.offsetX, e.offsetY]);
+						}
+						else {
+							g.trace.push([e.offsetX, e.offsetY]);
+						}
+					}
+					pencil.frameHandle = setInterval(pencil.onFrame, g.frameInterval||20);
 				}
-				this.frameHandle = setInterval(this.onFrame, g.frameInterval||20);
 			}
 		}
 
@@ -90,10 +92,11 @@
 			this.ctx.lineJoin = "round";
 			this.ctx.lineWidth = g.diameter;
 			this.ctx.strokeStyle = g.strokeStyle;
+
 			for(var i = 0; i < path.length; i++){
-				if (i==0) this.ctx.moveTo(path[0].x, path[0].y);
+				if (i==0) this.ctx.moveTo(path[0][0], path[0][1]);
 				else 
-					this.ctx.lineTo(path[i].x, path[i].y);
+					this.ctx.lineTo(path[i][0], path[i][1]);
 			}
 
 			this.ctx.stroke();
@@ -102,13 +105,17 @@
 
 		this.onFrame = function(){
 			if (this.isDrawingMode || pencil.path.length > 0) {
-				pencil.render(pencil.path);
-				pencil.path.length && socket && socket.send(JSON.stringify({c:'draw', data:['pm', pencil.path, Date.now()]}));
-				pencil.path = [];
+				var buffer = [];
+				for(var i=0; i<pencil.path.length && i<10; i++) {
+					buffer.push(pencil.path.shift());
+				}
+				pencil.render(buffer);
+				socket && socket.send({c:'draw', data:{op:['pm', buffer],t:Date.now()}});
 			}
-			g.trace.length && socket && socket.send(JSON.stringify({c:'draw', data:['mm', g.trace, Date.now()]}));
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace], t:Date.now()}});
 			g.trace = [];
-		}		
+		}
+
 	})
 })(sketch);
 
@@ -121,25 +128,25 @@
 
 		this.enable = function(){
 			if (!this.isEnabled) {
-				this.ctx = g.ctx;
-				this.canvas = g.canvas;
-				this.isEnabled = true;
-
-				this.canvas.onmousedown = function(e){
-					this.isDrawingMode = true;
-				}
-				this.canvas.onmouseup = function(e) {
-					this.isDrawingMode = false;
-				}
-
-				this.canvas.onmousemove =  function(e) {
-					if (this.isDrawingMode) {
-						eraser.path.push({x:e.offsetX, y:e.offsetY});
-					} else {
-						g.trace.push({x:e.offsetX, y:e.offsetY});
+				this.ctx = g.ctx, this.canvas = g.canvas, this.isEnabled = true;
+				
+				if (g.mode && g.mode == "active") {
+					this.canvas.onmousedown = function(e){
+						this.isDrawingMode = true;
 					}
+					this.canvas.onmouseup = function(e) {
+						this.isDrawingMode = false;
+					}
+
+					this.canvas.onmousemove =  function(e) {
+						if (this.isDrawingMode) {
+							eraser.path.push([e.offsetX, e.offsetY]);
+						} else {
+							g.trace.push([e.offsetX, e.offsetY]);
+						}
+					}
+					this.frameHandle = setInterval(this.onFrame, g.frameInterval||20);
 				}
-				this.frameHandle = setInterval(this.onFrame, g.frameInterval||20);
 			}
 		}
 
@@ -158,9 +165,9 @@
 			this.ctx.beginPath();
 			for(var i=0;i<path.length;i++){
 				if (i==0) 
-					this.ctx.moveTo(path[0].x, path[0].y);
+					this.ctx.moveTo(path[0][0], path[0][1]);
 				else 
-					this.ctx.lineTo(path[i].x, path[i].y);
+					this.ctx.lineTo(path[i][0], path[i][1]);
 			}
 
 			this.ctx.globalCompositeOperation="destination-out";
@@ -172,11 +179,11 @@
 		this.onFrame = function(){
 			if (this.isDrawingMode || eraser.path.length > 0) {
 				eraser.render(eraser.path);
-				eraser.path.length && socket && socket.send(JSON.stringify({c:'draw', data:['em', eraser.path, Date.now()]}));
+				eraser.path.length && socket && socket.send({c:'draw', data:{op:['em', eraser.path], t:Date.now()}});
 				eraser.path = [];
 			}
 			
-			g.trace.length && socket && socket.send(JSON.stringify({c:'draw', data:['mm', g.trace, Date.now()]}));
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace], t:Date.now()}});
 			g.trace = [];
 		}		
 	})

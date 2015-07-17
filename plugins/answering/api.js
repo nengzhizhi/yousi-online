@@ -8,7 +8,7 @@ module.exports = function(options) {
 	seneca.act('role:web', {use:router(function (app){
 		app.post('/api/answering/getRooms', onGetRooms);
 		app.post('/api/answering/enterRoom', onEnterRoom);
-		app.post('/api/answering/leaveRoom', onLeaveRoom);
+		app.get('/api/answering/leaveRoom', onLeaveRoom);
 		app.post('/api/answering/createRoom', onCreateRoom);
 		app.post('/api/answering/closeRoom', onCloseRoom);
 		app.post('/api/answering/getAnswerings', onGetAnswerings);
@@ -184,62 +184,90 @@ module.exports = function(options) {
 	}
 
 	function onLeaveRoom(req, res){
-		var roomId = req.body.roomId,student;
+		var roomId = req.query.id, student;
 
-		if (!req.signedCookies || !req.signedCookies.username || req.signedCookies.role != 'student') 
-		{
+		if (!req.signedCookies || !req.signedCookies.username) {
 			res.end(JSON.stringify(error.PermissonDeny()));
-		}
-		else {
-			student = req.signedCookies.username;
+		} else {
+			if (req.signedCookies.role == 'teacher') {
+				queryData = { _id: roomId, teacher: req.signedCookies.username },
+				updateData = { student: null, status: 'closed', answeringId: null}
+			} else if(req.signedCookies.role == 'student') {
+				queryData = { _id: roomId, student: req.signedCookies.username },
+				updateData = { student: null, status: 'waiting', answeringId: null}
+			}
 
-			async.waterfall([
-				//获取房间信息
-				function (next) {
+			seneca.act({
+				role: 'answering', cmd: 'updateRoom',
+				queryData: queryData, 
+				updateData: updateData
+			}, function (err, result){
+				if (err) res.end(JSON.stringify(error.InternalError()));
+				else {
 					seneca.act({
-						role:'answering', cmd:'getRoom',
-						data : {
-							_id : roomId,
-							student : student
-						}
-					}, function (err, result) {
-						if (err) {
-							next(JSON.stringify(error.InternalError(err)), null);
-						} else if(!result) {
-							next(JSON.stringify(error.PermissonDeny()), null);
-						} else {
-							next(null, result);
-						}
-					})
-				},
-				//更新房间状态
-				function (room, next) {
-					seneca.act({
-						role:'answering', cmd:'updateRoom',
-						queryData : {
-							_id : roomId
-						},
-						updateData : {
-							student : null,
-							status : 'waiting',
-							answeringId : null
-						}
-					}, function (err, result) {
-						if (err) {
-							next(JSON.stringify(error.InternalError(err)), null)
-						} else {
-							next(null, result)
+						role: 'keepConn', cmd: 'leaveRoom',
+						data: {
+							roomId: roomId,
+							username: req.signedCookies.username
 						}
 					})
 				}
-			], function (err, results){
-				if (err) {
-					res.end(err);
-				} else {
-					res.end(JSON.stringify({code : 200}))
-				}
-			})
+			})			
 		}
+
+		// if (!req.signedCookies || !req.signedCookies.username || req.signedCookies.role != 'student') {
+		// 	res.end(JSON.stringify(error.PermissonDeny()));
+		// }
+		// else {
+		// 	student = req.signedCookies.username;
+
+		// 	async.waterfall([
+		// 		//获取房间信息
+		// 		function (next) {
+		// 			seneca.act({
+		// 				role:'answering', cmd:'getRoom',
+		// 				data : {
+		// 					_id : roomId,
+		// 					student : student
+		// 				}
+		// 			}, function (err, result) {
+		// 				if (err) {
+		// 					next(JSON.stringify(error.InternalError(err)), null);
+		// 				} else if(!result) {
+		// 					next(JSON.stringify(error.PermissonDeny()), null);
+		// 				} else {
+		// 					next(null, result);
+		// 				}
+		// 			})
+		// 		},
+		// 		//更新房间状态
+		// 		function (room, next) {
+		// 			seneca.act({
+		// 				role:'answering', cmd:'updateRoom',
+		// 				queryData : {
+		// 					_id : roomId
+		// 				},
+		// 				updateData : {
+		// 					student : null,
+		// 					status : 'waiting',
+		// 					answeringId : null
+		// 				}
+		// 			}, function (err, result) {
+		// 				if (err) {
+		// 					next(JSON.stringify(error.InternalError(err)), null)
+		// 				} else {
+		// 					next(null, result)
+		// 				}
+		// 			})
+		// 		}
+		// 	], function (err, results){
+		// 		if (err) {
+		// 			res.end(err);
+		// 		} else {
+		// 			res.end(JSON.stringify({code : 200}))
+		// 		}
+		// 	})
+		// }
 	}
 	function onCreateRoom(req, res){
 		if(!req.signedCookies || !req.signedCookies.username || req.signedCookies.role != 'teacher')
@@ -363,23 +391,25 @@ module.exports = function(options) {
 		}
 	}
 
+
+
 	function onGetOperations(req, res){
 		req.checkBody('answeringId', error.BadInput()).isObjectId();
-		req.checkBody('startTime', error.BadInput()).isTimeStamp();
-		req.checkBody('endTime', error.BadInput()).isTimeStamp();
+		// req.checkBody('start', error.BadInput()).isInteger();
+		// req.checkBody('count', error.BadInput()).isInteger();
 
 		if (req.validationErrors()) {
 			res.end(JSON.stringify(error.BadInput()));
 			return;
-		} else if(!req.signedCookies || !req.signedCookies.username){
-			res.end(JSON.stringify(error.PermissonDeny()));
+		// } else if(!req.signedCookies || !req.signedCookies.username){
+		// 	res.end(JSON.stringify(error.PermissonDeny()));
 		} else {
 			seneca.act({
 				role:'answering', cmd:'getOperations',
 				data:{
 					answeringId : req.body.answeringId,
-					startTime : req.body.startTime,
-					endTime : req.body.endTime
+					start : req.body.start,
+					count : req.body.count
 				}
 			}, function (err, result) {
 				if (err) {

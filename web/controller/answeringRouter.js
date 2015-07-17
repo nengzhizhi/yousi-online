@@ -25,18 +25,20 @@ answeringRouter.get('/upload', function (req, res){
 
 answeringRouter.get('/leaveRoom', function (req, res) {
 	request.post({
-			url : RestApi.leaveRoom,
-			headers : { Cookie : req.headers.cookie },
-			form : { roomId : req.query.id }
-		}, function (err, response, body) {
-			console.log(JSON.parse(body));
-			if (JSON.parse(body).status == 'success') {
+		url : RestApi.leaveRoom,
+		headers : { Cookie : req.headers.cookie },
+		form : { roomId : req.query.id }
+	}, function (err, response, body) {
+		if (response.statusCode == 200) {
+			var result = JSON.parse(body);
+
+			if (result.code == 200) {
 				res.redirect('/answering/rooms');
-			} else {
-				res.end('leaveRoom failed!');
 			}
+		} else {
+			res.end('service unavailable!');
 		}
-	);
+	});
 });
 
 answeringRouter.get('/room', function (req, res) {
@@ -45,19 +47,23 @@ answeringRouter.get('/room', function (req, res) {
 		headers : { Cookie : req.headers.cookie },
 		form : { roomId : req.query.id }
 	}, function (err, response, body){
-		try {
-			var result = JSON.parse(body);
-
-			if (result.status == 'success') {
-				if (req.signedCookies.role == 'student') {
-					res.render('answering/room_s', {room : result.room,user:req.signedCookies});
-				} else if(req.signedCookies.role == 'teacher') {
-					res.render('answering/room_t', {room : result.room,user:req.signedCookies});
+		if (response.statusCode == 200) {
+			var result;
+			if (body && typeof(body) === 'string') {
+				result = JSON.parse(body);
+			
+				if (result.code == 200) {
+					if (req.signedCookies.role == 'student')
+						res.render('answering/classroom_s', {room:result.data.room, user:req.signedCookies});
+					else if(req.signedCookies.role == 'teacher')
+						res.render('answering/classroom', {room:result.data.room,user:req.signedCookies});
+				} else {
+					res.end('enterRoom failed!');
 				}
-			} else{
-				res.end('error : enterRoom failed!');
 			}
-		}catch(e){}
+		} else {
+			res.end('service unavailable!');
+		}
 	})
 });
 
@@ -66,9 +72,16 @@ answeringRouter.get('/rooms', function (req, res) {
 		url : RestApi.getRooms,
 		form : {}
 	},function (err, response, body) {
-		var result = JSON.parse(body);
+		if (response.statusCode == 200) {
+			var result;
+			if (body && typeof(body) === 'string') {
+				result = JSON.parse(body);
+			}
 
-		res.render('answering/roomList', {rooms:result,user:req.signedCookies});
+			res.render('answering/roomList', {rooms : result.data, user : req.signedCookies});
+		} else {
+			res.end('service unavailable!');
+		}
 	});
 });
 
@@ -77,21 +90,24 @@ answeringRouter.get('/answerings', function (req, res){
 		url : RestApi.getAnswerings,
 		headers : { Cookie : req.headers.cookie }
 	},function (err, response, body){
-		console.log(body);
 		if(response.statusCode == 200) {
-			var result = JSON.parse(body);
+			var result = body ? JSON.parse(body) : {};
 
-			res.render('answering/answerings', {answerings:result,user:req.signedCookies});
+			res.render('answering/answerings', {answerings:result.data, user:req.signedCookies});
 		}
 	})
 });
 
 answeringRouter.get('/replay', function (req, res){
-	res.render('answering/replay', {user:req.signedCookies});
+	res.render('answering/replay', {room:{answeringId:req.query.id}, user:req.signedCookies});
 })
 
 answeringRouter.get('/classroom', function (req, res){
 	res.render('answering/classroom', {user:req.signedCookies});
+})
+
+answeringRouter.get('/classroom_s', function (req, res){
+	res.render('answering/classroom_s', {user:req.signedCookies});
 })
 
 module.exports = answeringRouter;

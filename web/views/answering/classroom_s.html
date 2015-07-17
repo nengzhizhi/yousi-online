@@ -15,24 +15,25 @@
   .webCamera{
     width: 150px;height: 120px;border: 1px dashed #ddd;
 
-  }
+  }  
 </style>
 
 <div class="container">
-  <h3 id="overview" class="page-header">答疑房间（教师端）<a class="btn btn-danger" href="http://vgame.tv/api/answering/leaveRoom?id=<%-room.roomId %>" >
+  <h3 id="overview" class="page-header">答疑房间（学生端）
+    <a class="btn btn-danger" href="#" >
         <sapn>结束答疑</sapn>
       </a></h3>
   <div class="row" style="">
     <div class="col-xs-2">
-        <div class="btn-group">
-          <button type="button" class="btn btn-default" id="pencil"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
-          <button type="button" class="btn btn-default" id="eraser"><span class="glyphicon glyphicon-erase" aria-hidden="true"></span></button>
-          <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-font" aria-hidden="true"></span></button>
-        </div>
+      <div id="container">
+        <a class="btn btn-success" id="pickfiles" href="#" >
+          <i class="glyphicon glyphicon-plus"></i>
+          <sapn>上传问题图片</sapn>
+        </a>
+      </div>
         <div class="question" id="question">
         提问图片
         </div>
-
       <div class="camera-container">
         <div class="webCamera">
           摄像头
@@ -40,7 +41,7 @@
         <div class="webCamera">
           摄像头
         </div>        
-      </div>
+      </div>            
     </div>
     <div class="col-xs-10" style="border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);">
       <canvas height="800" width="800" id="canvas"></canvas>
@@ -52,19 +53,17 @@
 <script type="text/javascript" src="/js/sketch/sketch.js"></script>
 <script type="text/javascript" src="/js/sketch/socket.js"></script>
 <script type="text/javascript">
-	info.roomId = "<%-room && room.roomId ? room.roomId : ''%>";
+  info.roomId = "<%-room && room.roomId ? room.roomId : ''%>";
   info.answeringId = "<%-room && room.answeringId ? room.answeringId : '' %>";
 	info.username = 'nengzhizhi', info.role = 'teacher';
-
-	sketch.init('canvas','active');
+	
+	sketch.init('canvas', 'passive');
 	socket.init('112.124.117.146', 10001, 'echo-protocol');
-
-
-	$('#pencil').on('click', function(){
-	  sketch.setToolkit('pencil');
-	});
-	$('#eraser').on('click', function(){
-	  sketch.setToolkit('eraser');
-	})
 </script>
+<input type="hidden" id="domain" value="http://qiniu-plupload.qiniudn.com/">
+<input type="hidden" id="uptoken_url" value="http://vgame.tv/api/common/upload/token">
 <% include ../footer.html %>
+<script type="text/javascript" src="/js/qiniu/plupload/plupload.full.min.js"></script>
+<script type="text/javascript" src="/js/qiniu/plupload/i18n/zh_CN.js"></script>
+<script type="text/javascript" src="/js/qiniu/qiniu.js"></script>
+<script type="text/javascript" src="/js/qiniu/main.js"></script>

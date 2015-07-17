@@ -4,9 +4,9 @@ var ObjectId = Schema.ObjectId;
 
 
 var operationSchema = new Schema({
-	answeringId : ObjectId,
-	records : Array,
-	timestamp : Number
+	aid : ObjectId,
+	op : Array,
+	t : Number
 });
 
 var answeringSchema = new Schema({

@@ -11,6 +11,7 @@ module.exports = function(options) {
 	seneca.add({role:'keepConn', cmd:'addConnection'}, cmd_addConnection);
 	seneca.add({role:'keepConn', cmd:'delConnection'}, cmd_delConnection);
 	seneca.add({role:'keepConn', cmd:'broadcast'}, cmd_broadcast);
+	seneca.add({role:'keepConn', cmd:'leaveRoom'}, cmd_leaveRoom);
 
 	seneca.use('/plugins/answering/service');
 	mongoose.connect('mongodb://yousi:password@112.124.117.146:27017/yousi');
@@ -175,22 +176,52 @@ module.exports = function(options) {
 
 	function cmd_broadcast(args, callback){
 		if (args.data.roomId) {
-			for (var i in seneca.stConnections[args.data.roomId])
-			{
-				seneca.stConnections[args.data.roomId][i].write(args.data.message + '\r\n');
+			var data = (typeof args.data.message === "string") ? 
+						args.data.message : JSON.stringify(args.data.message);
+
+			for (var i in seneca.stConnections[args.data.roomId]){
+				seneca.stConnections[args.data.roomId][i].write(data + '\r\n');
 			}
 
-			for (var index in seneca.wsConnections[args.data.roomId]) 
-			{
-				seneca.wsConnections[args.data.roomId][index].sendUTF(args.data.message);
+			for (var index in seneca.wsConnections[args.data.roomId]) {
+				seneca.wsConnections[args.data.roomId][index].sendUTF(data);
 			}
 		}
 		callback(null, null);
 	}
 
+	function cmd_leaveRoom(args, callback){
+		console.log('length = ' + seneca.wtConnections[args.data.roomId].length);
+		if (args.data.roomId && args.data.role) {
+			for (var i in seneca.stConnections[args.data.roomId]) {
+				if (seneca.stConnections[args.data.roomId][i].username == args.data.username) {
+					seneca.stConnections[args.data.roomId].close();
+					seneca.stConnections[args.data.roomId].remove(i);
+
+					if (seneca.stConnections[args.data.roomId].length == 0) {
+						delete seneca.stConnections[args.data.roomId];
+					}
+				}
+			}
+
+			for (var j in seneca.wsConnections[args.data.roomId]) {
+				if (seneca.wtConnections[args.data.roomId][i].username == args.data.username) {
+					seneca.wtConnections[args.data.roomId].close();
+					seneca.wtConnections[args.data.roomId].remove(i);
+				
+					if (seneca.wsConnections[args.data.roomId].length == 0) {
+						delete seneca.wsConnections[args.data.roomId];
+					}
+				}				
+			}
+		}
+		console.log('length = ' + seneca.wtConnections[args.data.roomId].length);
+	}
+
 	function handleData(type, connection, req){
 		if(req.c == 'join') {
 			connection.roomId = req.data.roomId;
+			connection.answeringId = req.data.answeringId;
 			connection.username = req.data.username;
 			seneca.act({
 				role:'keepConn', cmd:'addConnection',
@@ -206,56 +237,71 @@ module.exports = function(options) {
 						message : JSON.stringify({
 							c : 'join_push',
 							data : {
+								roomId : req.data.roomId,
 								answeringId : req.data.answeringId
 							}
 						})
 					}});
 				}
-				if (type == 'st'){
-					connection.write(JSON.stringify({c:'join',data:{status:'success'}}));
-				} else if(type == 'ws'){
-					connection.sendUTF(JSON.stringify({c:'join',data:{status:'success'}}));
-				}
+				// if (type == 'st'){
+				// 	connection.write(JSON.stringify({c:'join',data:{status:'success'}}));
+				// } else if(type == 'ws'){
+				// 	connection.sendUTF(JSON.stringify({c:'join',data:{status:'success'}}));
+				// }
 			})
 		}
 		else if(req.c == 'draw') {
-			if (req.data.roomId && req.data.answeringId) {
+			seneca.act({
+				role:'keepConn', cmd:'broadcast',
+				data : {
+					message : req,
+					roomId : connection.roomId								
+				}
+			})
+
+			if (connection.answeringId) {
 				seneca.act({
-					role:'keepConn', cmd:'broadcast',
+					role:'answering', cmd:'saveOperations',
 					data : {
-						message : data,
-						roomId : req.data.roomId								
+						answeringId : connection.answeringId,
+						op : req.data.op,
+						t : req.data.t
 					}
 				})
-
-				// seneca.act({
-				// 	role:'answering', cmd:'saveOperations',
-				// 	data : {
-				// 		answeringId : req.data.answeringId,
-				// 		records : req.data.operations
-				// 	}
-				// })
 			}
 		}
 		else if(req.c == 'leave') {}
 		else if(req.c == 'upload') {
-			if (req.data.roomId && req.data.answeringId) {
-				seneca.act({
-					role:'answering', cmd:'addQuestion',
-					data : req.data;
-				})
-
-				seneca.act({
-					role:'keepConn', cmd:'broadcast',
-					data:{
-						roomId : req.data.roomId,
-						message : {
-							c : 'upload_push',
-							data : {key:req.data.key,meta:req.data.meta}
-						}
+			seneca.act({
+				role : 'keepConn', cmd : 'broadcast',
+				data : {
+					roomId : connection.roomId,
+					message : {
+						c : 'upload_push',
+						data : { url:req.data.url, meta:req.data.meta }
 					}
-				})
-			}
+				}
+			});
+			// if (req.data.roomId && req.data.answeringId) {
+			// 	seneca.act({
+			// 		role:'answering', cmd:'addQuestion',
+			// 		data : req.data;
+			// 	})
+
+			// 	seneca.act({
+			// 		role:'keepConn', cmd:'broadcast',
+			// 		data:{
+			// 			roomId : req.data.roomId,
+			// 			message : {
+			// 				c : 'upload_push',
+			// 				data : {key:req.data.key,meta:req.data.meta}
+			// 			}
+			// 		}
+			// 	})
+			// }
+		}
+		else if(req.c == 'update_connection') {
+			connection.answeringId = req.data.answeringId;
 		}
 	}
 }

@@ -2,7 +2,7 @@
 <body>
 	<div class="container">
 		<div class="row">
-			<div class="col-sm-8">
+			<div class="col-sm-12">
 				<h3 id="forms" class="page-header">答疑列表：</h3>
 				<table class="table">
 					<thead>
@@ -21,7 +21,7 @@
 							<td><%-answerings[i].created %></td>
 							<td><%-answerings[i].teacher %></td>
 							<td><%-answerings[i].student %></td>
-							<td><a href="#" class="btn btn-default">回顾答疑</a></td>
+							<td><a href="/answering/replay?id=<%-answerings[i]._id %>" class="btn btn-default">回顾答疑</a></td>
 						</tr>
 						<% } %>
 					</tbody>

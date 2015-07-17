@@ -21,7 +21,6 @@ module.exports = function(options) {
 	seneca.add({role:'answering', cmd:'saveOperations'}, cmd_saveOperations);
 	seneca.add({role:'answering', cmd:'getOperations'}, cmd_getOperations);
 
-	seneca.add({role:'answering', cmd:'addQuestion'}, cmd_addQuestion);
 
 	function cmd_getRoom(args, callback){
 		roomModel
@@ -86,18 +85,9 @@ module.exports = function(options) {
 
 	function cmd_saveOperations(args, callback){
 		var operation = new operationModel();
-		var currentTick = 0; 
-		operation.records = new Array();
-
-		for (var i=0;i<args.data.records.length;i++) {
-			if (currentTick != args.data.records[i].id || args.data.records[i].op != 'mouseMove') {
-				operation.records.push(args.data.records[i]);
-				currentTick = args.data.records[i].id;
-			}
-		}
-
-		operation.answeringId = args.data.answeringId;
-		operation.timestamp = Date.now();
+		operation.aid = args.data.answeringId;
+		operation.op = args.data.op;
+		operation.t = args.data.t;
 
 		operation.save(function (err) {
 			callback(null, operation);
@@ -108,30 +98,31 @@ module.exports = function(options) {
 	function cmd_getOperations(args, callback){
 		operationModel
 		.find({
-			answeringId : args.data.answeringId,
-			timestamp : { $gt:args.data.startTime, $lt:args.data.endTime}
+			aid : args.data.answeringId
 		})
-		.select('timestamp records')
-		.sort({ timestamp : 1 })
+		.sort({ t : 1 })
+		.skip(args.data.start)
+		.limit(args.data.count)
+		//.select('op', 't')
 		.exec(function (err, operations){
 			callback(err, operations);
 		});
 	}
 
-	function cmd_addQuestions(args, callback){
-		var question = new questionModel();
+	// function cmd_addQuestions(args, callback){
+	// 	var question = new questionModel();
 
-		question.answeringId = args.data.answeringId;
-		question.teacher = args.data.teacher;
-		question.student = args.data.student;
-		question.created = Date.now();
-		question.key = args.data.key;
-		question.meta = args.data.meta;
+	// 	question.answeringId = args.data.answeringId;
+	// 	question.teacher = args.data.teacher;
+	// 	question.student = args.data.student;
+	// 	question.created = Date.now();
+	// 	question.key = args.data.key;
+	// 	question.meta = args.data.meta;
 
-		question.save(function (err){
-			callback(null, question);
-		})
-	}
+	// 	question.save(function (err){
+	// 		callback(null, question);
+	// 	})
+	// }
 
 	// function operationEncode(operation){
 	// 	var code = [];
