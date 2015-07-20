@@ -40,7 +40,7 @@ var uploader = Qiniu.uploader({
                             socket && socket.send(
                               {
                                 c : 'upload',
-                                data : { url : sourceLink }
+                                data : { key : res.key }
                               }
                             )
                     },

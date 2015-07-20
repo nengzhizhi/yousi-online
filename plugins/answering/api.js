@@ -210,6 +210,8 @@ module.exports = function(options) {
 							roomId: roomId,
 							username: req.signedCookies.username
 						}
+					}, function (err, result){
+						res.end(JSON.stringify(err ? error.InternalError() : {code:200}));
 					})
 				}
 			})			

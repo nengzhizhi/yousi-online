@@ -19,21 +19,18 @@
 
 		s.ws.onmessage = function(event) {
 			var message = JSON.parse(event.data);
-
+			console.log(event.data);
 			if (message.c == 'draw') {
 				sketch && sketch.mode == 'passive' && sketch.onCommand(message.data.op);
 			} else if(message.c == 'join_push') {
-				if (message.data.answeringId && !info.answeringId){
-					s.ws.send(JSON.stringify({
-						c : 'update_connection',
-						data : {
-							answeringId : message.data.answeringId
-						}
-					}));
-					info.answeringId = message.data.answeringId;
-				}				
+				console.log('message.data.username = ' + message.data.username);
+				if (message.data.username != info.username) {
+					appendLog('[' + message.data.username + ']加入房间');
+				}			
 			} else if(message.c == 'upload_push') {
 				$('#question').html('<img src="' + message.data.url +'"></img>');
+			} else if(message.c == 'leave_push') {
+				appendLog('[' + message.data.username + ']离开房间');
 			}
 		}
 

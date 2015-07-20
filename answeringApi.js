@@ -8,6 +8,8 @@ var mongoose = require('mongoose');
 var _ = require('lodash');
 mongoose.connect('mongodb://yousi:password@112.124.117.146:27017/yousi');
 
+//online service
+seneca.client({host: '112.124.117.146', port: 20003, pin: {role:'keepConn',cmd:'*'}});
 seneca.use('/plugins/answering/api');
 
 var api = require('express')();

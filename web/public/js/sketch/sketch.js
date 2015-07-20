@@ -54,6 +54,7 @@
 		this.isEnabled = false;
 		pencil.path = [];
 		pencil.id = 'pencil';
+		pencil.key;
 
 		this.enable = function(){
 			if (!pencil.isEnabled) {
@@ -70,6 +71,7 @@
 					pencil.canvas.onmousemove =  function(e) {
 						if (pencil.isDrawingMode) {
 							pencil.path.push([e.offsetX, e.offsetY]);
+							pencil.key = [[e.offsetX, e.offsetY]];
 						}
 						else {
 							g.trace.push([e.offsetX, e.offsetY]);
@@ -110,7 +112,9 @@
 					buffer.push(pencil.path.shift());
 				}
 				pencil.render(buffer);
-				socket && socket.send({c:'draw', data:{op:['pm', buffer],t:Date.now()}});
+				//socket && socket.send({c:'draw', data:{op:['pm', buffer],t:Date.now()}});
+				socket && socket.send({c:'draw', data:{op:['pm', [buffer[0]]],t:Date.now()}});
+				console.log(buffer[0]);
 			}
 			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace], t:Date.now()}});
 			g.trace = [];

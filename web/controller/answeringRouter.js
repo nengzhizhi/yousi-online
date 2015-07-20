@@ -99,15 +99,12 @@ answeringRouter.get('/answerings', function (req, res){
 });
 
 answeringRouter.get('/replay', function (req, res){
-	res.render('answering/replay', {room:{answeringId:req.query.id}, user:req.signedCookies});
-})
-
-answeringRouter.get('/classroom', function (req, res){
-	res.render('answering/classroom', {user:req.signedCookies});
-})
-
-answeringRouter.get('/classroom_s', function (req, res){
-	res.render('answering/classroom_s', {user:req.signedCookies});
+	//TODO check req.query.id
+	if (!req.query.id) {
+		res.redirect('404');
+	} else {
+		res.render('answering/replay', {room:{answeringId:req.query.id}, user:req.signedCookies});
+	}
 })
 
 module.exports = answeringRouter;

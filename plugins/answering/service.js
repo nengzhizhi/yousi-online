@@ -31,7 +31,7 @@ module.exports = function(options) {
 
 	function cmd_getRooms(args, callback){
 		roomModel
-		.find(args.data)
+		.find({status: {$ne: 'closed'}})
 		//.sort({ timestamp : 1 })
 		.exec(function (error, rooms){
 			callback(error, rooms);

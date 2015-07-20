@@ -3,7 +3,9 @@ var express = require('express');
 var seneca = require('seneca')();
 var bodyParser = require('body-parser');
 var cookieParser = require('cookie-parser');
+var expressValidator = require('express-validator');
 var mongoose = require('mongoose');
+var _ = require('lodash');
 mongoose.connect('mongodb://yousi:password@112.124.117.146:27017/yousi');
 
 seneca.use('/plugins/users/api');
@@ -25,5 +27,18 @@ api
     res.header("Content-Type", "application/json;charset=utf-8");
     next();
 })
+.use(expressValidator({
+	customValidators: {
+		isUsername: function(value) {
+			return _.isString(value) && value.match(/^([a-zA-Z0-9]){5,15}$/g);
+		},
+		isPassword: function(value) {
+			return _.isString(value) && value.match(/^((.){6,15})$/g);
+		},
+		isRole: function(value) {
+			return value == 'student' || value == 'teacher';
+		}
+	}
+}))
 .use(seneca.export('web'))
 .listen(2003);

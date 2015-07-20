@@ -38,32 +38,18 @@ function error() {
 		}
 	}
 
-	error.PasswordDiffer = function(err) {
-		return {
-			code : 200004,
-			desc : 'Password is differ with Confirm Password'
-		}
-	}
-
 	error.UnknowRole = function(err) {
 		return {
-			code : 200005,
+			code : 200004,
 			desc : 'Unkown Role'
 		}		
 	}
 
 	error.UsernamePasswordNotMatch = function(err){
 		return {
-			code : 200006,
+			code : 200005,
 			desc : 'Username and password does not match.'
 		}			
-	}
-
-	error.VerifySignFail = function(err){
-		return {
-			code : 200007,
-			desc : 'Sign failed!'
-		}
 	}
 
 	return this;

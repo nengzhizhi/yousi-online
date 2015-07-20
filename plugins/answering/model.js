@@ -11,9 +11,9 @@ var operationSchema = new Schema({
 
 var answeringSchema = new Schema({
 	created : Number,
+	closed : Number,
 	teacher : String,
-	student : String,
-	duration : Number
+	student : String
 });
 
 var roomSchema = new Schema({

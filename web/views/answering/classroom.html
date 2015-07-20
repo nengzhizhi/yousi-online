@@ -14,7 +14,13 @@
   }
   .webCamera{
     width: 150px;height: 120px;border: 1px dashed #ddd;
+  }
 
+  .log{
+    margin-top: 20px;
+    position: relative;
+    border: 1px dashed #ddd;
+    width:150px; height:200px; 
   }
 </style>
 
@@ -41,6 +47,8 @@
           摄像头
         </div>        
       </div>
+
+      <div class="log" id="log"></div>
     </div>
     <div class="col-xs-10" style="border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);">
       <canvas height="800" width="800" id="canvas"></canvas>
@@ -54,10 +62,15 @@
 <script type="text/javascript">
 	info.roomId = "<%-room && room.roomId ? room.roomId : ''%>";
   info.answeringId = "<%-room && room.answeringId ? room.answeringId : '' %>";
-	info.username = 'nengzhizhi', info.role = 'teacher';
+	info.username = "<%-user && user.username ? user.username : ''%>";
+  info.role = "<%-user && user.role ? user.role : ''%>";
+
+  function appendLog(msg) {
+    $('#log').append('<span>' + msg + '</span>');
+  }
 
 	sketch.init('canvas','active');
-	socket.init('112.124.117.146', 10001, 'echo-protocol');
+	socket.init('121.40.174.3', 10001, 'echo-protocol');
 
 
 	$('#pencil').on('click', function(){
