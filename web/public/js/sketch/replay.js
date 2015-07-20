@@ -16,7 +16,7 @@
 	r.getOps = function(data, callback){
 		$.ajax({
 			type : 'POST',
-			url : 'http://vgame.tv/api/answering/getOperations',
+			url : 'http://localhost/api/answering/getOperations',
 			success : function(data) {
 				if (data.code != 200 || data.data.length <= 0) {
 					r.stop();
