@@ -20,10 +20,26 @@ YSCanvas.prototype.initCanvas = function(){
     this.shape =  new fabric.Canvas('page'+this.num+'shape',{ hoverCursor: 'pointer', selection :false, isdrawingmode:false });
     this.shape.on({
        'object:modified': function(e) {
-            // if(para.getValue("identify") == Identify.student) return;
-         
-            // var _obj = this.getActiveObject();
-            // if(!_obj) return;
+            var _obj = this.getActiveObject();
+            if(!_obj) return;
+            var _info = {
+                c:'draw', 
+                data:{
+                    op:[
+                        'mo', 
+                        [     
+                            _obj.get('left'),
+                            _obj.get('top'),
+                            _obj.get('currentWidth'),
+                            _obj.get('currentHeight'),
+                            _obj.get('radius'),
+                            _obj.get('angle')
+                        ], 
+                        _obj.get('id')
+                    ],
+                    t:Date.now()
+                }
+            }
             // var _infor = {
             //     op : "modifyObject",
             //     id : _obj.get('id'),
@@ -39,7 +55,7 @@ YSCanvas.prototype.initCanvas = function(){
             //     timeamp : (new Date()).valueOf(),
             //     radius : _obj.get('radius')
             // };
-    
+            socket.send(_info)
             // operations.push(_infor)
         } 
     })

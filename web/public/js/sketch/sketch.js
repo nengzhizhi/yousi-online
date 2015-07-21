@@ -5,6 +5,7 @@
 	g.mode = 'passive';
 	g.init = function(id, mode) {
 		g.dom = document.getElementById(id);
+		g.ctn = ""
 		g.mode = mode ? mode : 'passive';
 		g.canvasArray = [] 
 		g.canvasArray.push(new YSCanvas(g.dom,g.canvasArray.length + 1))
@@ -12,6 +13,7 @@
 		g.canvas =  g.canvasArray ? g.canvasArray[g.currentIndex].getWriteCanvas() : null;
 		g.ctx = g.canvasArray ? g.canvasArray[g.currentIndex].getWrite() : null;
 		g.fctx = g.canvasArray ? g.canvasArray[g.currentIndex].getShape() : null;
+		g.tid = 0
 		g.strokeStyle = '#000';
 		g.diameter = 2;
 		g.frameInterval = 20;
@@ -138,10 +140,10 @@
 				// }
 				pencil.render(pencil.path);
 				//socket && socket.send({c:'draw', data:{op:['pm', buffer],t:Date.now()}});
-				socket && socket.send({c:'draw', data:{op:['pm', [pencil.path[0]]],t:Date.now()}});
+				socket && socket.send({c:'draw', data:{op:['pm', pencil.path[pencil.path.length-1]],t:Date.now()}});
 				
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace], t:Date.now()}});
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0]], t:Date.now()}});
 			g.trace = [];
 		}
 	})
@@ -203,10 +205,10 @@
 		this.onFrame = function(){
 			if (this.isDrawingMode || eraser.path.length > 0) {
 				eraser.render(eraser.path);
-				eraser.path.length && socket && socket.send({c:'draw', data:{op:['em', eraser.path], t:Date.now()}});
+				eraser.path.length && socket && socket.send({c:'draw', data:{op:['em', eraser.path[eraser.path.length-1]], t:Date.now()}});
 				eraser.path = [];
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace], t:Date.now()}});
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0]], t:Date.now()}});
 			g.trace = [];
 		}		
 	})
@@ -226,8 +228,9 @@
 				this.dom.onmousedown = function(e){
 					this.isDrawingMode = true;
 					rectangle.path.push({x:e.offsetX, y:e.offsetY});
+					g.tid = Date.now()
 					var rect = new fabric.Rect({
-			            id:Date.now(),
+			            id:g.tid,
 			            width:0,
 			            height:0,
 			            left:rectangle.path[0].x,
@@ -279,10 +282,10 @@
 		this.onFrame = function(){
 			if (this.isDrawingMode || rectangle.path.length > 0) {
 				rectangle.render(rectangle.path);
-				rectangle.path.length && socket && socket.send(JSON.stringify({c:'draw', data:['rm', eraser.path, Date.now()]}));
+				rectangle.path.length && socket && socket.send(JSON.stringify({c:'draw', data:['rm', rectangle.path[rectangle.path.length-1], g.tid]}));
 				
 			}
-			g.trace.length && socket && socket.send(JSON.stringify({c:'draw', data:['mm', g.trace, Date.now()]}));
+			g.trace.length && socket && socket.send(JSON.stringify({c:'draw', data:['mm', g.trace[0], Date.now()]}));
 			g.trace = [];
 		}		
 	})
@@ -368,7 +371,7 @@
 
 			if (this.isDrawingMode || circle.path.length > 0) {
 				circle.render(circle.path);
-				circle.path.length && socket && socket.send(JSON.stringify({c:'draw', data:['cm', circle.path, Date.now()]}));
+				circle.path.length && socket && socket.send(JSON.stringify({c:'draw', data:['cm', circle.path[circle.path[circle.path.length-1]], Date.now()]}));
 				
 			}
 			
@@ -458,9 +461,7 @@
 			if (this.isDrawingMode || triangle.path.length > 0) {
 				triangle.render(triangle.path);
 				triangle.path.length && socket && socket.send(JSON.stringify({c:'draw', data:['tm', triangle.path, Date.now()]}));
-				
 			}
-			
 			g.trace.length && socket && socket.send(JSON.stringify({c:'draw', data:['mm', g.trace, Date.now()]}));
 			g.trace = [];
 		}		
@@ -529,7 +530,6 @@
             _line.set('x2',_endPoint.x).set('y2',_endPoint.y).set('originX','center').set('originY','center');
             _line.setCoords();
             g.fctx.renderAll();
-
 		}
 
 		this.onFrame = function(){
@@ -545,3 +545,120 @@
 		}		
 	})
 })(sketch);
+
+(function(g){
+	g.registerToolkit("image", function(){
+		var image = this;
+		image.isEnabled = false;
+		image.path = [];
+		image.id = 'image';
+		this.enable = function(){
+			if (!this.isEnabled) {
+				this.dom = g.dom
+				this.isEnabled = true;
+				this.dom.onmousedown = function(e){
+					this.ctx.selection=true;
+				    var _point = [e.offsetX,e.offsetY];
+				    var _imageUrl = g.ctn;
+				    if(!_imageUrl || _imageUrl == '') return;
+				    var img = new Image();
+				    img.src = _imageUrl;
+				    img.onload = function(){
+				        var _img = new fabric.Image(img,{
+				            id:Date.now(),
+				            radius:0,
+				            left:_point[0],
+				            top:_point[0],
+				            scaleX:1,
+				            scaleY:1,
+				            originX :'center',
+				            originY :'center',
+				            selectable:false
+				        });
+				        context.add(_img);
+
+				        
+				    }
+				}
+			}
+		}
+
+		this.disable = function(){
+			this.isEnabled = false;
+			this.dom.onmousemove = null,this.dom.onmouseup = null,this.dom.onmousedown = null;
+		}
+
+		
+	})
+})(sketch);
+
+// (function(g){
+// 	g.registerToolkit("move", function(){
+// 		var image = this;
+// 		this.dom = g.dom
+// 		image.isEnabled = true;
+// 		image.path = [];
+// 		image.id = 'move';
+// 		this.enable = function(){
+// 			$('.canvas-container').css('z-index',10)
+// 	        g.canvasArray[g.currentIndex].getShape().selection=true;
+// 	        var objs = g.canvasArray[g.currentIndex].getShape();
+// 	        var _objs = objs.toObject();
+// 	        var objects = _objs.objects;
+// 	        for(var i=0;i<objects.length;i++){
+// 	            (objs.item(i)).set('selectable',true)
+// 	        }
+// 		}
+
+// 		this.dom.onmousemove = function(e){
+// 			g.trace.push([e.offsetX,e.offsetY])
+// 		}
+
+// 		this.disable = function(){
+// 			$('.canvas-container').css('z-index',6)
+// 	        g.canvasArray[g.currentIndex].getShape().selection=false;
+// 	        var objs = g.canvasArray[g.currentIndex].getShape();
+// 	        var _objs = objs.toObject();
+// 	        var objects = _objs.objects;
+// 	        for(var i=0;i<objects.length;i++){
+// 	            (objs.item(i)).set('selectable',false)
+// 	        }
+// 		}
+// 		this.frameHandle = setInterval(this.onFrame, g.frameInterval||20);
+// 		this.onFrame = function(){
+// 			g.trace.length && socket && socket.send(JSON.stringify({c:'draw', data:['mm', g.trace, Date.now()]}));
+// 			g.trace = [];
+// 		}	
+// 	})
+// })(sketch);
+
+
+// (function(g){
+// 	g.registerToolkit("modifyObject", function(){
+// 		console.log("aaaaaaa")
+// 		g.canvasArray[g.currentIndex].getShape().on({
+// 	       'object:modified': function(e) {
+// 	         	if (g.mode && g.mode == 'active') { 
+// 	         		var _obj = this.getActiveObject();
+// 		            if(!_obj) return;
+// 		            var _infor = {
+// 		                op : "modifyObject",
+// 		                id : _obj.get('id'),
+// 		                height : _obj.get('height'),
+// 		                width : _obj.get('width'),
+// 		                x : _obj.get('left'),
+// 		                y :　_obj.get('top'),
+// 		                angle : _obj.get('angle'),
+// 		                scaleX : _obj.get('scaleX'),
+// 		                scaleY : _obj.get('scaleY'),
+// 		                currentHeight : _obj.get('currentHeight'),
+// 		                currentWidth : _obj.get('currentWidth'),
+// 		                timeamp : (new Date()).valueOf(),
+// 		                radius : _obj.get('radius')
+// 		            };
+// 		            console.log(_info)
+// 	         	}
+// 	        } 
+//    		})
+// 	})
+// })(sketch);

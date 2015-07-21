@@ -47,6 +47,7 @@
           <button type="button" class="btn btn-default" id="circle"><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></button>
           <button type="button" class="btn btn-default" id="triangle"><span class="glyphicon glyphicon-eject" aria-hidden="true"></span></button>
           <button type="button" class="btn btn-default" id="line"><span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span></button>
+          <button type="button" class="btn btn-default" id="move"><span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span></button>
         </div>
         <select class="form-control" id="stroke">
           <option>红色</option>
@@ -63,7 +64,7 @@
           <option>透明</option>
         </select>
         <div class="question" id="question">
-        提问图片
+        <img src="http://7xk9po.com1.z0.glb.clouddn.com/FiNj9sbrEp4fzacK7jyBplrFIPE-">
         </div>
 
       <div class="camera-container">
@@ -101,7 +102,7 @@
   }
 
 	sketch.init('canvas',"active");
-	socket.init('127.0.0.1', 10001, 'echo-protocol');
+	socket.init('121.40.174.3', 10001, 'echo-protocol');
 
 	$('#pencil').on('click', function(){
 	  sketch.setToolkit('pencil');
@@ -122,5 +123,64 @@
   $('#line').on('click', function(){
     sketch.setToolkit('line');
   }) 
+   $('#move').on('click', function(){
+    sketch.setToolkit('move');
+  }) 
+
+  var dragEle = null;
+
+  $('#question').on('dragstart','img',function(e){
+      dragEle = e.target;
+
+      sketch.ctn = e.target.src
+  });
+
+  $('#question img').on('dragend','img',function(e){
+      dragEle = null;
+      return false;
+  });
+
+  $("#canvas")[0].ondrop = function(e){
+        
+        if(dragEle){
+            console.log("offsetX",e.offsetX)
+            var img = new Image();
+            img.src = sketch.ctn;
+            sketch.tid = Date.now()
+            img.onload = function(){
+                var _img = new fabric.Image(img,{
+                    id:sketch.tid,
+                    radius:0,
+                    left:e.offsetX,
+                    top:e.offsetY,
+                    scaleX:1,
+                    scaleY:1,
+                    originX :'center',
+                    originY :'center',
+                    selectable:false
+                });
+                sketch.fctx.add(_img);
+                socket && socket.send({
+                  c:'draw', 
+                  data:{op:['im', [e.offsetX,e.offsetY,_img.get('currentWidth'),_img.get('currentHeight')],sketch.tid,sketch.ctn], t:sketch.tid}
+                })
+            }
+            
+
+        }
+        return false
+    }
+
+    $('#canvas')[0].ondragover = function(ev) {
+        /*拖拽元素在目标元素头上移动的时候*/
+        ev.preventDefault();
+        return true;
+    };
+
+    $('#canvas')[0].ondragenter = function(ev) {
+        /*拖拽元素进入目标元素头上的时候*/
+        return true;
+    };
+
 </script>
 <% include ../footer.html %>

@@ -38,6 +38,7 @@
 	}
 
 	s.send = function(json) {
+		console.log("send",JSON.stringify(json))
 		s.ws && s.ws.send(JSON.stringify(json)); 
 	}
 })(socket);
