@@ -26,7 +26,8 @@
 				console.log('message.data.username = ' + message.data.username);
 				if (message.data.username != info.username) {
 					appendLog('[' + message.data.username + ']加入房间');
-				}			
+				}
+				setAnsweringStatus('answering');		
 			} else if(message.c == 'upload_push') {
 				$('#question').html('<img src="' + message.data.url +'"></img>');
 			} else if(message.c == 'leave_push') {

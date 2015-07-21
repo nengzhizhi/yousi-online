@@ -13,7 +13,7 @@
     color:#ddd;
   }
   .webCamera{
-    width: 150px;height: 120px;border: 1px dashed #ddd;
+    width: 150px;height: 120px;border: 1px dashed #ddd;text-align: center; vertical-align: middle;line-height:120px;
   }
 
   .log{
@@ -25,9 +25,16 @@
 </style>
 
 <div class="container">
-  <h3 id="overview" class="page-header">答疑房间（教师端）<a class="btn btn-danger" href="http://vgame.tv/api/answering/leaveRoom?id=<%-room.roomId %>" >
-        <sapn>结束答疑</sapn>
-      </a></h3>
+  <h4 id="overview" class="page-header">答疑房间（教师端）
+    <span id="answeringStatus">
+    <% if (room.status == 'waiting') { %>
+      <span class="label label-default">等待中...</span>
+    <% } else if (room.status == 'answering'){ %>
+      <span class="label label-success">正在答疑</span>    
+    <% } %>
+    </span>
+    <a class="btn btn-default" id="endAnswering" href="javascript:void(0)" >离开房间</a>
+  </h4>
   <div class="row" style="">
     <div class="col-xs-2">
         <div class="btn-group">
@@ -50,8 +57,10 @@
 
       <div class="log" id="log"></div>
     </div>
-    <div class="col-xs-10" style="border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);">
-      <canvas height="800" width="800" id="canvas"></canvas>
+    <div class="col-xs-10" style="width:960px;height:600px;border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);">
+      <canvas height="600" width="960" id="canvas" position="absolute" style="position:absolute;z-index:2">
+      </canvas>
+      <canvas height="600" width="960" id="canvasBg" position="absolute" style="position:absolute;z-index:1"></canvas>
     </div>
   </div>
 </div>
@@ -69,8 +78,16 @@
     $('#log').append('<span>' + msg + '</span>');
   }
 
+  function setAnsweringStatus(status){
+    if (status == 'answering') {
+      $('#answeringStatus').html('<span class="label label-success">正在答疑</span>');
+    } else if(status == 'waiting') {
+      $('#answeringStatus').html('<span class="label label-default">等待中...</span>');
+    }
+  }
+
 	sketch.init('canvas','active');
-	socket.init('121.40.174.3', 10001, 'echo-protocol');
+	socket.init('localhost', 10001, 'echo-protocol');
 
 
 	$('#pencil').on('click', function(){
@@ -79,5 +96,16 @@
 	$('#eraser').on('click', function(){
 	  sketch.setToolkit('eraser');
 	})
+
+  $('#endAnswering').on('click', function(){
+    socket && socket.send({c:'leave', data: {
+      roomId: info.roomId, 
+      answeringId: info.answeringId,
+      username: info.username,
+      role: info.role
+    }});
+
+    location.href = '/answering/rooms';  
+  });
 </script>
 <% include ../footer.html %>

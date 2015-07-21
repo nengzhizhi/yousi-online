@@ -26,9 +26,7 @@
 
 <div class="container">
   <h3 id="overview" class="page-header">答疑房间（学生端）
-    <a class="btn btn-danger" href="http://vgame.tv/api/answering/leaveRoom?id=<%-room.roomId %>" >
-        <sapn>结束答疑</sapn>
-      </a></h3>
+      <a class="btn btn-default" id="endAnswering" href="javascript:void(0)" >结束答疑</a></h3>
   <div class="row" style="">
     <div class="col-xs-2">
       <div id="container">
@@ -72,6 +70,17 @@
 	
 	sketch.init('canvas', 'passive');
 	socket.init('121.40.174.3', 10001, 'echo-protocol');
+
+  $('#endAnswering').on('click', function(){
+    socket && socket.send({c:'leave', data: {
+      roomId: info.roomId, 
+      answeringId: info.answeringId,
+      username: info.username,
+      role: info.role
+    }});
+
+    location.href = '/answering/rooms'; 
+  });  
 </script>
 <input type="hidden" id="domain" value="http://qiniu-plupload.qiniudn.com/">
 <input type="hidden" id="uptoken_url" value="http://vgame.tv/api/common/upload/token">

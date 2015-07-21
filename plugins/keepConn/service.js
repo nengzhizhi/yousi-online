@@ -5,6 +5,8 @@ var cp = require('child_process');
 module.exports = function(options) {
 	var seneca = this;
 
+	seneca.use('/plugins/answering/service');
+
 	seneca.add({role: 'keepConn', cmd: 'init'}, cmd_init);
 
 	function cmd_init(args, callback){
@@ -79,17 +81,41 @@ module.exports = function(options) {
 					username: req.data.username				
 				}
 			}
-			broadcast(connection.roomId, message, type === 'ws' ? [connection.token] : [connection]);			
+			broadcast(req.data.roomId, message, type === 'ws' ? [connection.token] : [connection]);			
+		}
+		else if( req.c == 'leave') {
+			//删除房间里用户名对应的websocket连接
+			delWsConnections(req.data.roomId, req.data.username);
+			updateConnections(req.data.roomId);
+			//删除房间中用户名对应的socket连接
+			seneca.socketProc.send({cmd: 'multiDel', data: {
+				roomId: req.data.roomId,
+				username: req.data.username
+			}});
+
+			var message = {c: 'leave_push', data: {username: req.data.username}};
+			broadcast(req.data.roomId, message);
+
+			//更新数据库中房间对应的状态
+			seneca.act({role: 'answering', cmd: 'updateRoom',
+				queryData: {_id: req.data.roomId},
+				updateData: {
+					status: req.data.role=='teacher' ? 'closed' : 'waiting', 
+					answeringId: null,
+					student: null
+				}
+			})
 		}
 		else if (req.c == 'draw') {
 			broadcast(connection.roomId, req, type === 'ws' ? [connection.token] : [connection]);
 
+			//FIXME reduce save times
 			if (connection.answeringId) {
 				seneca.act({role: 'answering', cmd: 'saveOperations', data: {
 					answeringId: connection.answeringId,
 					op: req.data.op,
 					t: req.data.t
-				})
+				}})
 			}
 		}
 		else if (req.c == 'upload') {
@@ -101,22 +127,24 @@ module.exports = function(options) {
 			}
 			broadcast(roomId, message);
 		}
+		//console.log('command: ' + req.c);
+		//showConnectionStatus();
 	}
 
 	function broadcast(roomId, message, omit){
+		//broadcast in websocket connections
+		for (var i in seneca.wsConnections[roomId]) {
+			if (!omit || omit.indexOf(seneca.wsConnections[roomId][i].token) < 0) {
+				seneca.wsConnections[roomId][i].sendUTF(JSON.stringify(message));
+			}
+		}		
+
 		//broadcast in socket connections
 		seneca.socketProc && seneca.socketProc.send({cmd: 'broadcast', data: {
 			roomId: roomId,
 			message: message,
 			omit: omit
 		}})
-
-		//broadcast in websocket connections
-		for (var i in seneca.wsConnections[roomId]) {
-			if (!omit || omit.indexOf(seneca.wsConnections[roomId][i].token) < 0 ) {
-				seneca.wsConnections[roomId][i].sendUTF(JSON.stringify(message));
-			}
-		}
 	}
 
 	function addWsConnection(roomId, connection){
@@ -127,6 +155,7 @@ module.exports = function(options) {
 			seneca.wsConnections[roomId].push(connection);
 	}
 
+	//delete specified connection in room
 	function delWsConnection(roomId, connection){
 		if (roomId && seneca.wsConnections[roomId]) {
 			var inx = seneca.wsConnections[roomId].indexOf(connection); 
@@ -134,6 +163,23 @@ module.exports = function(options) {
 
 			seneca.wsConnections[roomId].length <= 0 
 				&& delete seneca.wsConnections[roomId];
+		}
+	}
+
+	//delete connections of username in room
+	function delWsConnections(roomId, username) {
+		for (var i in seneca.wsConnections[roomId]) {
+			if (username && seneca.wsConnections[roomId][i].username == username) {
+				seneca.wsConnections[roomId][i].close();
+				seneca.wsConnections[roomId].splice(i, 1);
+
+				if (seneca.wsConnections[roomId].length == 0) {
+					//TODO 
+					//房间所有老师的连接都断开，答疑结束
+
+					delete seneca.wsConnections[roomId];
+				}
+			}
 		}
 	}
 
@@ -148,5 +194,21 @@ module.exports = function(options) {
 			roomId: roomId,
 			answeringId: answeringId
 		}});
+	}
+
+	function showConnectionStatus(){
+		console.log('websocket statistic!');
+		console.log("----------------------------------------------------------------------");
+		for(var i in seneca.wsConnections) {	
+			console.log("roomId: " + i);
+			console.log("ws connection count: " + seneca.wsConnections[i].length);
+
+			for (var j in seneca.wsConnections[i]) {
+				console.log('connection No.' + j);
+				console.log('\tusername: ' + seneca.wsConnections[i][j].username);
+				console.log('\tansweringId: ' + seneca.wsConnections[i][j].answeringId);
+			}
+		}
+		console.log("----------------------------------------------------------------------");
 	}
 }

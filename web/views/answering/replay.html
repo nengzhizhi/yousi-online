@@ -30,8 +30,10 @@
         </tbody>  
       </table>         
     </div>
-    <div class="col-xs-10" style="border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);">
-      <canvas height="800" width="800" id="canvas"></canvas>
+    <div class="col-xs-10" style="width:960px;height:600px;border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);">
+      <canvas height="600" width="960" id="canvas" position="absolute" style="position:absolute;z-index:2">
+      </canvas>
+      <canvas height="600" width="960" id="canvasBg" position="absolute" style="position:absolute;z-index:1"></canvas>
     </div>
   </div>
 </div>

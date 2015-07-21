@@ -23,7 +23,7 @@
 				} else {
 					r.offset += data.data.length;
 					r.ops.length == 0 ? r.ops = data.data : r.ops.concat(data.data);
-					r.frameHandle = setInterval(r.frameHandle, r.frameInterval);
+					r.frameHandle = setInterval(r.frameHandleFunc, r.frameInterval);
 				}
 			},
 			error : function(){
@@ -38,7 +38,7 @@
 		})
 	}
 
-	r.frameHandle = function(){
+	r.frameHandleFunc = function(){
 		var op = r.getOp();
 		op ? sketch && sketch.onCommand(op.op) : r.stop();
 	}
