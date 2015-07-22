@@ -16,6 +16,17 @@
     width: 150px;height: 120px;border: 1px dashed #ddd;
   }
 
+  #fillTxtdiv{
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+  }
+
+  #fillTxt{
+      outline: none;
+  }
   .log{
     margin-top: 20px;
     position: relative;
@@ -78,7 +89,11 @@
 
       <div class="log" id="log"></div>
     </div>
-    <div style="border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);width:900px;height:600px;float:left" id = "canvas">
+    
+    <div style="border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);width:900px;height:600px;float:left;position:relative"  id = "canvas">
+    <div id="fillTxtdiv" >
+      <textarea id="fillTxt" class="form-control" row = "1"></textarea><button class="btn btn-default" row = "1" id="createText">确定</button><button id="cancelText" class="btn btn-default">取消</button>
+    </div>
       <!-- <canvas height="800" width="800" id="canvas"></canvas> -->
     </div>
   </div>
@@ -86,7 +101,6 @@
 
 <script type="text/javascript" src="/js/info.js"></script>
 <script type="text/javascript" src="/js/sketch/fabric.min.js"></script>
-
 <script type="text/javascript" src="/js/sketch/socket.js"></script>
 <script type="text/javascript" src="/js/sketch/canvas.js"></script>
 <script type="text/javascript" src="/js/sketch/sketch.js"></script>
@@ -102,14 +116,17 @@
   }
 
 	sketch.init('canvas',"active");
-	socket.init('121.40.174.3', 10001, 'echo-protocol');
-
+	// socket.init('121.40.174.3', 10001, 'echo-protocol');
+  socket.init('172.16.3.243', 10001, 'echo-protocol');
 	$('#pencil').on('click', function(){
 	  sketch.setToolkit('pencil');
 	});
 	$('#eraser').on('click', function(){
 	  sketch.setToolkit('eraser');
 	})
+  $('#font').on('click', function(){
+    sketch.setToolkit('font');
+  })
   $('#rectangle').on('click', function(){
     sketch.setToolkit('rectangle');
   })
@@ -117,13 +134,12 @@
     sketch.setToolkit('circle');
   }) 
   $('#triangle').on('click', function(){
-    console.log("triangle")
     sketch.setToolkit('triangle');
   }) 
   $('#line').on('click', function(){
     sketch.setToolkit('line');
   }) 
-   $('#move').on('click', function(){
+  $('#move').on('click', function(){
     sketch.setToolkit('move');
   }) 
 

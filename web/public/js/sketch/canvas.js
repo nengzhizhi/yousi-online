@@ -32,7 +32,7 @@ YSCanvas.prototype.initCanvas = function(){
                             _obj.get('top'),
                             _obj.get('currentWidth'),
                             _obj.get('currentHeight'),
-                            _obj.get('radius'),
+                            _obj.get('radius')||0,
                             _obj.get('angle')
                         ], 
                         _obj.get('id')
@@ -40,23 +40,9 @@ YSCanvas.prototype.initCanvas = function(){
                     t:Date.now()
                 }
             }
-            // var _infor = {
-            //     op : "modifyObject",
-            //     id : _obj.get('id'),
-            //     height : _obj.get('height'),
-            //     width : _obj.get('width'),
-            //     x : _obj.get('left'),
-            //     y :　_obj.get('top'),
-            //     angle : _obj.get('angle'),
-            //     scaleX : _obj.get('scaleX'),
-            //     scaleY : _obj.get('scaleY'),
-            //     currentHeight : _obj.get('currentHeight'),
-            //     currentWidth : _obj.get('currentWidth'),
-            //     timeamp : (new Date()).valueOf(),
-            //     radius : _obj.get('radius')
-            // };
+           
             socket.send(_info)
-            // operations.push(_infor)
+          
         } 
     })
 
