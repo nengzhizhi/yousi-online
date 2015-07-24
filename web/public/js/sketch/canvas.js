@@ -28,19 +28,23 @@ YSCanvas.prototype.initCanvas = function(){
                     op:[
                         'mo', 
                         [     
-                            _obj.get('left'),
-                            _obj.get('top'),
-                            _obj.get('currentWidth'),
-                            _obj.get('currentHeight'),
-                            _obj.get('radius')||0,
-                            _obj.get('angle')
+                            Math.floor(_obj.get('left')),
+                            Math.floor(_obj.get('top')),
+                            Math.floor(_obj.get('currentWidth')),
+                            Math.floor(_obj.get('currentHeight')),
+                            Math.floor(_obj.get('radius'))||0,
+                            Math.floor(_obj.get('angle')),
+                            _obj.get('scaleX'),
+                            _obj.get('scaleY'),
+                            Math.floor(_obj.get('width')),
+                            Math.floor(_obj.get('height'))
                         ], 
                         _obj.get('id')
                     ],
                     t:Date.now()
                 }
             }
-           
+            console.log(JSON.stringify(_info))
             socket.send(_info)
           
         } 

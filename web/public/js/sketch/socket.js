@@ -19,8 +19,8 @@
 
 		s.ws.onmessage = function(event) {
 			var message = JSON.parse(event.data);
-			console.log(event.data);
 			if (message.c == 'draw') {
+				console.log(JSON.stringify(message))
 				sketch && sketch.mode == 'passive' && sketch.onCommand(message.data.op);
 			} else if(message.c == 'join_push') {
 				console.log('message.data.username = ' + message.data.username);
@@ -38,7 +38,7 @@
 	}
 
 	s.send = function(json) {
-		console.log(JSON.stringify(json))
-		s.ws && s.ws.send(JSON.stringify(json)); 
+		//console.log(JSON.stringify(json))
+		 s.ws.send(JSON.stringify(json)); 
 	}
 })(socket);
