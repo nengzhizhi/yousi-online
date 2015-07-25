@@ -175,7 +175,7 @@
   $("#lineWidth").on("change",function(){
     var width = $(this).find("option:selected").attr("type")
     sketch.setLineWidth(width) 
-    socket && socket.send({c:'draw', data:{op:['lw',width],t:Date.now()}});
+    socket && socket.send({c:'draw', data:{op:['lw',sketch.diameter],t:Date.now()}});
   })
 
   var dragEle = null;

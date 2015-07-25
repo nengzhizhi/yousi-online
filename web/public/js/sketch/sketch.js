@@ -148,8 +148,8 @@
 				var point = [c.path[0],c.path[1]]
 				console.log("c.path",c.path)
 				g.Toolkit && g.Toolkit.id != 'font' && g.setToolkit('font');
-				g.tid = c.path[4]
-				g.ctn = c.path[5]
+				g.tid = c.tid
+				g.ctn = c.path[4]
 				console.log("g.ctn:",g.ctn)
 				console.log("g.tid:",g.tid)
 				c.path && g.Toolkit.render(point)
@@ -880,7 +880,15 @@
 			var _text = g.fctx.getActiveObject();
 			var info = {
 	            c:'draw', 
-	            data:{op:['fm', [_text.get('left'),_text.get('top'),_text.get('currentWidth'),_text.get('currentHeight'),g.tid,g.ctn]], t:g.tid}
+	            data:{op:['fm', 
+	            				[
+	            					_text.get('left'),
+	            					_text.get('top'),
+	            					_text.get('currentWidth'),
+	            					_text.get('currentHeight'),
+	            					g.ctn
+	            				],
+	            		 g.tid], t:g.tid}
             }
             console.log(JSON.stringify(info))
 		    socket && socket.send(info)
