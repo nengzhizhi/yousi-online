@@ -1,0 +1,7 @@
+#EXTM3U
+#EXT-X-MEDIA-SEQUENCE:140651513
+#EXT-X-TARGETDURATION:2
+#EXTINF:8,
+http://localhost/videojs/1.ogg
+#EXTINF:9,
+http://localhost/videojs/2.ogg

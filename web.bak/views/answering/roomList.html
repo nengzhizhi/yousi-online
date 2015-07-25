@@ -1,0 +1,44 @@
+<% include ../header.html %>
+
+<style type="text/css">
+	th{
+		text-align: left;
+	}
+</style>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12">
+				<h3 id="forms" class="page-header">房间列表：</h3>
+			
+				<table class="table table-striped">
+				<thead>
+					<tr>
+						<th>房间编号</th>
+						<th>房间状态</th>
+						<th>房间老师</th>
+						<th>房间学生</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody>
+					<% for(var i=0;i<rooms.length;i++){ %>
+					<tr>
+						<td><%-rooms[i]._id %></td>
+						<td>
+							<% if (rooms[i].status=='answering') { %>
+								<span class="label label-danger">正在答疑</span>
+							<% } else if(rooms[i].status=='waiting') { %>
+							<span class="label label-success">等待中</span>
+							<% } %>
+						</td>
+						<td><%-rooms[i].teacher %></td>
+						<td><%-rooms[i].student %></td>
+						<td><a href="/answering/room?id=<%-rooms[i]._id %>" class="btn btn-default">进入房间</a></td>
+					</tr>
+					<% } %>
+				</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+<% include ../footer.html %>

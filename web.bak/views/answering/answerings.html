@@ -1,0 +1,34 @@
+<% include ../header.html %>
+<body>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-12">
+				<h3 id="forms" class="page-header">答疑列表：</h3>
+				<table class="table">
+					<thead>
+						<tr>
+							<td>答疑编号</td>
+							<td>答疑时间</td>
+							<td>老师</td>
+							<td>学生</td>
+							<td></td>
+						</tr>
+					</thead>
+					<tbody>
+						<% for(var i=0;i<answerings.length;i++){ %>
+						<tr>
+							<td><%-answerings[i]._id %></td>
+							<td><%-answerings[i].created %></td>
+							<td><%-answerings[i].teacher %></td>
+							<td><%-answerings[i].student %></td>
+							<td><a href="/answering/replay?id=<%-answerings[i]._id %>" class="btn btn-default">回顾答疑</a></td>
+						</tr>
+						<% } %>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+
+<% include ../footer.html %>

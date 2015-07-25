@@ -1,0 +1,52 @@
+<% include ../header.html %>
+
+<div class="container">
+  <h3 id="overview" class="page-header">答疑回顾</h3>
+  <div class="row" style="">
+    <div class="col-xs-2">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>答疑时间</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+          </tr>
+        </tbody>  
+      </table>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>答疑图片</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td></td>
+          </tr>
+        </tbody>  
+      </table>         
+    </div>
+    <div class="col-xs-10" style="width:960px;height:600px;border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);">
+      <canvas height="600" width="960" id="canvas" position="absolute" style="position:absolute;z-index:2">
+      </canvas>
+      <canvas height="600" width="960" id="canvasBg" position="absolute" style="position:absolute;z-index:1"></canvas>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="/js/info.js"></script>
+<script type="text/javascript" src="/js/sketch/sketch.js"></script>
+<script type="text/javascript" src="/js/sketch/replay.js"></script>
+<script type="text/javascript">
+  info.roomId = "<%-room && room.roomId ? room.roomId : ''%>";
+  info.answeringId = "<%-room && room.answeringId ? room.answeringId : '' %>";
+	info.username = 'nengzhizhi', info.role = 'teacher';
+
+	sketch.init('canvas','passive');
+	replay.start();
+</script>
+<% include ../footer.html %>

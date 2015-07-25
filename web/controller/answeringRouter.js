@@ -4,11 +4,11 @@ var express = require('express');
 var answeringRouter = express.Router();
 
 var RestApi = {
-	getRooms : 'http://vgame.tv/api/answering/getRooms',
-	enterRoom : 'http://vgame.tv/api/answering/enterRoom',
-	leaveRoom : 'http://vgame.tv/api/answering/leaveRoom',
-	getAnswerings : 'http://vgame.tv/api/answering/getAnswerings',
-	getOperations : 'http://vgame.tv/api/answering/getOperations'
+	getRooms : 'http://localhost/api/answering/getRooms',
+	enterRoom : 'http://localhost/api/answering/enterRoom',
+	leaveRoom : 'http://localhost/api/answering/leaveRoom',
+	getAnswerings : 'http://localhost/api/answering/getAnswerings',
+	getOperations : 'http://localhost/api/answering/getOperations'
 };
 
 

@@ -24,13 +24,7 @@
 					<% for(var i=0;i<rooms.length;i++){ %>
 					<tr>
 						<td><%-rooms[i]._id %></td>
-						<td>
-							<% if (rooms[i].status=='answering') { %>
-								<span class="label label-danger">正在答疑</span>
-							<% } else if(rooms[i].status=='waiting') { %>
-							<span class="label label-success">等待中</span>
-							<% } %>
-						</td>
+						<td><%-rooms[i].status %></td>
 						<td><%-rooms[i].teacher %></td>
 						<td><%-rooms[i].student %></td>
 						<td><a href="/answering/room?id=<%-rooms[i]._id %>" class="btn btn-default">进入房间</a></td>

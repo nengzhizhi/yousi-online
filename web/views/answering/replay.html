@@ -1,5 +1,36 @@
 <% include ../header.html %>
 
+<style type="text/css">
+  
+  #fillTxtdiv{
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+  }
+
+  #fillTxt{
+      outline: none;
+  }
+  .log{
+    margin-top: 20px;
+    position: relative;
+    border: 1px dashed #ddd;
+    width:150px; height:200px; 
+  }
+
+  .pagewrite{position: absolute;
+            z-index: 10;}
+  .pagedown{position:absolute;
+            z-index:8;}
+  .pagepaper{position:absolute;
+            z-index: 6;}
+  .pageshape{position:absolute;
+            z-index: 12;}
+
+</style>
+
 <div class="container">
   <h3 id="overview" class="page-header">答疑回顾</h3>
   <div class="row" style="">
@@ -30,15 +61,18 @@
         </tbody>  
       </table>         
     </div>
-    <div class="col-xs-10" style="width:960px;height:600px;border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);">
-      <canvas height="600" width="960" id="canvas" position="absolute" style="position:absolute;z-index:2">
-      </canvas>
-      <canvas height="600" width="960" id="canvasBg" position="absolute" style="position:absolute;z-index:1"></canvas>
+    <div style="border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);width:900px;height:600px;float:left;position:relative"  id = "canvas">
+    <div id="fillTxtdiv" >
+      <textarea id="fillTxt" class="form-control" row = "1"></textarea><button class="btn btn-default" row = "1" id="createText">确定</button><button id="cancelText" class="btn btn-default">取消</button>
+    </div>
+      <!-- <canvas height="800" width="800" id="canvas"></canvas> -->
     </div>
   </div>
 </div>
 
 <script type="text/javascript" src="/js/info.js"></script>
+<script type="text/javascript" src="/js/sketch/fabric.min.js"></script>
+<script type="text/javascript" src="/js/sketch/canvas.js"></script>
 <script type="text/javascript" src="/js/sketch/sketch.js"></script>
 <script type="text/javascript" src="/js/sketch/replay.js"></script>
 <script type="text/javascript">

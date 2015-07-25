@@ -10,7 +10,7 @@ YSDraw.prototype.draw = function(para){
     switch(para.getValue('drawType')) {  //判断操作类型
         case DrawType.line:
             canvasArray[para.getValue('canvasIndex')].getShape.selection = false;
-            this.freeDraw(canvasArray[para.getValue('canvasIndex')].getWrite(),canvasArray[para.getValue('canvasIndex')].getDown(),canvasArray[para.getValue('canvasIndex')].getWriteCanvas())
+            this.freeDraw(.getWrite(),.getDown(),.getWriteCanvas())
             break;
         case DrawType.rectangle:
             this.drawRect(canvasArray[para.getValue('canvasIndex')].getShape())
@@ -75,8 +75,9 @@ YSDraw.prototype.freeDrawFunc = function(context){
         );
         context.stroke();
 }
-
+ this.freeDraw(.getWrite(),.getDown(),.getWriteCanvas())
 YSDraw.prototype.freeDraw = function(context,canvasCtx,temp_canvas){
+    
     if(para.getValue('mouseStatus')==MouseStatus.move){
         this.freeDrawFunc(context);
     }

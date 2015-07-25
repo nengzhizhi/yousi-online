@@ -13,37 +13,74 @@
     color:#ddd;
   }
   .webCamera{
-    width: 150px;height: 120px;border: 1px dashed #ddd;text-align: center; vertical-align: middle;line-height:120px;
+    width: 150px;height: 120px;border: 1px dashed #ddd;
   }
 
+  #fillTxtdiv{
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+  }
+
+  #fillTxt{
+      outline: none;
+  }
   .log{
     margin-top: 20px;
     position: relative;
     border: 1px dashed #ddd;
     width:150px; height:200px; 
   }
+
+  .pagewrite{position: absolute;
+            z-index: 10;}
+  .pagedown{position:absolute;
+            z-index:8;}
+  .pagepaper{position:absolute;
+            z-index: 6;}
+  .pageshape{position:absolute;
+            z-index: 12;}
 </style>
 
 <div class="container">
-  <h4 id="overview" class="page-header">答疑房间（教师端）
-    <span id="answeringStatus">
-    <% if (room.status == 'waiting') { %>
-      <span class="label label-default">等待中...</span>
-    <% } else if (room.status == 'answering'){ %>
-      <span class="label label-success">正在答疑</span>    
-    <% } %>
-    </span>
-    <a class="btn btn-default" id="endAnswering" href="javascript:void(0)" >离开房间</a>
-  </h4>
+  <h3 id="overview" class="page-header">答疑房间（教师端）<a class="btn btn-danger"  id = "endAnswering">
+        <sapn>结束答疑</sapn>
+      </a></h3>
   <div class="row" style="">
     <div class="col-xs-2">
-        <div class="btn-group">
+        <div >
           <button type="button" class="btn btn-default" id="pencil"><span class="glyphicon glyphicon-pencil" aria-hidden="true"></span></button>
           <button type="button" class="btn btn-default" id="eraser"><span class="glyphicon glyphicon-erase" aria-hidden="true"></span></button>
-          <button type="button" class="btn btn-default"><span class="glyphicon glyphicon-font" aria-hidden="true"></span></button>
+          <button type="button" class="btn btn-default" id="font"><span class="glyphicon glyphicon-font" aria-hidden="true"></span></button>
+          <button type="button" class="btn btn-default" id="rectangle"><span class="glyphicon glyphicon-th-large" aria-hidden="true"></span></button>
+          <button type="button" class="btn btn-default" id="circle"><span class="glyphicon glyphicon-play-circle" aria-hidden="true"></span></button>
+          <button type="button" class="btn btn-default" id="triangle"><span class="glyphicon glyphicon-eject" aria-hidden="true"></span></button>
+          <button type="button" class="btn btn-default" id="line"><span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span></button>
+          <button type="button" class="btn btn-default" id="move"><span class="glyphicon glyphicon-resize-full" aria-hidden="true"></span></button>
         </div>
+        <select class="form-control" id="strokeColor">
+          <option type="red">描边红色</option>
+          <option type="green">描边绿色</option>
+          <option type="blue">描边蓝色</option>
+          <option type="black">描边黑色</option>
+          <option type="clear">描边透明</option>
+        </select>
+        <select class="form-control" id="lineWidth">
+          <option type="1">1</option>
+          <option type="2">2</option>
+          <option type="3">3</option>
+        </select>
+        <select class="form-control" id="fillColor">
+          <option type="clear">填充透明</option>
+          <option type="red">填充红色</option>
+          <option type="green">填充绿色</option>
+          <option type="blue">填充蓝色</option>
+          <option type="black">填充黑色</option>
+        </select>
         <div class="question" id="question">
-        提问图片
+         <img src="http://7xk9po.com1.z0.glb.clouddn.com/o_19qvocs6k15pup5nuhu15ip4ev9.png">
         </div>
 
       <div class="camera-container">
@@ -57,17 +94,27 @@
 
       <div class="log" id="log"></div>
     </div>
-    <div class="col-xs-10" style="width:960px;height:600px;border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);">
-      <canvas height="600" width="960" id="canvas" position="absolute" style="position:absolute;z-index:2">
-      </canvas>
-      <canvas height="600" width="960" id="canvasBg" position="absolute" style="position:absolute;z-index:1"></canvas>
+    
+    <div style="border:1px solid #999;left: 0px; top: 0px; background: url(/img/sketch/bg.png);width:900px;height:600px;float:left;position:relative"  id = "canvas">
+    <div id="fillTxtdiv" >
+      <textarea id="fillTxt" class="form-control" row = "1"></textarea><button class="btn btn-default" row = "1" id="createText">确定</button><button id="cancelText" class="btn btn-default">取消</button>
+    </div>
+      <!-- <canvas height="800" width="800" id="canvas"></canvas> -->
     </div>
   </div>
 </div>
 
 <script type="text/javascript" src="/js/info.js"></script>
-<script type="text/javascript" src="/js/sketch/sketch.js"></script>
+<script type="text/javascript" src="/js/sketch/fabric.min.js"></script>
+
+<script type="text/javascript">
+   
+
+</script>
 <script type="text/javascript" src="/js/sketch/socket.js"></script>
+<script type="text/javascript" src="/js/sketch/canvas.js"></script>
+<script type="text/javascript" src="/js/sketch/sketch.js"></script>
+
 <script type="text/javascript">
 	info.roomId = "<%-room && room.roomId ? room.roomId : ''%>";
   info.answeringId = "<%-room && room.answeringId ? room.answeringId : '' %>";
@@ -78,34 +125,104 @@
     $('#log').append('<span>' + msg + '</span>');
   }
 
-  function setAnsweringStatus(status){
-    if (status == 'answering') {
-      $('#answeringStatus').html('<span class="label label-success">正在答疑</span>');
-    } else if(status == 'waiting') {
-      $('#answeringStatus').html('<span class="label label-default">等待中...</span>');
-    }
-  }
+   $('#endAnswering').on('click', function(){
+      socket && socket.send({c:'leave', data: {
+        roomId: info.roomId, 
+        answeringId: info.answeringId,
+        username: info.username,
+        role: info.role
+      }});
+      location.href = '/answering/rooms';  
+  });
 
-	sketch.init('canvas','active');
-	socket.init('localhost', 10001, 'echo-protocol');
-
-
+	sketch.init('canvas',"active");
+	// socket.init('121.40.174.3', 10001, 'echo-protocol');
+  socket.init('172.16.3.244', 10001, 'echo-protocol');
 	$('#pencil').on('click', function(){
 	  sketch.setToolkit('pencil');
 	});
 	$('#eraser').on('click', function(){
 	  sketch.setToolkit('eraser');
 	})
+  $('#font').on('click', function(){
+    sketch.setToolkit('font');
+  })
+  $('#rectangle').on('click', function(){
+    sketch.setToolkit('rectangle');
+  })
+  $('#circle').on('click', function(){
+    sketch.setToolkit('circle');
+  }) 
+  $('#triangle').on('click', function(){
+    sketch.setToolkit('triangle');
+  }) 
+  $('#line').on('click', function(){
+    sketch.setToolkit('line');
+  }) 
+  $('#move').on('click', function(){
+    sketch.setToolkit('move');
+  }) 
+  $("#fillColor").on("change",function(){
+    var color = $(this).find("option:selected").attr("type")
+    sketch.setFillColor(color) 
+    socket && socket.send({c:'draw', data:{op:['fc',color],t:Date.now()}});
+  })
+  $("#strokeColor").on("change",function(){
+    var color = $(this).find("option:selected").attr("type")
+    sketch.setStokeColor(color) 
+    socket && socket.send({c:'draw', data:{op:['sc',color],t:Date.now()}});
+  })
+  $("#lineWidth").on("change",function(){
+    var width = $(this).find("option:selected").attr("type")
+    sketch.setLineWidth(width) 
+    socket && socket.send({c:'draw', data:{op:['lw',sketch.diameter],t:Date.now()}});
+  })
 
-  $('#endAnswering').on('click', function(){
-    socket && socket.send({c:'leave', data: {
-      roomId: info.roomId, 
-      answeringId: info.answeringId,
-      username: info.username,
-      role: info.role
-    }});
+  var dragEle = null;
 
-    location.href = '/answering/rooms';  
+  $('#question').on('dragstart','img',function(e){
+      dragEle = e.target;
+      sketch.ctn = e.target.src
   });
+
+  $('#question img').on('dragend','img',function(e){
+      dragEle = null;
+      return false;
+  });
+
+
+
+  $("#canvas")[0].ondrop = function(e){
+      if(dragEle){
+        var img = new Image();
+        img.src = sketch.ctn;
+        sketch.tid = Date.now()
+        img.onload = function(){
+            var point = [e.offsetX,e.offsetY]
+            sketch.setToolkit('image');
+            sketch.Toolkit.drawImage(img,point)
+            var _img = sketch.fctx.getActiveObject();
+            var info = {
+              c:'draw', 
+              data:{op:['im', [point[0],point[1],_img.get('currentWidth'),_img.get('currentHeight'),sketch.ctn],sketch.tid], t:sketch.tid }
+            }
+            console.log(info)
+            socket && socket.send(info)
+        }
+      }
+      return false
+    }
+
+    $('#canvas')[0].ondragover = function(ev) {
+        /*拖拽元素在目标元素头上移动的时候*/
+        ev.preventDefault();
+        return true;
+    };
+
+    $('#canvas')[0].ondragenter = function(ev) {
+        /*拖拽元素进入目标元素头上的时候*/
+        return true;
+    };
+
 </script>
 <% include ../footer.html %>

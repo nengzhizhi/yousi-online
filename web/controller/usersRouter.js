@@ -6,7 +6,7 @@ var seneca = require('seneca')();
 seneca.use('../plugins/users/service');
 
 var RestApi = {
-	login : 'http://vgame.tv/api/users/login'
+	login : 'http://localhost/api/users/login'
 }
 
 
