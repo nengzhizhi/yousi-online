@@ -3,7 +3,7 @@
 	r.ops = [];
 	r.frameInterval = 20;
 	r.offset = 0;
-	r.blockSize = 10000;
+	r.blockSize = 30000;
 
 	r.start = function(){
 		r.getOps();
@@ -16,14 +16,25 @@
 	r.getOps = function(data, callback){
 		$.ajax({
 			type : 'POST',
-			url : 'http://localhost/api/answering/getOperations',
+			url : 'http://172.16.3.244/api/answering/getOperations',
 			success : function(data) {
 				if (data.code != 200 || data.data.length <= 0) {
 					r.stop();
 				} else {
+					console.log(data.data.length)
 					r.offset += data.data.length;
 					r.ops.length == 0 ? r.ops = data.data : r.ops.concat(data.data);
-					r.frameHandle = setInterval(r.frameHandle, r.frameInterval);
+
+					audio.callback = function(){
+						var op = r.getOp();
+						
+			
+						op ? sketch && sketch.onCommand(op.op) : audio.actions.pause()
+						
+
+					}
+					audio.playWithURL("/js/1.ogg")
+		
 				}
 			},
 			error : function(){
@@ -32,16 +43,17 @@
 			data : {
 				answeringId : info.answeringId,
 				start : r.offset,
-				count : r.blockSize || 10000
+				count : r.blockSize || 30000
 			},
 			dataType : 'json'
 		})
 	}
 
-	r.frameHandle = function(){
-		var op = r.getOp();
-		op ? sketch && sketch.onCommand(op.op) : r.stop();
-	}
+	// r.frameHandle = function(){
+	// 	var op = r.getOp();
+
+	// 	op ? sketch && sketch.onCommand(op.op) : r.stop();
+	// }
 	// //var before = Date.now(),leftValue = 0;
 	// r.frameHandle = function(){
 	// 	//var now = Date.now();

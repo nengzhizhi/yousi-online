@@ -84,12 +84,15 @@
 		switch(width){
 			case "1":
 				g.diameter = g.DrawStokeWidth.level1
+				console.log("console.log(g.diameter)",g.diameter)
 				break;
 			case "2":
 				g.diameter = g.DrawStokeWidth.level2
+				console.log("console.log(g.diameter)",g.diameter)
 				break;
 			case "3":
 				g.diameter = g.DrawStokeWidth.level3
+				console.log("console.log(g.diameter)",g.diameter)
 				break;
 		}
 	}
@@ -99,6 +102,7 @@
 	}
 
 	g.setToolkit = function(t) {
+		
 		g.Toolkit && g.Toolkit.isEnabled && g.Toolkit.disable();
 		delete g.Toolkit;
 		g.Toolkit = new g.toolkit[t]();
@@ -107,7 +111,7 @@
 
 	g.onCommand = function(c) {
 		c= parseCommand(c);
-
+		
 		if (c.type == 'mm') {
 			//移动鼠标
 			g.Toolkit && g.Toolkit.id != 'mousemove' && g.setToolkit('mousemove');
@@ -137,9 +141,10 @@
 			g.Toolkit && g.Toolkit.id != 'line' && g.setToolkit('line');
 			c.path && g.Toolkit.render(c.path);
 		}else if(c.type == 'fc') {
-			console.log(JSON.stringify(c))
+			
 			c.path  && g.setFillColor(c.path)
 		}else if(c.type == "sc") {
+			
 			c.path && g.setStokeColor(c.path)
 		}else if(c.type == "fm") {
 			
@@ -169,6 +174,10 @@
 				}
 				
 			}
+		}else if (c.type == "lw"){
+			console.log(JSON.stringify(c))
+			console.log(c.path)
+			g.diameter = c.path
 		}
 	}
 
@@ -235,6 +244,7 @@
 		}
 		
 		this.render = function(point){
+			
 			pencil.keyPath.push(point);
 			this.ctx.save();
 			this.ctx.lineCap = "round";
@@ -358,9 +368,9 @@
 		rectangle.keyPath = []
 		rectangle.id = 'rectangle';
 		this.enable = function(){
-			if (!this.isEnabled) {
+			if (!this.isEnabled && g.mode && g.mode == 'active') {
 				this.dom = g.dom
-				this.isEnabled = true;
+				
 				this.dom.onmousedown = function(e){
 					this.isDrawingMode = true;
 					g.tid = Date.now()
@@ -380,6 +390,7 @@
 				}
 				this.frameHandle = setInterval(this.onFrame, g.frameInterval||20);
 			}
+			this.isEnabled = true;
 		}
 
 		this.createRectangle = function(path){
@@ -405,6 +416,7 @@
 			this.isEnabled = false;
 			this.path = []
 			this.keyPath = []
+
 			this.dom.onmousemove = null,this.dom.onmouseup = null,this.dom.onmousedown = null;
 			this.frameHandle && clearInterval(this.frameHandle);
 		}
@@ -439,6 +451,7 @@
 			if (this.isDrawingMode || rectangle.path.length > 0) {
 				var path = rectangle.path[rectangle.path.length-1]
 				rectangle.render(path)
+				console.log(JSON.stringify({c:'draw', data:{op:['rm', path, g.tid],t:Date.now()}}))
 				rectangle.path.length && socket && socket.send({c:'draw', data:{op:['rm', path, g.tid],t:Date.now()}});
 			}
 			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now()}});
@@ -455,7 +468,7 @@
 		circle.keyPath = []
 		circle.id = 'circle';
 		this.enable = function(){
-			if (!this.isEnabled) {
+			if (!this.isEnabled && g.mode && g.mode == 'active') {
 				this.dom = g.dom
 				this.isEnabled = true;
 				this.dom.onmousedown = function(e){
@@ -554,7 +567,7 @@
 		triangle.keyPath = []
 		triangle.id = 'triangle';
 		this.enable = function(){
-			if (!this.isEnabled) {
+			if (!this.isEnabled && g.mode && g.mode == 'active') {
 				this.dom = g.dom
 				this.isEnabled = true;
 				this.dom.onmousedown = function(e){
@@ -652,7 +665,7 @@
 		line.keyPath = []
 		line.id = 'line';
 		this.enable = function(){
-			if (!this.isEnabled) {
+			if (!this.isEnabled && g.mode && g.mode == 'active') {
 				this.dom = g.dom
 				this.isEnabled = true;
 				this.dom.onmousedown = function(e){
@@ -779,13 +792,13 @@
 
 (function(g){
 	g.registerToolkit("move", function(){
-		var image = this;
+		var move = this;
 		this.dom = g.dom
-		image.isEnabled = false;
-		image.path = [];
-		image.id = 'move';
+		move.isEnabled = false;
+		move.path = [];
+		move.id = 'move';
 		this.enable = function(){
-			image.isEnabled = true
+			move.isEnabled = true
 			$('.canvas-container').css('z-index',10)
 	        g.canvasArray[g.currentIndex].getShape().selection=true;
 	        var objs = g.canvasArray[g.currentIndex].getShape();
@@ -801,7 +814,7 @@
 		}
 
 		this.disable = function(){
-			image.isEnabled = false
+			move.isEnabled = false
 			$('.canvas-container').css('z-index',6)
 	        g.canvasArray[g.currentIndex].getShape().selection=false;
 	        var objs = g.canvasArray[g.currentIndex].getShape();
@@ -816,7 +829,7 @@
 
 		this.frameHandle = setInterval(this.onFrame, g.frameInterval||20);
 		this.onFrame = function(){
-			g.trace.length && socket && socket.send(JSON.stringify({c:'draw', data:['mm', g.trace, Date.now()]}));
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now()}});
 			g.trace = [];
 		}	
 	})
@@ -888,7 +901,7 @@
 	            					_text.get('currentHeight'),
 	            					g.ctn
 	            				],
-	            		 g.tid], t:g.tid}
+	            		 g.tid], t:Date.now()}
             }
             console.log(JSON.stringify(info))
 		    socket && socket.send(info)
