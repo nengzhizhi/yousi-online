@@ -13,7 +13,7 @@ module.exports = function(options) {
 		app.post('/api/answering/openRoom', onOpenRoom);
 		app.post('/api/answering/closeRoom', onCloseRoom);				
 		app.post('/api/answering/enterRoom', onEnterRoom);
-		app.post('/api/answering/getRoom', onGetRoom);
+		app.post('/api/answering/getRoomByUsername', onGetRoomByUsername);
 
 		app.post('/api/answering/leaveRoom', onleaveRoom);
 		app.post('/api/answering/closeRoom', onCloseRoom);
@@ -22,7 +22,8 @@ module.exports = function(options) {
 
 		app.post('/api/answering/addAudioSlice', onAddAudioSlice);
 		app.post('/api/answering/concatAudioSlice', onConcatAudioSlice);
-		app.get('/api/answering/concatFinishCallback', onConcatFinishCallback);
+		app.post('/api/answering/concatCallback', onConcatCallback);
+		app.post('/api/answering/getAudio', onGetAudio);
 	})});
 
 	seneca.use('/plugins/users/service');
@@ -181,28 +182,31 @@ module.exports = function(options) {
 	/**
 	 * Description: 获取房间信息
 	 *
-	 * @param roomId: 房间编号
+	 * @param roomId: 房主用户名
 	 *
 	**/
-	function onGetRoom(req, res){
-		req.body.roomId && req.sanitize('roomId').escape().trim();
-		req.checkBody('roomId', '').isObjectId();
-
-		if (!req.signedCookies) {
-			res.end(JSON.stringify(error.NotLogin()));
-			return;		
-		}
+	function onGetRoomByUsername(req, res){
+		req.body.username && req.sanitize('username').escape().trim();
+		//req.checkBody('roomId', '').isUsername();
 
 		seneca.act({
 			role: 'answering', cmd: 'getRoom',
 			data: {
-				roomId: req.body.roomId
+				teacher: req.body.username
 			}
 		}, function (err, result) {
-			if (err)
+			if (err || _.isEmpty(result))
 				res.end(JSON.stringify(error.PermissonDeny()));
 			else
-				res.end(JSON.stringify({code: 200, data: {room: result}}));			
+				res.end(JSON.stringify({
+					code: 200, 
+					data: {
+						room: {
+							id: result._id,
+							teacher: result.teacher,
+							status: result.status
+						}
+					}}));			
 		})
 	}
 
@@ -289,9 +293,8 @@ module.exports = function(options) {
 	//保存音频片段
 	function onAddAudioSlice (req, res) {
 		//TODO check permission
-		console.log(req.body.key);
-		req.body.roomId && req.sanitize('roomId').escape().trim();
-		req.checkBody('roomId', '').isObjectId();
+		req.body.answeringId && req.sanitize('answeringId').escape().trim();
+		req.checkBody('answeringId', '').isObjectId();
 		req.body.key && req.sanitize('key').escape().trim();
 		req.checkBody('key', '').isTimeStamp();
 
@@ -302,7 +305,7 @@ module.exports = function(options) {
 				answeringId: req.body.answeringId
 			}
 		}, function (err, result) {
-			if (err) {
+			if (err || _.isEmpty(result)) {
 				res.end(JSON.stringify(err));
 			} else {
 				res.end(JSON.stringify({ code: 200 }));
@@ -312,43 +315,68 @@ module.exports = function(options) {
 
 	//拼接音频片段，拼接完成删除片段，更新答疑状态
 	function onConcatAudioSlice (req, res) {
-		//TODO 权限输入检查
-		//TODO 拼接完成后删除片段
-		
-		var spaceName = 'sounds';
-		var fops = 'avconcat/2/format/mp3';
-		var prefix = 'http://7xkjiu.media1.z0.glb.clouddn.com/';
+		req.body.answeringId && req.sanitize('answeringId').escape().trim();
+		req.checkBody('answeringId', '').isObjectId();
+
+		if (req.validationErrors()) {
+			res.end(JSON.stringify(error.BadInput()));
+			return;
+		}
 
 		seneca.act({
-			role: 'answering', cmd: 'getAudioSlice',
-			data: {
-				answeringId: req.answeringId
-			}
-		}, function (err, slices) {
-			if (err || !slices) {
-				res.end(JSON.stringify());
+			role: 'answering', cmd: 'concatAudioSlice',
+			data: { answeringId: req.body.answeringId }
+		}, function (err, result) {
+			if (err || _.isEmpty(result) || result.status != 'success') {
+				res.end(JSON.stringify(error.ConcatAudioSliceFail()));
 			} else {
-				qiniu.conf.ACCESS_KEY = 'zQKgGIPr-OBfpGn82vgqGF8iPeZO6qwO9LMtaJsk';
-				qiniu.conf.SECRET_KEY = '5FFoL8KBg-9l1AMEoaXIuIjKbqYlgn0eJ_y7LNhn';
-
-				for (var i; i < keys; i++) {
-					fops = fops + '/' + qiniu.util.urlsafeBase64Encode(prefix + keys[i]);
-				}
-
-				var ops = { pipeline: 'soundsConcat' };
-
-				qiniu.fop.pfop(spaceName, keys[0], fops, ops, function (err, result, response){
-					res.end(result);
-				})
+				res.end(JSON.stringify({ code: 200 }));
 			}
 		})
 	}
 
-	function onConcatFinishCallback (req, res) {
-		seneca.act({
-			role: 'answering', cmd: 'updateAudioSlice',
-			queryData: { answeringId: req.query.answeringId },
-			updateData: { status: 'concated'}
-		})
+	function onConcatCallback (req, res) {
+		//检查来源
+		req.body.id && req.sanitize('id').escape().trim();
+		req.checkBody('id', 'invalid persistentId').isObjectId();
+		req.body.code && req.sanitize('code').escape().trim();
+
+		if (req.validationErrors()) {
+			res.end(JSON.stringify(error.BadInput()));
+			return;			
+		}	
+
+		if (req.body.code == 0) {
+			//合并成功
+			async.waterfall([
+				function (next) {
+					//更新concat后音频文件名
+					seneca.act({
+						role: 'answering', cmd: 'updateAnswering',
+						queryData: { _id: req.body.id },
+						updateData: { savingStatus: 'success' }
+					}, next)
+				}, function (result, next) {
+					//更新音频状态
+					seneca.act({
+						role: 'answering', cmd: 'updateAudioSlice',
+						queryData: { answeringId: req.query.answeringId },
+						updateData: { status: 'concated' }
+					}, next)
+				}
+			], function (err, result) {
+				if (err || _isEmpty(result)) {
+					res.end();
+				} else {
+					res.end(JSON.stringify({ code: 200 }));
+				}
+			})
+		} else {
+			res.end(JSON.stringify(error.ConcatAudioSliceFail()));
+		}
+	}
+
+	function onGetAudio(req, res){
+
 	}
 }

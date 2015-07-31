@@ -1,6 +1,7 @@
 var async = require('async');
 var error = require('./error.js')();
 var Validator = require('schema-validator');
+var _ = require('lodash');
 
 module.exports = function (options) {
 	var seneca = this;
@@ -64,7 +65,8 @@ module.exports = function (options) {
 						teacher: req.body.username
 					}})
 			}
-			res.end(JSON.stringify(err? error.InternalError(err) : {code:200}));
+			var val = _.isEmpty(err) ? error.InternalError() : { code: 200 };
+			res.end(JSON.stringify(val));
 		})
 	}
 

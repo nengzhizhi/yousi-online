@@ -66,6 +66,13 @@
 		}
 	}
 
+	error.ConcatAudioSliceFail = function(){
+		return {
+			code: 100009,
+			desc: 'Concat audio slice fail!'
+		}
+	}
+
 	return error;
 }
 

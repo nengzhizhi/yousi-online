@@ -7,22 +7,23 @@ seneca.use('../plugins/users/service');
 
 var RestApi = {
 	login: 'http://121.40.174.3/api/users/login',
-	getRoom: 'http://121.40.174.3/api/answering/getRoom'
+	getRoom: 'http://121.40.174.3/api/answering/getRoomByUsername'
 }
 
 
 usersRouter.get('/home', function (req, res) {
 	if (req.signedCookies && req.signedCookies.username) {
-		request.post({
-				url: RestApi.getRoom,
-				headers : { Cookie : req.headers.cookie }
+		request.post(
+			RestApi.getRoom, {
+				form: {
+					username: req.signedCookies.username
+				}
 			}, function (err, response, body) {
+				console.log(body);
 				if (response.statusCode == 200) {
 					var result = JSON.parse(body);
 					if (result.code == 200) {
-						res.render(
-							'users/home', 
-							{ 
+						res.render('users/home', { 
 								user: req.signedCookies, 
 								room: result.data.room 
 							}

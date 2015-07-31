@@ -56,7 +56,7 @@ $(document).ready(function(){
 		$.ajax({
 			url: '/api/answering/openRoom',
 			type: 'POST',
-			data: { roomId: '<%-room && room._id %>' },
+			data: { roomId: '<%-room && room.id %>' },
 			success: function (data) {
 				console.log(data);
 				if (data.code == 200) {
@@ -73,7 +73,7 @@ $(document).ready(function(){
 		$.ajax({
 			url: '/api/answering/closeRoom',
 			type: 'POST',
-			data: { roomId: '<%-room && room._id %>' },
+			data: { roomId: '<%-room && room.id %>' },
 			success: function (data) {
 				console.log(data);
 				if (data.code == 200) {

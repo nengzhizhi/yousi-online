@@ -13,7 +13,9 @@ var answeringSchema = new Schema({
 	created : Number,
 	closed : Number,
 	teacher : String,
-	student : String
+	student : String,
+	audio: String,
+	savingStatus: String
 });
 
 var roomSchema = new Schema({

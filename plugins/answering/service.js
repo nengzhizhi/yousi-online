@@ -1,6 +1,7 @@
 var util = require('util');
 var async = require('async');
 var _ = require('lodash');
+var qiniu = require('qiniu');
 var answeringModel = require('./model.js').answeringModel;
 var roomModel = require('./model.js').roomModel;
 var operationModel = require('./model.js').operationModel;
@@ -33,6 +34,7 @@ module.exports = function(options) {
 	seneca.add({role: 'answering', cmd: 'addAudioSlice'}, cmd_addAudioSlice);
 	seneca.add({role: 'answering', cmd: 'getAudioSlice'}, cmd_getAudioSlice);
 	seneca.add({role: 'answering', cmd: 'updateAudioSlice'}, cmd_updateAudioSlice);
+	seneca.add({role: 'answering', cmd: 'concatAudioSlice'}, cmd_concatAudioSlice);
 
 	function cmd_startAnswering (args, callback) {
 		async.waterfall([
@@ -41,6 +43,7 @@ module.exports = function(options) {
 				answering.student = args.data.student;
 				answering.teacher = args.data.teacher;
 				answering.created = Date.now();
+				answering.audioFile = null;
 
 				answering.save(function (err) {
 					next(err, answering);
@@ -52,55 +55,6 @@ module.exports = function(options) {
 			.update({ answeringId: answering._id }, function (err, result) {
 				callback(err, answering);
 			})
-		})
-	}
-
-	//结束答疑，发送concat指令
-	function cmd_finishAnswering (args, callback) {
-		var answeringId = args.data.answeringId;
-
-		//TODO 在配置文件或者配置服务中读取
-		var spacename = 'sounds';
-		var prefix = 'http://7xkjiu.media1.z0.glb.clouddn.com/';
-		var ACCESS_KEY = 'zQKgGIPr-OBfpGn82vgqGF8iPeZO6qwO9LMtaJsk';
-		var SECRET_KEY = '5FFoL8KBg-9l1AMEoaXIuIjKbqYlgn0eJ_y7LNhn';
-		var pipeline = 'soundsConcat';
-		var notifyURL = 'http://121.40.174.3/api/answering/concatFinishCallback';
-
-		async.waterfall([
-			function (next) {
-				seneca.act({
-					role: 'answering', cmd: 'getAudioSlice',
-					data: { answeringId: answeringId }
-				}, next)
-			}, function (slices, next) {
-				if (!_.isEmpty(slices)) {
-					qiniu.conf.ACCESS_KEY = ACCESS_KEY;
-					qiniu.conf.SECRET_KEY = SECRET_KEY;
-
-					var concat_fops = 'avconcat/2/format/mp3';
-					for (var i = 0; i < slices.length; i++) {
-						concat_fops = concat_fops + '/' + qiniu.util.urlsafeBase64Encode(prefix + slices[i].key);
-					}
-
-					var ops = { 
-						pipeline: pipeline,
-						notifyURL: notifyURL + '?id=' + answeringId
-					};
-
-					qiniu.fop.pfop(
-						spacename, 
-						slices[0].key, 
-						concat_fops, 
-						ops, 
-						function (err, result, response){
-							next(err, null);
-						}
-					)
-				}
-			}
-		], function (err, result) {
-			callback(err, result);
 		})
 	}
 
@@ -124,7 +78,11 @@ module.exports = function(options) {
 					next(err, room);
 				})	
 			}, function (room, next) {
-				_.isEmpty(room) && next(true, null);
+				console.log('room = ' + room);
+				if (_.isEmpty(room)) {
+					next(null, null);
+					return;
+				}
 
 				var updateData = {};
 				if (role == 'teacher') {
@@ -352,4 +310,64 @@ module.exports = function(options) {
 		.where(args.data.queryData)
 		.update(args.data.updateData, callback);
 	}
+
+	//结束答疑，发送concat指令
+	function cmd_concatAudioSlice (args, callback) {
+		var answeringId = args.data.answeringId;
+
+		//TODO 在配置文件或者配置服务中读取
+		var spacename = 'sounds';
+		var prefix = 'http://7xkjiu.media1.z0.glb.clouddn.com/';
+		var ACCESS_KEY = 'zQKgGIPr-OBfpGn82vgqGF8iPeZO6qwO9LMtaJsk';
+		var SECRET_KEY = '5FFoL8KBg-9l1AMEoaXIuIjKbqYlgn0eJ_y7LNhn';
+		var pipeline = 'soundsConcat';
+		var notifyURL = 'http://121.40.174.3/api/answering/concatCallback';
+
+		async.waterfall([
+			function (next) {
+				seneca.act({
+					role: 'answering', cmd: 'getAudioSlice',
+					data: { answeringId: answeringId }
+				}, next)
+			}, function (slices, next) {
+				if (!_.isEmpty(slices)) {
+					//更新答疑状态
+					seneca.act({
+						role: 'answering', cmd: 'updateAnswering',
+						queryData: { _id: answeringId },
+						updateData: { savingStatus: 'saving', audio: slices[0].key }
+					})
+
+					qiniu.conf.ACCESS_KEY = ACCESS_KEY;
+					qiniu.conf.SECRET_KEY = SECRET_KEY;
+
+					var concat_fops = 'avconcat/2/format/mp3';
+					for (var i = 0; i < slices.length; i++) {
+						concat_fops = concat_fops + '/' + qiniu.util.urlsafeBase64Encode(prefix + slices[i].key);
+					}
+
+					var ops = { 
+						pipeline: pipeline,
+						notifyURL: notifyURL + '?id=' + answeringId
+					};
+
+					qiniu.fop.pfop(
+						spacename, 
+						slices[0].key, 
+						concat_fops, 
+						ops, 
+						function (err, result, response){
+							if (_.isEmpty(err) && response.statusCode == 200) {
+								next(null, { status: 'success' });
+							} else {
+								next(null, err);
+							}
+						}
+					)
+				}
+			}
+		], function (err, result) {
+			callback(err, result);
+		})
+	}	
 }
