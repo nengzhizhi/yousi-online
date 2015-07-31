@@ -14,10 +14,21 @@
 					<tr>
 						<th>操作：</th>
 						<td>
-							<a href="#" class="btn btn-primary" id="createRoom">创建房间</a>
 							<a href="/answering/rooms" class="btn btn-default">房间列表</a>
 							<a href="/answering/answerings" class="btn btn-default">答疑列表</a>							
 						</td>
+					</tr>
+					<tr>
+						<th>房间管理：</th>
+						<td>
+							<% if(room && room.status == 'closed'){ %>
+								<a href="#" class="btn btn-primary" id="openRoomBtn">开启房间</a>
+								<a href="#" class="btn btn-primary" id="closeRoomBtn" style="display:none">关闭房间</a>
+							<% } else { %>
+								<a href="#" class="btn btn-primary" id="openRoomBtn" style="display:none">开启房间</a>
+								<a href="#" class="btn btn-primary" id="closeRoomBtn">关闭房间</a>
+ 							<% } %>
+ 						</td>
 					</tr>
 				</table>
 				<% } else { %>
@@ -41,21 +52,40 @@
 
 <script type="text/javascript">
 $(document).ready(function(){
-	$('#createRoom').click(function(){
+	$('#openRoomBtn').click(function(){
 		$.ajax({
-			url : '/api/answering/createRoom',
-			type : 'POST',
-			data : { type : 'answering' },
-			success : function(data){
-				if (data.code == 200){
-					location.href = '/answering/room?id=' + data.data.roomId;
+			url: '/api/answering/openRoom',
+			type: 'POST',
+			data: { roomId: '<%-room && room._id %>' },
+			success: function (data) {
+				console.log(data);
+				if (data.code == 200) {
+					$('#openRoomBtn').hide();
+					$('#closeRoomBtn').show();
 				} else {
-					alert('create room failed!');
+					alert('open room failed!');
 				}
-			}	
+			}
 		})
-	});
-});
+	})
+
+	$('#closeRoomBtn').click(function(){
+		$.ajax({
+			url: '/api/answering/closeRoom',
+			type: 'POST',
+			data: { roomId: '<%-room && room._id %>' },
+			success: function (data) {
+				console.log(data);
+				if (data.code == 200) {
+					$('#openRoomBtn').show();
+					$('#closeRoomBtn').hide();
+				} else {
+					alert('open room failed!');
+				}
+			}
+		})
+	})
+})
 </script>
 
 <% include ../footer.html %>

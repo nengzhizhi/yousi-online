@@ -1,6 +1,7 @@
 var http = require('http');
 var WebSocketServer = require('websocket').server;
 var cp = require('child_process');
+var _ = require('lodash');
 
 module.exports = function(options) {
 	var seneca = this;
@@ -32,16 +33,20 @@ module.exports = function(options) {
 			var connection = request.accept('echo-protocol', request.origin);
 			connection.token = Date.now();
 			console.log((new Date()) + ' Connection accepted.');
-
+			
+			//断开webSocket连接，退出房间
 			connection.on('close', function (reasonCode, description) {
-				delWsConnection(connection.roomId, connection);
+				// delWsConnection(connection.roomId, connection);
+				handleBusinessData('ws', connection, {
+					c: 'interrupt',
+					data: { roomId: connection.roomId, username: connection.username, role: connection.role }
+				});
 			})
 
 			connection.on('message', function (message) {
 				handleBusinessData('ws', connection, message.utf8Data);
 			})
 		})
-
 
 		seneca.socketProc = cp.fork(__dirname + '/socketProc.js');
 		seneca.socketProc.on('message', function (m) {
@@ -53,14 +58,62 @@ module.exports = function(options) {
 	function handleBusinessData(type, connection, rawData){
 		var req = (typeof(rawData)==="string" ? JSON.parse(rawData) : rawData);
 
-		if(req.c == 'join') {
+		console.log(req.c);
+		if (req.c == 'enter') {
+			if (type == 'ws') {
+				connection.roomId = req.data.roomId,
+				connection.username = req.data.username,
+				connection.role = req.data.role;
+
+				addWsConnection(req.data.roomId, connection);
+			} else if (type == 'st') {
+				seneca.socketProc.send({cmd: 'add', data: {
+					roomId: req.data.roomId,
+					username: req.data.username,
+					role: req.data.role,
+					connection: connection
+				}});
+			}
+
+			broadcast(
+				req.data.roomId, {
+					c: 'enter_push', 
+					data: { username: req.data.username, roomId: req.data.roomId }
+				},
+				type === 'ws' ? [connection.token] : [connection]
+			);
+		} else if(req.c == 'answer') {
+			seneca.act({
+				role: 'answering', cmd: 'startAnswering',
+				data: {
+					roomId: req.data.roomId,
+					username: req.data.username,
+					role: req.data.role
+				}
+			}, function (err, result) {
+				if (!_.isEmpty(result)) {
+					//更新答疑Id
+					updateConnections(req.data.roomId, result._id);
+
+					var message = {
+						c: 'answer_push',
+						data: {
+							roomId: req.data.roomId,
+							answeringId: result._id
+						}
+					}
+
+					broadcast(req.data.roomId, message);
+				}
+			})
+		} else if(req.c == 'join') {
 			//TODO 
 			//determine whether can join room！(use signed username)
-
 			if (type == 'ws') {
 				connection.roomId = req.data.roomId, 
 				connection.answeringId = req.data.answeringId,
 				connection.username = req.data.username;
+				connection.role = req.data.role;
 
 				addWsConnection(req.data.roomId, connection);			
 			} else if (type == 'st'){
@@ -68,6 +121,7 @@ module.exports = function(options) {
 					roomId: req.data.roomId, 
 					answeringId: req.data.answeringId,
 					username: req.data.username,
+					role: req.data.role,
 					connection: connection
 				}});
 			}
@@ -75,14 +129,18 @@ module.exports = function(options) {
 			//更新房间的答疑ID
 			req.data.answeringId && updateConnections(req.data.roomId, req.data.answeringId);
 
+			//广播join_push
 			var message = {c: 'join_push', data: {
 					roomId: req.data.roomId, 
 					answeringId: req.data.answeringId,
 					username: req.data.username				
 				}
 			}
-			broadcast(req.data.roomId, message, type === 'ws' ? [connection.token] : [connection]);			
+			broadcast(req.data.roomId, message, type === 'ws' ? [connection.token] : [connection]);
+
+
 		}
+		//处理所有离开房间的事务
 		else if( req.c == 'leave') {
 			//删除房间里用户名对应的websocket连接
 			delWsConnections(req.data.roomId, req.data.username);
@@ -97,15 +155,39 @@ module.exports = function(options) {
 			broadcast(req.data.roomId, message);
 
 			//更新数据库中房间对应的状态
-			seneca.act({role: 'answering', cmd: 'updateRoom',
-				queryData: {_id: req.data.roomId},
-				updateData: {
-					status: req.data.role=='teacher' ? 'closed' : 'waiting', 
-					answeringId: null,
-					student: null
+			seneca.act({role: 'answering', cmd: 'changeRoomState',
+				data: {
+					action: 'leave',
+					roomId: req.data.roomId,
+					role: req.data.role,
+					username: req.data.username
 				}
 			})
 		}
+		//异常中断
+		else if (req.c == 'interrupt') {
+			//删除房间里用户名对应的websocket连接
+			delWsConnections(req.data.roomId, req.data.username);
+			updateConnections(req.data.roomId);
+			//删除房间中用户名对应的socket连接
+			seneca.socketProc.send({cmd: 'multiDel', data: {
+				roomId: req.data.roomId,
+				username: req.data.username
+			}});
+
+			var message = {c: 'interrupt_push', data: {username: req.data.username}};
+			broadcast(req.data.roomId, message);
+
+			//更新数据库中房间对应的状态
+			seneca.act({role: 'answering', cmd: 'changeRoomState',
+				data: {
+					action: 'interrupt',
+					roomId: req.data.roomId,
+					role: req.data.role,
+					username: req.data.username
+				}
+			})
+		} 
 		else if (req.c == 'draw') {
 			broadcast(connection.roomId, req, type === 'ws' ? [connection.token] : [connection]);
 
@@ -127,14 +209,12 @@ module.exports = function(options) {
 			}
 			broadcast(roomId, message);
 		}
-		//console.log('command: ' + req.c);
-		//showConnectionStatus();
 	}
 
 	function broadcast(roomId, message, omit){
 		//broadcast in websocket connections
 		for (var i in seneca.wsConnections[roomId]) {
-			if (!omit || omit.indexOf(seneca.wsConnections[roomId][i].token) < 0) {
+			if (_.isEmpty(omit) || omit.indexOf(seneca.wsConnections[roomId][i].token) < 0) {
 				seneca.wsConnections[roomId][i].sendUTF(JSON.stringify(message));
 			}
 		}		

@@ -5,15 +5,43 @@ var connTemp = {};
 var server = net.createServer();
 
 server.on('connection', function (connection) {
-	connection.on('end', function(){ delConnection(connection.roomId, connection) });
-	connection.on('error', function(){ delConnection(connection.roomId, connection) });
-	connection.on('close', function(){ delConnection(connection.roomId, connection) });
+	//断开房间连接
+	connection.on('end', function(){ 
+		process.send({ 
+			connection: connection.token, 
+			data: {
+				c: 'interrupt',
+				data: { roomId: connection.roomId, username: connection.username, role: connection.role }
+			}
+		})
+	});
+
+	connection.on('error', function(){
+		process.send({ 
+			connection: connection.token, 
+			data: {
+				c: 'interrupt',
+				data: { roomId: connection.roomId, username: connection.username, role: connection.role }
+			}
+		})		
+	});
+	
+	connection.on('close', function(){ 
+		process.send({ 
+			connection: connection.token, 
+			data: {
+				c: 'interrupt',
+				data: { roomId: connection.roomId, username: connection.username, role: connection.role }
+			}
+		})		
+	});
+	
 	connection.token = Date.now();
 	connTemp[connection.token] = connection;
 
 	connection.on('data', function (data) {
 		data = Buffer.isBuffer(data) ? JSON.parse(data.toString()) : JSON.parse(data);
-		process.send({connection: connection.token, data: data});
+		process.send({ connection: connection.token, data: data });
 	})
 //FIXME port dynamic
 }).listen(10002);
@@ -35,8 +63,6 @@ process.on('message', function (m){
 	} else if(m.cmd == 'update') {
 		updateConnections(m.data.roomId, m.data.answeringId);
 	}
-	//console.log('command:' + m.cmd);
-	//showConnectionStatus();
 })
 
 function broadcast(roomId, message, omit){
@@ -84,20 +110,4 @@ function updateConnections(roomId, answeringId){
 	for (var i in connections[roomId]) {
 		connections[roomId][i].answeringId = answeringId;
 	}
-}
-
-function showConnectionStatus(){
-	console.log('socket statistic!');
-	for(var i in connections) {
-		console.log("----------------------------------------------------------------------");
-		console.log("roomId: " + i);
-		console.log("ws connection count: " + connections[i].length);
-
-		for (var j in connections[i]) {
-			console.log('connection No.' + j);
-			console.log('\tusername: ' + connections[i][j].username);
-			console.log('\tansweringId: ' + connections[i][j].answeringId);
-		}
-		console.log("----------------------------------------------------------------------");
-	}	
 }

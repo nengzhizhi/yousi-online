@@ -52,6 +52,20 @@
 		}
 	}
 
+	error.NotLogin = function(){
+		return {
+			code: 100007,
+			desc: 'Please login first!'
+		}
+	}
+
+	error.AlreadyInRoom = function(){
+		return {
+			code: 100008,
+			desc: 'Already enter in room!'
+		}
+	}
+
 	return error;
 }
 

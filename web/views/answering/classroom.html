@@ -107,15 +107,32 @@
 <script type="text/javascript" src="/js/info.js"></script>
 <script type="text/javascript" src="/js/sketch/fabric.min.js"></script>
 
+<!--音频处理-->
+<script type="text/javascript" src="/js/audio/recorder.js"></script>
 <script type="text/javascript">
-   
+function startAudio(){
+  window.AudioContext = window.AudioContext || window.webkitAudioContext;
+  var audioContext = new AudioContext();
+  var audioInput;
 
+  function gotStream(stream){
+    audioInput = audioContext.createMediaStreamSource(stream);
+    recorder.init(audioInput);
+    recorder.record();
+  }
+
+  navigator.getUserMedia = navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+  navigator.getUserMedia({"audio": true}, gotStream, function(e){
+    if (e) console.log('get user media err: ' + JSON.stringify(e))
+  });    
+}
 </script>
 <script type="text/javascript" src="/js/sketch/socket.js"></script>
 <script type="text/javascript" src="/js/sketch/canvas.js"></script>
 <script type="text/javascript" src="/js/sketch/sketch.js"></script>
 
 <script type="text/javascript">
+$(document).ready(function(){
 	info.roomId = "<%-room && room.roomId ? room.roomId : ''%>";
   info.answeringId = "<%-room && room.answeringId ? room.answeringId : '' %>";
 	info.username = "<%-user && user.username ? user.username : ''%>";
@@ -125,7 +142,7 @@
     $('#log').append('<span>' + msg + '</span>');
   }
 
-   $('#endAnswering').on('click', function(){
+  $('#endAnswering').on('click', function(){
       socket && socket.send({c:'leave', data: {
         roomId: info.roomId, 
         answeringId: info.answeringId,
@@ -135,10 +152,11 @@
       location.href = '/answering/rooms';  
   });
 
-	sketch.init('canvas',"active");
-	// socket.init('121.40.174.3', 10001, 'echo-protocol');
-  socket.init('172.16.3.244', 10001, 'echo-protocol');
-	$('#pencil').on('click', function(){
+	socket.init('121.40.174.3', 10001, 'echo-protocol');
+  //socket.init('172.16.3.244', 10001, 'echo-protocol');
+  sketch.init('canvas',"active");
+	
+  $('#pencil').on('click', function(){
 	  sketch.setToolkit('pencil');
 	});
 	$('#eraser').on('click', function(){
@@ -223,6 +241,38 @@
         /*拖拽元素进入目标元素头上的时候*/
         return true;
     };
-
+});
 </script>
+
 <% include ../footer.html %>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('#acceptAnswering').click(function(){
+    //开启答疑操作命令
+    socket.send({
+      c: 'answer', data: {
+        roomId: info.roomId,
+        username: info.username,
+        role: info.role
+      }
+    })
+  })
+})
+</script>
+<div class="modal fade" id="notify" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h3 class="modal-title">新的答疑请求</h3>
+      </div>
+      <div class="modal-body">
+        有学生希望请您答疑
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal" id="acceptAnswering">同意</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal">拒绝</button>
+      </div>
+    </div>
+  </div>
+</div>

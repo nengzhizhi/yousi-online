@@ -19,7 +19,7 @@ var answeringSchema = new Schema({
 var roomSchema = new Schema({
 	created : { type: Date, default: Date.now },
 	type : { type:String, required: false, default: 'answering'},
-	status : { type:String,  required: false, default: 'waiting'},
+	status : { type:String, required: false, default: 'closed'},
 	teacher : String,
 	student : String,
 	answeringId : ObjectId
@@ -34,7 +34,14 @@ var questionSchema = new Schema({
 	meta : String
 });
 
+var audioSliceSchema = new Schema({
+	answeringId: ObjectId,
+	key: Number,
+	status: { type:String, required: false, default: 'alone'}
+})
+
 exports.roomModel = mongoose.model('room', roomSchema);
 exports.answeringModel = mongoose.model('answering', answeringSchema);
 exports.operationModel = mongoose.model('operation', operationSchema);
 exports.questionModel = mongoose.model('question', questionSchema);
+exports.audioSliceModel = mongoose.model('audioSlice', audioSliceSchema);
