@@ -44,7 +44,7 @@
 			} else if(message.c == 'upload_push') {
 				$('#question').html('<img src="' + message.data.url +'"></img>');
 			} else if(message.c == 'leave_push') {
-				appendLog('[' + message.data.username + ']离开房间');
+				//appendLog('[' + message.data.username + ']离开房间');
 			}
 		}
 
