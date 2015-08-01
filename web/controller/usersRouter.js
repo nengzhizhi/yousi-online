@@ -6,17 +6,35 @@ var seneca = require('seneca')();
 seneca.use('../plugins/users/service');
 
 var RestApi = {
-	login : 'http://localhost/api/users/login'
+	login: 'http://121.40.174.3/api/users/login',
+	getRoom: 'http://121.40.174.3/api/answering/getRoomByUsername'
 }
 
 
 usersRouter.get('/home', function (req, res) {
-	if (req.signedCookies && req.signedCookies.username) 
-	{
-		res.render('users/home', {user:req.signedCookies});
+	if (req.signedCookies && req.signedCookies.username) {
+		request.post(
+			RestApi.getRoom, {
+				form: {
+					username: req.signedCookies.username
+				}
+			}, function (err, response, body) {
+				if (response.statusCode == 200) {
+					var result = JSON.parse(body);
+					if (result.code == 200) {
+						res.render('users/home', { 
+								user: req.signedCookies, 
+								room: result.data.room 
+							}
+						);
+						return;
+					}
+				}
+				res.render('users/home', {user: req.signedCookies, room: {}});
+			}
+		)
 	}
-	else
-	{
+	else{
 		res.redirect('/users/login');
 	}
 });

@@ -4,28 +4,32 @@
 	r.frameInterval = 20;
 	r.offset = 0;
 	r.blockSize = 30000;
+	r.audioURL = ""
+	r.index = 0
 
 	r.start = function(){
-		r.getOps();
+		console.log("aaaaaaaaaa")
+		r.getStart();
 	}
 
 	r.stop = function(){
 		clearInterval(r.frameHandle);
 	}
 
-	r.getOps = function(data, callback){
+	r.getStart = function(data, callback){
+		console.log("answeringId:",info.answeringId)
 		$.ajax({
 			type : 'POST',
-			url : 'http://172.16.3.244/api/answering/getOperations',
+			url : 'http://121.40.174.3/api/answering/getOperations',
 			success : function(data) {
-			
-				if (data.code != 200 || data.data.length <= 0) {
+				console.log("getOperations:",JSON.stringify(data))
+				if (data.code != 200 ) {
 					r.stop();
 				} else {
+
 					r.offset += data.data.length;
 					r.ops.length == 0 ? r.ops = data.data : r.ops.concat(data.data);
-					
-					r.frameHandle = setInterval(r.frameHandle, r.frameInterval);
+					r.getOps()
 				}
 			},
 			error : function(){
@@ -40,11 +44,43 @@
 		})
 	}
 
-	r.frameHandle = function(){
-		var op = r.getOp();
-
-		op ? sketch && sketch.onCommand(op.op) : r.stop();
+	r.getOps = function(){
+		$.ajax({
+			type : 'POST',
+			url : 'http://121.40.174.3/api/answering/getAnswering',
+			success : function(data) {
+				console.log("getAnswering:",JSON.stringify(data))
+				if (data.code != 200) {
+					r.stop();
+				} else {
+					r.audioURL = data.data.audio
+					console.log("r.audio:",data.data.audio)
+					console.log("r.audioURL:",r.audioURL)
+					audio.callback = function(){
+						var op = r.getOp();
+						r.index++ 
+						console.log("index:",r.index)
+						op ? sketch && sketch.onCommand(op.op) : audio.actions.pause()
+					}
+					audio.playWithURL(r.audioURL)
+					
+				}
+			},
+			error : function(){
+				r.stop();
+			},
+			data : {
+				id : info.answeringId
+			},
+			dataType : 'json'
+		})
 	}
+
+	// r.frameHandle = function(){
+	// 	var op = r.getOp();
+
+	// 	op ? sketch && sketch.onCommand(op.op) : r.stop();
+	// }
 	// //var before = Date.now(),leftValue = 0;
 	// r.frameHandle = function(){
 	// 	//var now = Date.now();

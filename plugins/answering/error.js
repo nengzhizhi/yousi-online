@@ -52,6 +52,27 @@
 		}
 	}
 
+	error.NotLogin = function(){
+		return {
+			code: 100007,
+			desc: 'Please login first!'
+		}
+	}
+
+	error.AlreadyInRoom = function(){
+		return {
+			code: 100008,
+			desc: 'Already enter in room!'
+		}
+	}
+
+	error.ConcatAudioSliceFail = function(){
+		return {
+			code: 100009,
+			desc: 'Concat audio slice fail!'
+		}
+	}
+
 	return error;
 }
 

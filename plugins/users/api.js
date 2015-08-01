@@ -1,6 +1,7 @@
 var async = require('async');
 var error = require('./error.js')();
 var Validator = require('schema-validator');
+var _ = require('lodash');
 
 module.exports = function (options) {
 	var seneca = this;
@@ -12,16 +13,17 @@ module.exports = function (options) {
 	})});
 
 	seneca.use('/plugins/users/service');
+	seneca.use('/plugins/answering/service');
 
 	function onRegister(req, res){
-		req.sanitize('username').escape().trim();
+		req.body.username && req.sanitize('username').escape().trim();
 		req.checkBody('username', '').isUsername();
 		if (req.validationErrors()) {
 			res.end(JSON.stringify(error.InvalidUsername()));
 			return;
 		}
 
-		req.sanitize('password').escape().trim();
+		req.body.password && req.sanitize('password').escape().trim();
 		req.checkBody('password', '').isPassword();
 		if (req.validationErrors()) {
 			res.end(JSON.stringify(error.InvalidPassword()));
@@ -44,7 +46,8 @@ module.exports = function (options) {
 					if (!result) next(err, result);
 					else next(JSON.stringify(error.UsernameUsed()), null);
 				})
-			}, create: function (next) {
+			}, 
+			create: function (next) {
 				seneca.act({
 					role: 'users', cmd: 'create', data: {
 						username: req.body.username,
@@ -52,23 +55,33 @@ module.exports = function (options) {
 						role: req.body.role
 					}
 				}, function (err, result) {
-					next(err?JSON.stringify(err):null, result);
+					next(err ? JSON.stringify(err) : null, result);
 				})
 			}
 		}, function (err, result) {
-			res.end(JSON.stringify(err? error.InternalError(err) : {code:200}));
+			if (req.body.role == 'teacher') {
+				seneca.act({
+					role: 'answering', cmd: 'createRoom', data: {
+						teacher: req.body.username
+					}})
+			}
+			if (!_.isEmpty(err)) {
+				res.end(JSON.stringify(error.InternalError()));
+			} else {
+				res.end(JSON.stringify({ code: 200 }));
+			}
 		})
 	}
 
 	function onLogin(req, res){
-		req.sanitize('username').escape().trim();
+		req.body.username && req.sanitize('username').escape().trim();
 		req.checkBody('username', '').isUsername();
 		if (req.validationErrors()) {
 			res.end(JSON.stringify(error.InvalidUsername()));
 			return;
 		}
 
-		req.sanitize('password').escape().trim();
+		req.body.password && req.sanitize('password').escape().trim();
 		req.checkBody('password', '').isPassword();
 		if (req.validationErrors()) {
 			res.end(JSON.stringify(error.InvalidPassword()));

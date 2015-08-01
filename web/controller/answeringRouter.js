@@ -4,11 +4,11 @@ var express = require('express');
 var answeringRouter = express.Router();
 
 var RestApi = {
-	getRooms : 'http://localhost/api/answering/getRooms',
-	enterRoom : 'http://localhost/api/answering/enterRoom',
-	leaveRoom : 'http://localhost/api/answering/leaveRoom',
-	getAnswerings : 'http://localhost/api/answering/getAnswerings',
-	getOperations : 'http://localhost/api/answering/getOperations'
+	getRooms : 'http://121.40.174.3/api/answering/getRooms',
+	enterRoom : 'http://121.40.174.3/api/answering/enterRoom',
+	leaveRoom : 'http://121.40.174.3/api/answering/leaveRoom',
+	getAnswerings : 'http://121.40.174.3/api/answering/getAnswerings',
+	getOperations : 'http://121.40.174.3/api/answering/getOperations'
 };
 
 

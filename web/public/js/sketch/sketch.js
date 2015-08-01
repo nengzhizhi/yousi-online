@@ -16,7 +16,7 @@
 		g.tid = 0
 		g.strokeStyle = '#000';
 		g.diameter = 2;
-		g.frameInterval = 20;
+		g.frameInterval = 16.7;
 		g.setToolkit('pencil');
 		g.DrawStokeWidth = {
 		    level1 : 2,
