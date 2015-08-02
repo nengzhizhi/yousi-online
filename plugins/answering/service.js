@@ -80,8 +80,6 @@ module.exports = function(options) {
 				} 
 				else if(role == 'student') {
 					queryData = { _id: roomId };
-				} else {
-					callback(null, null);
 				}
 
 				roomModel
@@ -373,9 +371,10 @@ module.exports = function(options) {
 
 	//结束答疑，发送concat指令
 	function cmd_concatAudioSlice (args, callback) {
-		console.log(args.data);
+		console.log(_.isEmpty(args.data.answeringId));
 		if (_.isEmpty(args.data) || _.isEmpty(args.data.answeringId)) {
 			callback(null, null);
+			return;
 		} else {
 			var answeringId = args.data.answeringId;
 		}
@@ -416,5 +415,5 @@ module.exports = function(options) {
 		], function (err, result) {
 			callback(err, result);
 		})
-	}	
+	}
 }

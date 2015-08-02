@@ -63,7 +63,9 @@ module.exports = function(options) {
 	function handleBusinessData(type, connection, rawData){
 		var req = (typeof(rawData)==="string" ? JSON.parse(rawData) : rawData);
 		
-		console.log(connection);
+		//TODO 检查输入格式
+
+		console.log(req.c);
 		if (req.c == 'enter') {
 			if (type == 'ws') {
 				connection.roomId = req.data.roomId,
@@ -80,7 +82,6 @@ module.exports = function(options) {
 				}});
 			}
 
-			console.log(req.data.roomId);
 			broadcast(
 				req.data.roomId, {
 					c: 'enter_push', 
@@ -185,6 +186,30 @@ module.exports = function(options) {
 				data: { url: 'http://7xkjiu.media1.z0.glb.clouddn.com/' + req.data.key, meta: req.data.meta }
 			}
 			broadcast(roomId, message);
+		}
+		
+		//----------------------------------------------------------------------------------------------------
+		//FIXME
+		else if (req.c == 'unitTest.broadcast') {
+			broadcast(connection.roomId, { c: 'unitTest.broadcast' });
+		}
+		else if (req.c == 'unitTest.viewWsConnections') {
+			var connections = {};
+			for (var roomId in seneca.wsConnections) {
+				connections[roomId] = [];
+				for (var i = 0 ; i < seneca.wsConnections[roomId].length; i++) {
+					connections[roomId].push({
+						username: seneca.wsConnections[roomId][i].username
+					});
+				}
+			}
+
+			broadcast(connection.roomId, { 
+				c: 'unitTest.viewWsConnections', 
+				data: { 
+					wsConnections: connections		
+				}
+			})
 		}
 	}
 
