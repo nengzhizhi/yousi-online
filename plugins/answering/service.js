@@ -180,7 +180,6 @@ module.exports = function(options) {
 				}
 				next(null, updateData);		
 			}, function (updateData, next) {
-				
 				_.isEmpty(updateData) && next(null, null);
 
 				roomModel.where({ _id: roomId})
@@ -226,7 +225,11 @@ module.exports = function(options) {
 	function cmd_getRoom(args, callback){
 		roomModel
 		.findOne(args.data, function (err, document){
-			callback(err, document);
+			if (!_.isEmpty(err)) {
+				callback(err, { status: 'fail', error: err });
+			} else {
+				callback(null, { status: 'success', data: document});
+			}
 		});
 	}
 

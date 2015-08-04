@@ -1,7 +1,7 @@
 var seneca = require('seneca')();
 var mongoose = require('mongoose');
 mongoose.connect('mongodb://yousi:password@112.124.117.146:27017/yousi');
-seneca.use('/plugins/keepConn/service',{
+seneca.use('/plugins/keepConn/main',{
 	wsServerPort : 10001,
 	stServerPort : 10002
 });
@@ -21,7 +21,6 @@ seneca.use('/plugins/keepConn/service',{
 
 
 seneca
-.listen({host: 'localhost', port: 20003})
 .ready(function(){
 	// seneca.act({
 	// 	role : 'keepConn',
@@ -37,7 +36,7 @@ seneca
 	// 	console.log('Start initStService');
 	// })
 
-	seneca.act({role: 'keepConn', cmd: 'init'}, function (err, result) {
-		console.log('Start init keep connection!');
+	seneca.act({role: 'keepConn', cmd: 'start'}, function (err, result) {
+		console.log('Start start keep connection!');
 	})
 });

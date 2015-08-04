@@ -11,7 +11,7 @@ module.exports = function(options) {
 	seneca.add({role: 'keepConn', cmd: 'init'}, cmd_init);
 
 	function cmd_init(args, callback){
-		//init websocket server
+		//初始化WebSocket服务器
 		seneca.httpServer = http.createServer(function (request, response){
 			console.log((new Date()) + 'WebSocket http server received request for ' + request.url);
 			response.writeHead(404);
@@ -53,10 +53,12 @@ module.exports = function(options) {
 			})
 		})
 
+		//初始化socket服务器
 		seneca.socketProc = cp.fork(__dirname + '/socketProc.js');
 		seneca.socketProc.on('message', function (m) {
 			handleBusinessData('st', m.connection, m.data);
 		})
+
 		callback(null, {status: 'success'});
 	}
 

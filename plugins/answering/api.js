@@ -15,7 +15,6 @@ module.exports = function(options) {
 		app.post('/api/answering/enterRoom', onEnterRoom);
 		app.post('/api/answering/getRoomByUsername', onGetRoomByUsername);
 
-		//app.post('/api/answering/leaveRoom', onleaveRoom);
 		app.post('/api/answering/getAnswerings', onGetAnswerings);
 		app.post('/api/answering/getAnswering', onGetAnswering);
 		app.post('/api/answering/getOperations', onGetOperations);
@@ -159,14 +158,14 @@ module.exports = function(options) {
 					seneca.act({
 						role: 'answering', cmd: 'getRoom',
 						data: { _id: req.body.roomId }
-					}, function (err, room) {
-						if (err || _.isEmpty(room)) {
+					}, function (err, result) {
+						if (err || _.isEmpty(result.data) || result.status == 'fail') {
 							res.end(JSON.stringify(error.PermissonDeny()));
 						} else {
 							res.end(JSON.stringify({
 								code: 200,
 								data: {
-									room: { roomId: room._id }
+									room: { roomId: result.data._id }
 								}
 							}));
 						}
@@ -194,52 +193,21 @@ module.exports = function(options) {
 				teacher: req.body.username
 			}
 		}, function (err, result) {
-			if (err || _.isEmpty(result))
+			if (!_.isEmpty(err) || _.isEmpty(result.data) || result.status == 'fail')
 				res.end(JSON.stringify(error.PermissonDeny()));
 			else
 				res.end(JSON.stringify({
 					code: 200, 
 					data: {
 						room: {
-							id: result._id,
-							teacher: result.teacher,
-							status: result.status
+							id: result.data._id,
+							teacher: result.data.teacher,
+							status: result.data.status
 						}
-					}}));			
+					}
+				}));			
 		})
 	}
-
-	// /**
-	//  * Description: 退出房间
-	//  *
-	//  * @param roomId: 房间编号
-	//  *
-	// **/
-
-	// function onleaveRoom(req, res) {
-	// 	req.body.roomId && req.sanitize('roomId').escape().trim();
-	// 	req.checkBody('roomId', 'Invalid room Id').isObjectId();
-
-	// 	if (!req.signedCookies) {
-	// 		res.end(JSON.stringify(error.NotLogin()));
-	// 		return;
-	// 	}
-
-	// 	seneca.act({
-	// 		role: 'answering', cmd: 'changeRoomState',
-	// 		data: {
-	// 			action: 'leave',
-	// 			roomId: req.body.roomId,
-	// 			username: req.signedCookies.username,
-	// 			role: req.signedCookies.role
-	// 		}
-	// 	}, function (err, result){
-	// 		if (!_.isEmpty(err) || _.isEmpty(result))
-	// 			res.end(JSON.stringify(error.PermissonDeny()));
-	// 		else
-	// 			res.end(JSON.stringify({code: 200}));
-	// 	})
-	// }
 
 	function onGetAnswering (req, res) {
 		req.body.id && req.sanitize('id').escape().trim();

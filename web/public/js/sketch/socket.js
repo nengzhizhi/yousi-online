@@ -19,6 +19,7 @@
 		s.ws.onmessage = function(event) {
 			var message = JSON.parse(event.data);
 			//画图操作
+			console.log(message);
 			if (message.c == 'draw') {
 				sketch && sketch.mode == 'passive' && sketch.onCommand(message.data.op);
 			} 
@@ -30,7 +31,7 @@
 			else if(message.c == 'answer_push') {
 				console.log('answer_push');
 				info.answeringId = message.data.answeringId;
-				startAudio();
+				info.role == 'teacher' && startAudio();
 			}
 			else if(message.c == 'interrupt_push') {
 				console.log('interrupt_push');
