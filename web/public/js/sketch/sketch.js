@@ -39,6 +39,22 @@
 		}
 	}
 
+	g.createCanvas = function(){
+		g.canvasArray.push(new YSCanvas(g.dom,g.canvasArray.length + 1))
+		g.currentIndex = g.canvasArray.length - 1
+		g.canvas =  g.canvasArray ? g.canvasArray[g.currentIndex].getWriteCanvas() : null;
+		g.ctx = g.canvasArray ? g.canvasArray[g.currentIndex].getWrite() : null;
+		g.fctx = g.canvasArray ? g.canvasArray[g.currentIndex].getShape() : null;
+	}
+
+	g.switchCanvas = function(index){
+		g.currentIndex = index
+		g.canvasArray[g.currentIndex].setActive()
+		g.canvas =  g.canvasArray ? g.canvasArray[g.currentIndex].getWriteCanvas() : null;
+		g.ctx = g.canvasArray ? g.canvasArray[g.currentIndex].getWrite() : null;
+		g.fctx = g.canvasArray ? g.canvasArray[g.currentIndex].getShape() : null;
+	}
+
 	//线条颜色
 	g.setStokeColor = function(color){
 	    switch(color){
@@ -155,8 +171,7 @@
 				g.Toolkit && g.Toolkit.id != 'font' && g.setToolkit('font');
 				g.tid = c.tid
 				g.ctn = c.path[4]
-				console.log("g.ctn:",g.ctn)
-				console.log("g.tid:",g.tid)
+				
 				c.path && g.Toolkit.render(point)
 			}
 		}else if (c.type == "im"){
@@ -282,10 +297,10 @@
 			if (this.isDrawingMode || pencil.path.length > 0) {
 				var point = pencil.path[0]
 				pencil.path = []
-				socket && socket.send({c:'draw', data:{op:['pm', point],t:Date.now()}});
+				socket && socket.send({c:'draw', data:{op:['pm', point],t:Date.now(),roomId :info.roomId}});
 				pencil.render(point);	
 			}else{
-				g.trace.length && socket && socket.send({c:'draw', data: {op: ['mm', g.trace[0]], t: Date.now()}});
+				g.trace.length && socket && socket.send({c:'draw', data: {op: ['mm', g.trace[0]], t: Date.now(), roomId :info.roomId}});
 				g.trace = [];
 			}
 			pencil.frameHandle = requestAnimationFrame(pencil.onFrame);
@@ -350,10 +365,10 @@
 		this.onFrame = function(){
 			if (this.isDrawingMode || eraser.path.length > 0) {
 				eraser.render(eraser.path);
-				eraser.path.length && socket && socket.send({c:'draw', data:{op:['em', eraser.path[eraser.path.length-1]], t:Date.now()}});
+				eraser.path.length && socket && socket.send({c:'draw', data:{op:['em', eraser.path[eraser.path.length-1]], t:Date.now(),roomId:info.roomId}});
 				eraser.path = [];
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0]], t:Date.now()}});
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0]], t:Date.now(),roomId:info.roomId}});
 			g.trace = [];
 		}		
 	})
@@ -451,10 +466,10 @@
 			if (this.isDrawingMode || rectangle.path.length > 0) {
 				var path = rectangle.path[rectangle.path.length-1]
 				rectangle.render(path)
-				console.log(JSON.stringify({c:'draw', data:{op:['rm', path, g.tid],t:Date.now()}}))
-				rectangle.path.length && socket && socket.send({c:'draw', data:{op:['rm', path, g.tid],t:Date.now()}});
+				console.log(JSON.stringify({c:'draw', data:{op:['rm', path, g.tid],t:Date.now(),roomId:info.roomId}}))
+				rectangle.path.length && socket && socket.send({c:'draw', data:{op:['rm', path, g.tid],t:Date.now(),roomId:info.roomId}});
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now()}});
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
 			g.trace = [];
 		}		
 	})
@@ -551,9 +566,9 @@
 			if (this.isDrawingMode || circle.path.length > 0) {
 				var path = circle.path[circle.path.length-1]
 				circle.render(path)
-				circle.path.length && socket && socket.send({c:'draw', data:{op:['cm', path, g.tid],t:Date.now()}});
+				circle.path.length && socket && socket.send({c:'draw', data:{op:['cm', path, g.tid],t:Date.now(),roomId:info.roomId}});
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now()}});
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
 			g.trace = [];
 		}		
 	})
@@ -649,9 +664,9 @@
 			if (this.isDrawingMode || triangle.path.length > 0) {
 				var path = triangle.path[triangle.path.length-1]
 				triangle.render(path)
-				triangle.path.length && socket && socket.send({c:'draw', data:{op:['tm', path, g.tid],t:Date.now()}});
+				triangle.path.length && socket && socket.send({c:'draw', data:{op:['tm', path, g.tid],t:Date.now(),roomId:info.roomId}});
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now()}});
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
 			g.trace = [];
 		}		
 	})
@@ -736,9 +751,9 @@
 			if (this.isDrawingMode || line.path.length > 0) {
 				var path =  line.path[line.path.length-1]
 				line.render(path)
-				line.path.length && socket && socket.send({c:'draw', data:{op:['lm',path, g.tid],t:Date.now()}});
+				line.path.length && socket && socket.send({c:'draw', data:{op:['lm',path, g.tid],t:Date.now(),roomId:info.roomId}});
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now()}});
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
 			g.trace = [];
 		}		
 	})
@@ -829,7 +844,7 @@
 
 		this.frameHandle = setInterval(this.onFrame, g.frameInterval||20);
 		this.onFrame = function(){
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now()}});
+			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
 			g.trace = [];
 		}	
 	})
@@ -901,7 +916,7 @@
 	            					_text.get('currentHeight'),
 	            					g.ctn
 	            				],
-	            		 g.tid], t:Date.now()}
+	            		 g.tid], t:Date.now(),roomId:info.roomId}
             }
             console.log(JSON.stringify(info))
 		    socket && socket.send(info)

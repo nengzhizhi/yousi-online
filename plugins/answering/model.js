@@ -19,11 +19,12 @@ var answeringSchema = new Schema({
 });
 
 var roomSchema = new Schema({
-	created : { type: Date, default: Date.now },
-	type : { type:String, required: false, default: 'answering'},
-	status : { type:String, required: false, default: 'closed'},
-	teacher : String,
-	student : String,
+	owner:String,
+	created: { type: Date, default: Date.now },
+	type: { type:String, required: false, default: 'answering'},
+	status: { type:String, required: false, default: 'closed'},
+	teacher: String,
+	student: String,
 	answeringId : ObjectId
 });
 

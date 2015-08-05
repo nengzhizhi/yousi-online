@@ -40,6 +40,8 @@ module.exports = function(options) {
 		if (seneca.rooms[roomId] && seneca.rooms[roomId][token]) {
 			delete seneca.rooms[roomId][token];
 		}
+		seneca.socketProc.send({ cmd: 'del', token: token});
+		seneca.webSocketProc.send({ cmd: 'del', token: token});
 	}
 
 	function broadcast(roomId, msg, omit){
@@ -55,14 +57,13 @@ module.exports = function(options) {
 			var data = {};
 			for (var key in seneca.rooms) {
 				if (seneca.rooms[key][token] != undefined) {
-					console.log(seneca.rooms[key][token]);
 					data.roomId = key;
-					data.username = seneca.rooms[key][token].username;
+					data.username = seneca.rooms[key][token].user.username;
+					data.role = seneca.rooms[key][token].user.role;
 				}
-			}			
+			}						
 			handleBusinessData(token, 'interrupt', data);
 		}
-		//console.log(seneca.rooms);
 	}
 
 	function handleBusinessData (token, c, data) {
@@ -77,10 +78,18 @@ module.exports = function(options) {
 		
 		} else if (c == 'interrupt') {
 			var roomId = data.roomId;
-			var username = data.roomId;
+			var username = data.username;
+			var role = data.role;
 
 			removeFromRoom(roomId, token);
 			broadcast(roomId, { c: 'interrupt_push', data: { username: username }})
+
+			seneca.act({role: 'answering', cmd: 'takeAction', data: {
+				action: 'interrupt',
+				roomId: roomId,
+				role: role,
+				username: username
+			}})
 		} else if (c == 'answer') {
 			var roomId = data.roomId;
 			var username = data.username;
@@ -91,15 +100,16 @@ module.exports = function(options) {
 				cmd: 'startAnswering',
 				data: { roomId: roomId, username: username, role: role }
 			}, function (err, result) {
-				if (_.isEmpty(err)) {
+				console.log(result);
+				if (result.status == 'success') {
 					var message = {
 						c: 'answer_push',
-						data: {
-							roomId: roomId,
-							answeringId: result._id
-						}
+						data: { roomId: roomId,
+							    answeringId: result.data._id }
 					}
 					broadcast(roomId, message);
+					//where to delete
+					seneca.rooms[roomId].answeringId = result.data._id;				
 				}
 			})
 
@@ -113,24 +123,35 @@ module.exports = function(options) {
 			broadcast(roomId, { c: 'leave_push', data: { username: username }})
 
 			//更新数据库中房间对应的状态
-			seneca.act({role: 'answering', cmd: 'changeRoomState',
+			seneca.act({role: 'answering', cmd: 'takeAction',
 				data: {
 					action: 'leave',
 					roomId: roomId,
 					role: role,
-					username: username,
-					answeringId: answeringId
+					username: username
 				}
 			})
 		} else if (c == 'draw') {
 			var roomId = data.roomId;
-			broadcast(roomId, { c: 'draw', data: data }, [token]);
+			broadcast(roomId, { c: 'draw', data: {op: data.op, t: data.t} }, [token]);
+
+			if (!_.isEmpty(seneca.rooms[roomId]) && !_.isEmpty(seneca.rooms[roomId].answeringId)) {
+				seneca.act({
+					role: 'answering', 
+					cmd: 'saveOperations', 
+					data: {
+						answeringId: seneca.rooms[roomId].answeringId,
+						op: data.op,
+						t: data.t
+					}
+				})
+			}
 		} else if (c == 'upload') {
 			var roomId = data.roomId;
 			
 			var message = {
 				c: 'upload_push',
-				data: { url: 'http://7xkjiu.media1.z0.glb.clouddn.com/' + req.data.key, meta: req.data.meta }				
+				data: { url: 'http://7xkjiu.media1.z0.glb.clouddn.com/' + data.key, meta: data.meta }				
 			}
 			broadcast(roomId, message);
 		}

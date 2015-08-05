@@ -75,9 +75,8 @@ module.exports = function(options) {
 		}
 
 		seneca.act({
-			role: 'answering', cmd: 'changeRoomState',
+			role: 'answering', cmd: 'openRoom',
 			data: {
-				action: 'open',
 				roomId: req.body.roomId,
 				role: req.signedCookies.role,
 				username: req.signedCookies.username
@@ -108,9 +107,8 @@ module.exports = function(options) {
 		}
 
 		seneca.act({
-			role: 'answering', cmd: 'changeRoomState',
+			role: 'answering', cmd: 'closeRoom',
 			data: {
-				action: 'close',
 				roomId: req.body.roomId,
 				role: req.signedCookies.role,
 				username: req.signedCookies.username
@@ -128,33 +126,27 @@ module.exports = function(options) {
 		req.body.roomId && req.sanitize('roomId').escape().trim();
 		req.checkBody('roomId', '').isObjectId();
 
-		if (req.validationErrors()) {
-			res.end(JSON.stringify(error.BadInput()));
-			return;
-		}
+		if (req.validationErrors())
+			return res.end(JSON.stringify(error.BadInput()));
 
-		if (!req.signedCookies || !req.signedCookies.username){
-			res.end(JSON.stringify(error.NotLogin()));
-			return
-		}
+		if (!req.signedCookies || !req.signedCookies.username)
+			return res.end(JSON.stringify(error.NotLogin()));
 
 		if (req.signedCookies.role == 'teacher' || req.signedCookies.role == 'student') {
 			async.waterfall([
 				function (next) {
 					seneca.act({
-						role: 'answering', cmd: 'changeRoomState',
+						role: 'answering', cmd: 'takeAction',
 						data: {
 							action: 'enter',
 							roomId: req.body.roomId,
 							role: req.signedCookies.role,
 							username: req.signedCookies.username
 						}
-					}, next);
+					}, next)
 				}
 			], function (err, result) {
-				if (err || _.isEmpty(result)) {
-					res.end(JSON.stringify(error.PermissonDeny()));
-				} else {
+				if (result.status == 'success') {
 					seneca.act({
 						role: 'answering', cmd: 'getRoom',
 						data: { _id: req.body.roomId }
@@ -164,16 +156,17 @@ module.exports = function(options) {
 						} else {
 							res.end(JSON.stringify({
 								code: 200,
-								data: {
-									room: { roomId: result.data._id }
-								}
+								data: { room: { roomId: result.data._id } }
 							}));
 						}
-					})
+					})					
+				}
+				else {
+					return res.end(JSON.stringify(error.PermissonDeny()));
 				}
 			})
 		} else {
-			res.end(JSON.stringify(error.PermissonDeny()));
+			return res.end(JSON.stringify(error.PermissonDeny()));
 		}
 	}
 
@@ -190,7 +183,7 @@ module.exports = function(options) {
 		seneca.act({
 			role: 'answering', cmd: 'getRoom',
 			data: {
-				teacher: req.body.username
+				owner: req.body.username
 			}
 		}, function (err, result) {
 			if (!_.isEmpty(err) || _.isEmpty(result.data) || result.status == 'fail')

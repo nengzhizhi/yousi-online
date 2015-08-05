@@ -61,8 +61,10 @@ module.exports = function (options) {
 		}, function (err, result) {
 			if (req.body.role == 'teacher') {
 				seneca.act({
-					role: 'answering', cmd: 'createRoom', data: {
-						teacher: req.body.username
+					role: 'answering', 
+					cmd: 'createRoom', 
+					data: {
+						owner: req.body.username
 					}})
 			}
 			if (!_.isEmpty(err)) {

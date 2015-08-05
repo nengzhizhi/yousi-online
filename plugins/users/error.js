@@ -4,16 +4,9 @@ function error() {
 	var error = this;
 
 	error.InternalError = function(err){
-		if (util.isString(err)) {
-			return {
-					code : 200000,
-					desc : "Internal error:{0}"
-			}
-		} else {
-			return {
-					code : 200000,
-					desc : 'Internal error'
-			}
+		return {
+				code : 200011,
+				desc : 'InternalError'
 		}
 	}
 

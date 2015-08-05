@@ -16,11 +16,12 @@ module.exports = function(options) {
 
 	seneca.add({role: 'answering', cmd:'getRoom'}, cmd_getRoom);
 	seneca.add({role: 'answering', cmd:'getRooms'}, cmd_getRooms);
+	seneca.add({role: 'answering', cmd:'openRoom'}, cmd_openRoom);
+	seneca.add({role: 'answering', cmd:'closeRoom'}, cmd_closeRoom);
 	seneca.add({role: 'answering', cmd:'createRoom'}, cmd_createRoom);
 	seneca.add({role: 'answering', cmd:'updateRoom'}, cmd_updateRoom);
-	seneca.add({role: 'answering', cmd: 'leaveRoom'}, cmd_leaveRoom);
 
-	seneca.add({role: 'answering', cmd: 'changeRoomState'}, cmd_changeRoomState);
+	seneca.add({role: 'answering', cmd: 'takeAction'}, cmd_takeAction);
 
 	seneca.add({role: 'answering', cmd: 'startAnswering'}, cmd_startAnswering);
 	seneca.add({role: 'answering', cmd: 'updateAnswering'}, cmd_updateAnswering);
@@ -39,187 +40,190 @@ module.exports = function(options) {
 			function (next) {
 				roomModel
 				.findOne({ _id: args.data.roomId }, function (err, room) {
-					if (!_.isEmpty(err) || _.isEmpty(room) || room.status!='answering') {
-						callback(err, null);
+					if (_.isEmpty(err) && !_.isEmpty(room)) {
+						if (args.data.username == room.owner) {
+							next(null, room)
+						} else {
+							next(null, null);
+						}
 					} else {
-						next(null, room);
+						next(null, null);
 					}
 				})
-			},
-			function (room, next) {
-				var answering = answeringModel();
-				answering.student = room.student;
-				answering.teacher = room.teacher;
-				answering.created = Date.now();
-				answering.audio = null;
+			}, function (room, next) {
+				if (!_.isEmpty(room)) {
+					var answering = answeringModel();
+					answering.student = room.student;
+					answering.teacher = room.teacher;
+					answering.created = Date.now();
+					answering.audio = null;
 
-				answering.save(function (err) {
-					next(err, answering);
-				});
+					answering.save(function (err) {
+						next(err, answering);
+					});					
+				} else {
+					next(null, null);
+				}
+			}, function (answering, next) {
+				if (!_.isEmpty(answering)) {
+					roomModel
+					.where({ _id: args.data.roomId})
+					.update({ answeringId: answering._id }, function (err, result) {
+						next(err, result.ok > 0 ? answering : null);
+					})					
+				} else {
+					next(null, null);
+				}
 			}
 		], function (err, answering) {
-			roomModel
-			.where({ _id: args.data.roomId})
-			.update({ answeringId: answering._id }, function (err, result) {
-				callback(err, answering);
-			})
+			if (_.isEmpty(err) && !_.isEmpty(answering)) {
+				callback(null, {status: 'success', data: answering});
+			} else {
+				callback(err, {status: 'fail'});
+			}
 		})
 	}
 
-	function cmd_changeRoomState(args, callback) {
+	function cmd_openRoom(args, callback){
+		var role = args.data.role;
+		var roomId = args.data.roomId;
+		var username = args.data.username;
+
+		roomModel.where({ 
+			_id: roomId,
+			owner: username
+		})
+		.update({
+			status: 'empty',
+			teacher: null,
+			student: null
+		}, function (err, result) {
+			if (_.isEmpty(err) && result.ok > 0) {
+				callback(null, { status: 'success' });
+			} else {
+				callback(err, { status: 'fail' });
+			}
+		})		
+	}
+
+	function cmd_closeRoom(args, callback){
+		var role = args.data.role;
+		var roomId = args.data.roomId;
+		var username = args.data.username;
+
+		roomModel
+		.where({ _id: roomId, owner: username })
+		.update({
+			status: 'closed'
+		}, function (err, result) {
+			if (_.isEmpty(err) && result.ok > 0) {
+				callback(null, { status: 'success' });
+			} else {
+				callback(err, { status: 'fail' });
+			}
+		})
+	}
+
+
+	function cmd_takeAction (args, callback) {
 		var action = args.data.action;
 		var roomId = args.data.roomId;
 		var role = args.data.role;
 		var username = args.data.username;
-		var answeringId = args.data.answeringId;
 
 		async.waterfall([
 			function (next) {
-				if (role == 'teacher') {
-					queryData = { _id: roomId, teacher: username };
-				} 
-				else if(role == 'student') {
-					queryData = { _id: roomId };
-				}
-
-				roomModel
-				.findOne( queryData, function (err, room) {
+				roomModel.findOne({ _id: roomId }, function (err, room) {
 					next(err, room);
-				})	
-			}, function (room, next) {
-				if (_.isEmpty(room)) {
-					next(null, null);
-					return;
-				}
-
-				var updateData = {};
-				if (role == 'teacher') {
-					if (action == 'enter') {
-						if (room.status == 'empty') {
-							updateData.status = 'waiting';
-						} 
-						else if (room.status == 'pending' && !_.isEmpty(room.student)) {
-							updateData.status = 'answering';
-						}
-					} 
-					else if (action == 'leave') {
-						updateData.status = 'closed';
-						seneca.act({
-							role: 'answering', cmd:'concatAudioSlice',
-							data: { answeringId: answeringId }
-						})
-					} 
-					else if (action == 'open') {
-						if (room.status == 'closed') {
-							updateData.status = 'empty';
-						} 
-					}
-					else if (action == 'close') {
-						updateData.status = 'closed';
-						seneca.act({
-							role: 'answering', cmd:'concatAudioSlice',
-							data: { answeringId: answeringId }
-						})
-					} 
-					else if (action == 'interrupt') {
-						if (room.status == 'answering') {
-							updateData.status = 'pending';
-						}
-						else if (room.status == 'waiting' || room.status == 'pending') {
-							updateData.status = 'empty';
-							updateData.student = null;
-							updateData.answeringId = null;
-						}
-						seneca.act({
-							role: 'answering', cmd:'concatAudioSlice',
-							data: { answeringId: answeringId }
-						})
-					}
-				}
-				else if (role == 'student') {
-					if (action == 'enter') {
-						if (room.status == 'waiting') {
-							updateData.status = 'answering';
-							updateData.student = username;
-						} 
-						else if(room.status == 'pending' && room.student == username) {
-							updateData.status = 'answering';
-							updateData.student = username;
-						}
-					}
-					else if (action == 'leave') {
-						if (room.status == 'pending') {
-							updateData.status = 'empty';
-							updateData.student = null;
-							updateData.answeringId = null;
-						}
-						else if (room.status == 'answering'){
-							updateData.status = 'waiting';
-							updateData.student = null;
-							updateData.answeringId = null;
-						}
-						seneca.act({
-							role: 'answering', cmd:'concatAudioSlice',
-							data: { answeringId: answeringId }
-						})
-					}
-					else if (action == 'interrupt') {
-						if (room.status == 'pending') {
-							updateData.status = 'empty';
-							updateData.student = null;
-							updateData.answeringId = null;
-						} 
-						else if(room.status == 'answering') {
-							updateData.status = 'pending';
-						}
-						seneca.act({
-							role: 'answering', cmd:'concatAudioSlice',
-							data: { answeringId: answeringId }
-						})
-					}
-				}
-				next(null, updateData);		
-			}, function (updateData, next) {
-				_.isEmpty(updateData) && next(null, null);
-
-				roomModel.where({ _id: roomId})
-				.update(updateData, function (err, result){
-					next(null, updateData);
 				})
+			}, function (room, next) {
+				if (!_.isEmpty(room)) {
+					var updateData = canTakeAction(action, username, role, room);
+
+					if (!_.isEmpty(updateData)) {
+						if (room.answeringId && (action =='leave' || action =='interrupt')) {
+							seneca.act({ role: 'answering', 
+										 cmd:'concatAudioSlice',
+										 data: { answeringId: room.answeringId } })							
+						}
+
+						roomModel
+						.where({ _id: roomId })
+						.update(updateData, function (err, result){
+							//if (result.ok > 0)
+							next(err, updateData);
+						})
+					} else {
+						next(null, null);
+					}
+				} else {
+					next(null, null);
+				}
 			}
 		], function (err, result) {
-			callback(err, result);
-		})
+			if (_.isEmpty(err) && !_.isEmpty(result)) {
+				return callback(null, { status: 'success' });
+			}
+			return callback(err, {status: 'fail'});
+		});
 	}
 
-	function cmd_leaveRoom(args, callback) {
-		async.waterfall([
-			function (next) {
-				if (args.data.role == 'teacher') {
-					roomModel
-					.where({
-						_id: args.data.roomId,
-						teacher: args.data.username
-					})
-					.update({
-						teacher: null,
-						status: 'closed'
-					}, next)
-				} else if(args.data.role == 'student') {
-					roomModel
-					.where({
-						_id: args.data.roomId,
-						student: args.data.username
-					})
-					.update({
-						student: null,
-						status: 'waiting'
-					}, next)
+	function canTakeAction (action, username, role, snap) {
+		var updateData;
+		//进入房间
+		if (action == 'enter') {
+			if (snap.owner == username && _.isEmpty(snap.teacher)) {
+				updateData = {
+					teacher: username,
+					status: 'waiting'
+				}
+			} else if (role == 'student' && _.isEmpty(snap.student) && !_.isEmpty(snap.teacher)) {
+				updateData = {
+					student: username,
+					status: 'answering'
 				}
 			}
-		], function (err, result){
-			callback(err, result);
-		})
+			//判断游客进入的权限
+		//中断	
+		} else if (action == 'interrupt') {
+			if (role == 'teacher' && snap.teacher == username) {				
+				updateData = {
+					student: null,
+					teacher: null,
+					status: 'closed'
+				}			
+			} else if (role == 'student' && snap.student == username) {
+				if (snap.status == 'answering') {
+					updateData = {
+						student: null,
+						status: 'waiting'
+					}
+				} else {
+					updateData = { student: null }
+				}
+			}		
+		//离开
+		} else if (action == 'leave') {
+			if (role == 'student' && snap.student == username) {
+				if (snap.status == 'answering') {
+					updateData = {
+						student: null,
+						status: 'waiting'
+					}
+				} else {
+					updateData = {
+						student: null
+					}
+				}
+			} else if(role == 'teacher' && snap.teacher == username) {
+				updateData = {
+					student: null,
+					teacher: null,
+					status: 'closed'
+				}
+			}		
+		}
+		return updateData;
 	}
 
 	function cmd_getRoom(args, callback){
@@ -243,9 +247,8 @@ module.exports = function(options) {
 	}
 
 	function cmd_createRoom(args, callback){
-		//TODO check input
 		var record = new roomModel();
-		record.teacher = args.data.teacher;
+		record.owner = args.data.owner;
 		record.type = args.data.type;
 		record.status = 'closed';
 

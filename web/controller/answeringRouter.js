@@ -2,6 +2,7 @@ var async = require('async');
 var request = require('request');
 var express = require('express');
 var answeringRouter = express.Router();
+var _ = require('lodash');
 
 var RestApi = {
 	getRooms : 'http://121.40.174.3/api/answering/getRooms',
@@ -51,7 +52,7 @@ answeringRouter.get('/room', function (req, res) {
 			var result;
 			if (body && typeof(body) === 'string') {
 				result = JSON.parse(body);
-			
+
 				if (result.code == 200) {
 					if (req.signedCookies.role == 'student')
 						res.render('answering/classroom_s', {room:result.data.room, user:req.signedCookies});

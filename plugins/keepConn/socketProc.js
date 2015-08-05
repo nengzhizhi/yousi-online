@@ -26,6 +26,7 @@ server.on('connection', function (connection) {
 
 	connection.on('data', function (data) {
 		data = Buffer.isBuffer(data) ? JSON.parse(data.toString()) : JSON.parse(data);
+
 		process.send({
 			act: 'message',
 			token: connection.token,
@@ -37,7 +38,12 @@ server.on('connection', function (connection) {
 
 process.on('message', function (message) {
 	if (message.cmd == 'broadcast') {
-		broadcast (message.room, message.msg, message.omit);
+		broadcast(message.room, message.msg, message.omit);
+	} else if (message.cmd == 'del') {
+		if (!_.isEmpty(connections[message.token])) {
+			connections[message.token].destory();
+			delete connections[message.token];
+		}
 	}
 })
 

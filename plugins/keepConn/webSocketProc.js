@@ -39,14 +39,18 @@ wsServer.on('request', function (request) {
 process.on('message', function (message) {
 	if (message.cmd == 'broadcast') {
 		broadcast(message.room, message.msg, message.omit);
+	} else if (message.cmd == 'del') {
+		if (!_.isEmpty(connections[message.token])) {
+			connections[message.token].close();
+			delete connections[message.token];
+		}
 	}
 })
 
 function broadcast(room, msg, omit) {
-	console.log(msg);
 	for (var key in room) {
 		if (!_.isEmpty(connections[key])) {
-			if (!_.isArray(omit) || omit.indexOf(key) < 0) {
+			if (_.isEmpty(omit) || (_.isArray(omit) && omit.indexOf(key) < 0)) {
 				connections[key].sendUTF(JSON.stringify(msg));
 			}
 		}
