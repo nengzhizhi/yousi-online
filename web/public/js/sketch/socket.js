@@ -6,7 +6,7 @@
 		
 		s.ws.onopen = function() {
 			console.log('connect success!');
-
+			s.isConnected = true
 			if(info && (info.role == 'teacher' || info.role == 'student')){
 				s.ws.send(JSON.stringify({c:'enter',data:{
 					roomId : info.roomId,
@@ -53,6 +53,9 @@
 	}
 
 	s.send = function(json) {
-		s.ws && s.ws.send(JSON.stringify(json)); 
+		if (s.isConnected == true){
+			s.ws && s.ws.send(JSON.stringify(json)); 
+		}
+		
 	}
 })(socket);

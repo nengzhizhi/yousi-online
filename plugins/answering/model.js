@@ -15,7 +15,8 @@ var answeringSchema = new Schema({
 	teacher : String,
 	student : String,
 	audio: String,
-	savingStatus:  { type:String, required: false, default: 'waiting'}
+	savingStatus:  { type:String, required: false, default: 'waiting'},
+	imgs: Array
 });
 
 var roomSchema = new Schema({

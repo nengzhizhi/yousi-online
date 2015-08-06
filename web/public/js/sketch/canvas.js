@@ -16,7 +16,6 @@ var YSCanvas = function(doc,index){
 }
 
 YSCanvas.prototype.initCanvas = function(){
-    
     this.shape =  new fabric.Canvas('page'+this.num+'shape',{ hoverCursor: 'pointer', selection :false, isdrawingmode:false });
     this.shape.on({
        'object:modified': function(e) {
@@ -58,19 +57,20 @@ YSCanvas.prototype.initCanvas = function(){
 
 }
 
-// YSCanvas.prototype.addPage = function(){
-//     $(".addCanvas").before("<span class=\"am-badge am-radius \">"+this.num+"</span>")
-// }
+YSCanvas.prototype.addPage = function(){
+    $(".addCanvas").before("<span class=\"am-badge am-radius \">"+this.num+"</span>")
+}
 
-// YSCanvas.prototype.setActive = function(){
-//     var index = this.num-1
-//     var dom = $(".page span:eq("+ index +")")
-//     dom.addClass("am-badge-secondary")
-//     dom.siblings().removeClass("am-badge-secondary")
-//     var canvas = $("#page"+this.num)
-//     canvas.show()
-//     canvas.siblings().hide()
-// }
+YSCanvas.prototype.setActive = function(){
+    var index = this.num 
+    console.log("index",index)
+    var dom = $(".page span:eq("+ index +")")
+    dom.addClass("am-badge-secondary")
+    dom.siblings().removeClass("am-badge-secondary")
+    var canvas = $("#page"+this.num)
+    canvas.show()
+    canvas.siblings().hide()
+}
 
 YSCanvas.prototype.createCanvas = function(){
     $('#canvas').append('<div id = "page'+ this.num +'" index="'+ this.num +'" style="width:100%;height: 100%" class="pagebg"><canvas id="page'+this.num+'write" width='+this.canvasWidth+' height='+this.canvasHeight+' class="pagewrite"></canvas><canvas id="page'+this.num+'down" width='+this.canvasWidth+' height='+this.canvasHeight+' class="pagedown" ></canvas><canvas id="page'+this.num+'shape" width='+this.canvasWidth+' height='+this.canvasHeight+' class="pagewrite" style="z-index:6"></canvas></div>');

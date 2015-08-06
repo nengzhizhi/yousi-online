@@ -2,12 +2,12 @@ $(function() {
 var uploader = Qiniu.uploader({
                 runtimes: 'html5,html4',    //上传模式,依次退化
                 browse_button: 'pickfiles',       //上传选择的点选按钮，**必需**
-                uptoken_url: info && info.uptoken_url,            //Ajax请求upToken的Url，**强烈建议设置**（服务端提供）
+                uptoken_url: 'http://121.40.174.3/api/common/upload/token',            //Ajax请求upToken的Url，**强烈建议设置**（服务端提供）
                 // uptoken : '', //若未指定uptoken_url,则必须指定 uptoken ,uptoken由其他程序生成
                 unique_names: true, // 默认 false，key为文件名。若开启该选项，SDK为自动生成上传成功后的key（文件名）。
                 // save_key: true,   // 默认 false。若在服务端生成uptoken的上传策略中指定了 `sava_key`，则开启，SDK会忽略对key的处理
                
-                domain: info && info.domain,//bucket 域名，下载资源时用到，**必需**
+                domain: 'http://7xkjiu.media1.z0.glb.clouddn.com/',//bucket 域名，下载资源时用到，**必需**
                 container: 'container',           //上传区域DOM ID，默认是browser_button的父元素，
                 max_file_size: '100mb',           //最大文件体积限制
                 flash_swf_url: 'js/plupload/Moxie.swf',  //引入flash,相对路径
@@ -25,7 +25,7 @@ var uploader = Qiniu.uploader({
                     'UploadProgress': function(up, file) {
                            // 每个文件上传时,处理相关的事情
                     },
-                    'FileUploaded': function(up, file, info) {
+                    'FileUploaded': function(up, file, result) {
                            // 每个文件上传成功后,处理相关的事情
                            // 其中 info 是文件上传成功后，服务端返回的json，形式如
                            // {
@@ -33,14 +33,13 @@ var uploader = Qiniu.uploader({
                            //    "key": "gogopher.jpg"
                            //  }
                            // 参考http://developer.qiniu.com/docs/v6/api/overview/up/response/simple-response.html
-
                             var domain = up.getOption('domain');
-                            var res = JSON.parse(info);
+                            var res = JSON.parse(result);
                             var sourceLink = domain + res.key; //获取上传成功后的文件的Url
                             socket && socket.send(
                               {
                                 c : 'upload',
-                                data : { key : res.key }
+                                data : { roomId: info.roomId, key : res.key, meta: null }
                               }
                             )
                     },

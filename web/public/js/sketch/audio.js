@@ -35,7 +35,6 @@
   }
 
 	a.playWithURL = function(url){
-    console.log("playWithURL")
 		a.url = url
     soundManager.setup({
     // trade-off: higher UI responsiveness (play/progress bar), but may use more CPU.
@@ -70,7 +69,6 @@
         if (a.soundObject.playState) {
           a.actions.pause()
         }else{
-        
           a.actions.play()
         }
         
@@ -87,19 +85,14 @@
   })
 
 	a.makeSound = function(){
-    
-
 		var sound = soundManager.createSound({
-
         url: a.url,
-
         volume: 100,
-
         whileplaying: function() {
-
         	//播放中
-          console.log("position:",this.position)
-          console.log("now:",Date.now())
+          // console.log("durationEstimate:",this.durationEstimate)
+          // console.log("position:",this.position)
+          // console.log("now:",Date.now())
           var progressMaxLeft = 100,
               left,
               width;
@@ -110,7 +103,7 @@
             a.dom.progressBar.css("width",width);
             a.dom.time.html(a.getTime(this.position, true))
             if (a.callback) {
-              a.callback()
+              a.callback(this.position)
             }
             
           }

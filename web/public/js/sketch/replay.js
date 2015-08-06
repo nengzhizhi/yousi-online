@@ -5,10 +5,9 @@
 	r.offset = 0;
 	r.blockSize = 30000;
 	r.audioURL = ""
-	r.index = 0
+	r.baseTime = 0
 
 	r.start = function(){
-		console.log("aaaaaaaaaa")
 		r.getStart();
 	}
 
@@ -17,18 +16,23 @@
 	}
 
 	r.getStart = function(data, callback){
-		console.log("answeringId:",info.answeringId)
+		
 		$.ajax({
 			type : 'POST',
-			url : 'http://121.40.174.3/api/answering/getOperations',
+			url : '/api/answering/getOperations',
 			success : function(data) {
-				console.log("getOperations:",JSON.stringify(data))
+				
 				if (data.code != 200 ) {
 					r.stop();
 				} else {
-
 					r.offset += data.data.length;
+					console.log("data.data",data.data.length)
 					r.ops.length == 0 ? r.ops = data.data : r.ops.concat(data.data);
+					if (r.ops.length > 0 ) {
+						var newOp = r.ops[0]
+						r.baseTime = newOp.t
+						console.log("r.baseTime",r.baseTime)
+					}
 					r.getOps()
 				}
 			},
@@ -47,21 +51,23 @@
 	r.getOps = function(){
 		$.ajax({
 			type : 'POST',
-			url : 'http://121.40.174.3/api/answering/getAnswering',
+			url : '/api/answering/getAnswering',
 			success : function(data) {
 				console.log("getAnswering:",JSON.stringify(data))
 				if (data.code != 200) {
 					r.stop();
 				} else {
 					r.audioURL = data.data.audio
-					console.log("r.audio:",data.data.audio)
-					console.log("r.audioURL:",r.audioURL)
-					audio.callback = function(){
-						var op = r.getOp();
-						r.index++ 
-						console.log("index:",r.index)
-						op ? sketch && sketch.onCommand(op.op) : audio.actions.pause()
+					audio.callback = function(time){
+						var nowOps = r.getCanOps(time)
+						for (var i = 0; i < nowOps.length; i++) {
+							var next = nowOps[i]
+							console.log(JSON.stringify(nowOps[i]))
+							next.op ? sketch && sketch.onCommand(next.op) : audio.actions.pause()
+						};
+						
 					}
+
 					audio.playWithURL(r.audioURL)
 					
 				}
@@ -76,29 +82,21 @@
 		})
 	}
 
-	// r.frameHandle = function(){
-	// 	var op = r.getOp();
-
-	// 	op ? sketch && sketch.onCommand(op.op) : r.stop();
-	// }
-	// //var before = Date.now(),leftValue = 0;
-	// r.frameHandle = function(){
-	// 	//var now = Date.now();
-	// 	//var elapsedTime = now - before;
-
-	// 	// if (elapsedTime > r.frameInterval) {
-	// 	// 	leftValue += Math.floor(elapsedTime/r.frameInterval);
-	// 	// 	for (var i = 0; i < leftValue; i++) {
-	// 	// 		var op = r.getOp();
-	// 	// 		op ? sketch && sketch.onCommand(op.op) : r.stop();
-	// 	// 	}
-	// 	// 	leftValue = 0;
-	// 	// }
-	// 	// else {
-	// 	// 	leftValue ++;
-	// 	// }
-	// 	// before = Date.now();
-	// }
+	r.getCanOps = function(time){
+		var lists = []
+		if (r.ops.length > 0) {
+			for (var i = 0; i < r.ops.length; i++) {
+				var newOp = r.ops[i]
+				var timesamp = newOp.t - r.baseTime
+				if (timesamp < time) {
+					lists.push(r.ops.shift())
+				}else{
+					break;
+				}
+			};
+		}
+		return lists
+	}
 
 	r.getOp = function(){
 		return r.ops.length ? r.ops.shift() : null;

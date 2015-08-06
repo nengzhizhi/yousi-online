@@ -305,6 +305,7 @@ module.exports = function(options) {
 		})
 		.sort({ t : 1 })
 		.skip(args.data.start)
+		.batchSize(30000)
 		.limit(args.data.count)
 		//.select('op', 't')
 		.exec(function (err, operations){

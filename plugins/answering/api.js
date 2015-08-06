@@ -243,18 +243,18 @@ module.exports = function(options) {
 			} else if(req.signedCookies.role == 'student') {
 				queryData = {student:req.signedCookies.username};
 			} else {
-				res.end(JSON.stringify(error.PermissonDeny));
-				return;
+				return res.end(JSON.stringify(error.PermissonDeny));
 			}
+			//queryData.savingStatus = 'success';
 
 			seneca.act({
 				role:'answering', cmd:'getAnswerings',
 				data : queryData
 			}, function (err, result){
 				if(err){
-					res.end(error.InternalError(err));
+					return res.end(error.InternalError(err));
 				} else {
-					res.end(JSON.stringify({code: 200, data: result}));
+					return res.end(JSON.stringify({code: 200, data: result}));
 				}
 			});
 		}
@@ -267,8 +267,7 @@ module.exports = function(options) {
 		// req.checkBody('count', error.BadInput()).isInteger();
 
 		if (req.validationErrors()) {
-			res.end(JSON.stringify(error.BadInput()));
-			return;
+			return res.end(JSON.stringify(error.BadInput()));
 		// } else if(!req.signedCookies || !req.signedCookies.username){
 		// 	res.end(JSON.stringify(error.PermissonDeny()));
 		} else {

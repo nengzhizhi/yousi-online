@@ -41,10 +41,13 @@
 
 	g.createCanvas = function(){
 		g.canvasArray.push(new YSCanvas(g.dom,g.canvasArray.length + 1))
-		g.currentIndex = g.canvasArray.length - 1
+		g.currentIndex = g.canvasArray.length - 1 
+		g.canvasArray[g.currentIndex].setActive()
+		console.log("g.currentIndex",g.currentIndex)
 		g.canvas =  g.canvasArray ? g.canvasArray[g.currentIndex].getWriteCanvas() : null;
 		g.ctx = g.canvasArray ? g.canvasArray[g.currentIndex].getWrite() : null;
 		g.fctx = g.canvasArray ? g.canvasArray[g.currentIndex].getShape() : null;
+		socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['cl'],t:Date.now()}});
 	}
 
 	g.switchCanvas = function(index){
@@ -53,6 +56,7 @@
 		g.canvas =  g.canvasArray ? g.canvasArray[g.currentIndex].getWriteCanvas() : null;
 		g.ctx = g.canvasArray ? g.canvasArray[g.currentIndex].getWrite() : null;
 		g.fctx = g.canvasArray ? g.canvasArray[g.currentIndex].getShape() : null;
+		socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['sl', g.currentIndex],t:Date.now()}});
 	}
 
 	//线条颜色
@@ -195,7 +199,6 @@
 			g.diameter = c.path
 		}
 	}
-
 	var parseCommand = function(c) {
 		return {
 			type : c[0] || 'unknow',
@@ -212,13 +215,13 @@
 		this.isEnabled = false;
 		pencil.path = [];
 		pencil.id = 'pencil';
-		this.ctx = g.ctx
+	
 		pencil.keyPath = []
 		
 
 		this.enable = function(){
 			if (!pencil.isEnabled) {
-				// this.ctx = g.ctx, this.canvas = g.canvas, this.isEnabled = true;
+				// g.ctx = g.ctx, this.canvas = g.canvas, this.isEnabled = true;
 				if (g.mode && g.mode == 'active') {
 					this.dom = g.dom
 					console.log(this.dom)
@@ -249,7 +252,7 @@
 		this.disable = function(){
 			this.isEnabled = false;
 			g.canvasArray[g.currentIndex].getDown().drawImage(g.canvas, 0, 0);
-			this.ctx.clearRect(0,0,960,600)
+			g.ctx.clearRect(0,0,960,600)
 			pencil.keyPath = []
 			if (g.mode && g.mode == 'active') { 
 				this.dom.onmousemove = null,this.dom.onmouseup = null,this.dom.onmousedown = null;
@@ -261,36 +264,36 @@
 		this.render = function(point){
 			
 			pencil.keyPath.push(point);
-			this.ctx.save();
-			this.ctx.lineCap = "round";
-			this.ctx.lineJoin = "round";
-			this.ctx.lineWidth = g.diameter;
-			this.ctx.strokeStyle = g.strokeStyle;
+			g.ctx.save();
+			g.ctx.lineCap = "round";
+			g.ctx.lineJoin = "round";
+			g.ctx.lineWidth = g.diameter;
+			g.ctx.strokeStyle = g.strokeStyle;
 			if (pencil.keyPath.length < 3) {
-				pencil.keyPath.length == 1 && this.ctx.moveTo(pencil.keyPath[0][0], pencil.keyPath[0][1]);
+				pencil.keyPath.length == 1 && g.ctx.moveTo(pencil.keyPath[0][0], pencil.keyPath[0][1]);
 				var p = pencil.keyPath[0];
-				this.ctx.beginPath();
-				this.ctx.arc(p[0], p[1], g.diameter/2, 0, Math.PI * 2, !0);
-				this.ctx.fill();
-				this.ctx.closePath();
+				g.ctx.beginPath();
+				g.ctx.arc(p[0], p[1], g.diameter/2, 0, Math.PI * 2, !0);
+				g.ctx.fill();
+				g.ctx.closePath();
 			} else {
-				this.ctx.clearRect(0, 0, 960, 600);
-				this.ctx.beginPath();
-				this.ctx.moveTo(pencil.keyPath[0][0], pencil.keyPath[0][1]);
+				g.ctx.clearRect(0, 0, 960, 600);
+				g.ctx.beginPath();
+				g.ctx.moveTo(pencil.keyPath[0][0], pencil.keyPath[0][1]);
 				for (var i = 1; i < pencil.keyPath.length - 2; i++) {
 			        var c = (pencil.keyPath[i][0] + pencil.keyPath[i + 1][0]) / 2;
 			        var d = (pencil.keyPath[i][1] + pencil.keyPath[i + 1][1]) / 2;
-			        this.ctx.quadraticCurveTo(pencil.keyPath[i][0], pencil.keyPath[i][1], c, d);				
+			        g.ctx.quadraticCurveTo(pencil.keyPath[i][0], pencil.keyPath[i][1], c, d);				
 				}
-				this.ctx.quadraticCurveTo(
+				g.ctx.quadraticCurveTo(
 					pencil.keyPath[i][0],
 					pencil.keyPath[i][1],
 					pencil.keyPath[i + 1][0],
 					pencil.keyPath[i + 1][1]
 				);
-		 		this.ctx.stroke();
+		 		g.ctx.stroke();
 			}
-	 		this.ctx.restore();
+	 		g.ctx.restore();
 		}
 
 		this.onFrame = function(){
@@ -300,7 +303,7 @@
 				socket && socket.send({c:'draw', data:{op:['pm', point],t:Date.now(),roomId :info.roomId}});
 				pencil.render(point);	
 			}else{
-				g.trace.length && socket && socket.send({c:'draw', data: {op: ['mm', g.trace[0]], t: Date.now(), roomId :info.roomId}});
+				g.trace.length && socket && socket.send({c:'draw', data: {roomId :info.roomId,op: ['mm', g.trace[0]], t: Date.now(),roomId :info.roomId}});
 				g.trace = [];
 			}
 			pencil.frameHandle = requestAnimationFrame(pencil.onFrame);
@@ -318,7 +321,8 @@
 			if (!this.isEnabled) {
 				if (g.mode && g.mode == "active") {
 					this.dom = g.dom
-					this.ctx = g.ctx, this.canvas = g.canvas, this.isEnabled = true;
+					
+					this.isEnabled = true;
 					this.dom.onmousedown = function(e){
 						this.isDrawingMode = true;
 					}
@@ -344,31 +348,31 @@
 		}
 
 		this.render = function(path){
-			this.ctx.save();
-			this.ctx.lineCap = "round";
-			this.ctx.lineJoin = "round";
-			this.ctx.lineWidth = 10 ;
-			this.ctx.fillStyle = 'black';
-			this.ctx.beginPath();
+			g.ctx.save();
+			g.ctx.lineCap = "round";
+			g.ctx.lineJoin = "round";
+			g.ctx.lineWidth = 10 ;
+			g.ctx.fillStyle = 'black';
+			g.ctx.beginPath();
 			for(var i=0;i<path.length;i++){
 				if (i==0) 
-					this.ctx.moveTo(path[0][0], path[0][1]);
+					g.ctx.moveTo(path[0][0], path[0][1]);
 				else 
-					this.ctx.lineTo(path[i][0], path[i][1]);
+					g.ctx.lineTo(path[i][0], path[i][1]);
 			}
-			this.ctx.globalCompositeOperation="destination-out";
-			this.ctx.stroke();
-			this.ctx.globalCompositeOperation="source-over";
-			this.ctx.restore();
+			g.ctx.globalCompositeOperation="destination-out";
+			g.ctx.stroke();
+			g.ctx.globalCompositeOperation="source-over";
+			g.ctx.restore();
 		}
 
 		this.onFrame = function(){
 			if (this.isDrawingMode || eraser.path.length > 0) {
 				eraser.render(eraser.path);
-				eraser.path.length && socket && socket.send({c:'draw', data:{op:['em', eraser.path[eraser.path.length-1]], t:Date.now(),roomId:info.roomId}});
+				eraser.path.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['em', eraser.path[eraser.path.length-1]], t:Date.now()}});
 				eraser.path = [];
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0]], t:Date.now(),roomId:info.roomId}});
+			g.trace.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['mm', g.trace[0]], t:Date.now()}});
 			g.trace = [];
 		}		
 	})
@@ -437,7 +441,7 @@
 		}
 
 		this.render = function(path){
-			console.log("render")
+			
 			var _rect = g.fctx.getActiveObject();
 			if(_rect){
 				if(_rect.get("id")==g.tid){
@@ -466,10 +470,10 @@
 			if (this.isDrawingMode || rectangle.path.length > 0) {
 				var path = rectangle.path[rectangle.path.length-1]
 				rectangle.render(path)
-				console.log(JSON.stringify({c:'draw', data:{op:['rm', path, g.tid],t:Date.now(),roomId:info.roomId}}))
-				rectangle.path.length && socket && socket.send({c:'draw', data:{op:['rm', path, g.tid],t:Date.now(),roomId:info.roomId}});
+				console.log(JSON.stringify({c:'draw', data:{op:['rm', path, g.tid],t:Date.now()}}))
+				rectangle.path.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['rm', path, g.tid],t:Date.now()}});
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
+			g.trace.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['mm', g.trace[0], Date.now()],t:Date.now()}});
 			g.trace = [];
 		}		
 	})
@@ -566,9 +570,9 @@
 			if (this.isDrawingMode || circle.path.length > 0) {
 				var path = circle.path[circle.path.length-1]
 				circle.render(path)
-				circle.path.length && socket && socket.send({c:'draw', data:{op:['cm', path, g.tid],t:Date.now(),roomId:info.roomId}});
+				circle.path.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['cm', path, g.tid],t:Date.now()}});
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
+			g.trace.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['mm', g.trace[0], Date.now()],t:Date.now()}});
 			g.trace = [];
 		}		
 	})
@@ -664,9 +668,9 @@
 			if (this.isDrawingMode || triangle.path.length > 0) {
 				var path = triangle.path[triangle.path.length-1]
 				triangle.render(path)
-				triangle.path.length && socket && socket.send({c:'draw', data:{op:['tm', path, g.tid],t:Date.now(),roomId:info.roomId}});
+				triangle.path.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['tm', path, g.tid],t:Date.now()}});
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
+			g.trace.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['mm', g.trace[0], Date.now()],t:Date.now()}});
 			g.trace = [];
 		}		
 	})
@@ -751,9 +755,9 @@
 			if (this.isDrawingMode || line.path.length > 0) {
 				var path =  line.path[line.path.length-1]
 				line.render(path)
-				line.path.length && socket && socket.send({c:'draw', data:{op:['lm',path, g.tid],t:Date.now(),roomId:info.roomId}});
+				line.path.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['lm',path, g.tid],t:Date.now()}});
 			}
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
+			g.trace.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['mm', g.trace[0], Date.now()],t:Date.now()}});
 			g.trace = [];
 		}		
 	})
@@ -772,7 +776,7 @@
 // 				this.dom = g.dom
 // 				this.isEnabled = true;
 // 				this.dom.onmousedown = function(e){
-// 					this.ctx.selection=true;
+// 					g.ctx.selection=true;
 // 				    var _point = [e.offsetX,e.offsetY];
 // 				    var _imageUrl = g.ctn;
 // 				    if(!_imageUrl || _imageUrl == '') return;
@@ -844,7 +848,7 @@
 
 		this.frameHandle = setInterval(this.onFrame, g.frameInterval||20);
 		this.onFrame = function(){
-			g.trace.length && socket && socket.send({c:'draw', data:{op:['mm', g.trace[0], Date.now()],t:Date.now(),roomId:info.roomId}});
+			g.trace.length && socket && socket.send({c:'draw', data:{roomId :info.roomId,op:['mm', g.trace[0], Date.now()],t:Date.now()}});
 			g.trace = [];
 		}	
 	})
@@ -916,7 +920,7 @@
 	            					_text.get('currentHeight'),
 	            					g.ctn
 	            				],
-	            		 g.tid], t:Date.now(),roomId:info.roomId}
+	            		 g.tid], t:Date.now()}
             }
             console.log(JSON.stringify(info))
 		    socket && socket.send(info)

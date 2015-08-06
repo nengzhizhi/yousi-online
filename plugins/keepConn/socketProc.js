@@ -41,7 +41,7 @@ process.on('message', function (message) {
 		broadcast(message.room, message.msg, message.omit);
 	} else if (message.cmd == 'del') {
 		if (!_.isEmpty(connections[message.token])) {
-			connections[message.token].destory();
+			//connections[message.token].destory();
 			delete connections[message.token];
 		}
 	}

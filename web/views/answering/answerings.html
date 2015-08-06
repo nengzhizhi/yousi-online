@@ -18,7 +18,7 @@
 						<% for(var i=0;i<answerings.length;i++){ %>
 						<tr>
 							<td><%-answerings[i]._id %></td>
-							<td><%-answerings[i].created %></td>
+							<td><%-new Date(answerings[i].created).toTimeString().slice(0, 8) %></td>
 							<td><%-answerings[i].teacher %></td>
 							<td><%-answerings[i].student %></td>
 							<td><a href="/answering/replay?id=<%-answerings[i]._id %>" class="btn btn-default">回顾答疑</a></td>

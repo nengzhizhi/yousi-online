@@ -1,5 +1,7 @@
 var cp = require('child_process');
 var _ = require('lodash');
+var async = require('async');
+
 
 module.exports = function(options) {
 	var seneca = this;
@@ -81,15 +83,16 @@ module.exports = function(options) {
 			var username = data.username;
 			var role = data.role;
 
-			removeFromRoom(roomId, token);
-			broadcast(roomId, { c: 'interrupt_push', data: { username: username }})
-
 			seneca.act({role: 'answering', cmd: 'takeAction', data: {
 				action: 'interrupt',
 				roomId: roomId,
 				role: role,
 				username: username
-			}})
+			}})	
+
+
+			removeFromRoom(roomId, token);
+			broadcast(roomId, { c: 'interrupt_push', data: { username: username }})
 		} else if (c == 'answer') {
 			var roomId = data.roomId;
 			var username = data.username;
@@ -100,7 +103,6 @@ module.exports = function(options) {
 				cmd: 'startAnswering',
 				data: { roomId: roomId, username: username, role: role }
 			}, function (err, result) {
-				console.log(result);
 				if (result.status == 'success') {
 					var message = {
 						c: 'answer_push',
@@ -147,6 +149,7 @@ module.exports = function(options) {
 				})
 			}
 		} else if (c == 'upload') {
+			console.log('upload');
 			var roomId = data.roomId;
 			
 			var message = {
@@ -154,6 +157,34 @@ module.exports = function(options) {
 				data: { url: 'http://7xkjiu.media1.z0.glb.clouddn.com/' + data.key, meta: data.meta }				
 			}
 			broadcast(roomId, message);
+
+			if (!_.isEmpty(seneca.rooms[roomId]) && !_.isEmpty(seneca.rooms[roomId].answeringId)) {
+				async.waterfall([
+					function (next) {
+						seneca.act({
+							role: 'answering',
+							cmd: 'getAnswering',
+							data: { _id: seneca.rooms[roomId].answeringId}
+						}, next);
+					}
+				], function (err, answering) {
+					if (_.isEmpty(err) && !_.isEmpty(answering)) {
+						var imgs = answering.imgs;
+						imgs.push({
+							url: 'http://7xkjiu.media1.z0.glb.clouddn.com/' + data.key,
+							meta: data.meta,
+							time: Date.now()
+						})
+
+						seneca.act({
+							role: 'answering', 
+							cmd: 'updateAnswering',
+							queryData: { _id: seneca.rooms[roomId].answeringId },
+							updateData: { imgs: imgs }
+						})
+					}
+				})
+			}
 		}
 	}
 }

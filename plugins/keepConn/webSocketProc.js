@@ -1,6 +1,7 @@
 var http = require('http');
 var WebSocketServer = require('websocket').server;
 var _ = require('lodash');
+var seneca = require('seneca')();
 
 var connections = {};
 
